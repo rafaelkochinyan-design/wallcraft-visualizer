@@ -44,10 +44,11 @@ router.post('/auth/login', async (req, res, next) => {
       { expiresIn: '7d' }
     )
 
+    const isProd = process.env.NODE_ENV === 'production'
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'strict', // 'none' required for cross-domain (Vercel ↔ Render)
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
