@@ -25,7 +25,7 @@ export default function AccessoryObject({
 }: AccessoryObjectProps) {
   const { scene } = useGLTF(accessory.model_url)
   const { camera, raycaster, pointer } = useThree()
-  const { moveAccessory } = useVisualizerStore()
+  const { moveAccessory, setIsDraggingAccessory } = useVisualizerStore()
 
   const groupRef = useRef<THREE.Group>(null)
   const [dragging, setDragging] = useState(false)
@@ -45,12 +45,14 @@ export default function AccessoryObject({
   const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     setDragging(true)
+    setIsDraggingAccessory(true)
     ;(e.target as Element | null)?.setPointerCapture?.(e.pointerId)
-  }, [])
+  }, [setIsDraggingAccessory])
 
   const handlePointerUp = useCallback(() => {
     setDragging(false)
-  }, [])
+    setIsDraggingAccessory(false)
+  }, [setIsDraggingAccessory])
 
   const handlePointerMove = useCallback(
     (e: ThreeEvent<PointerEvent>) => {
@@ -69,7 +71,7 @@ export default function AccessoryObject({
         moveAccessory(uid, [clampedX, clampedY, 0.025])
       }
     },
-    [dragging, raycaster, pointer, camera, wallWidth, wallHeight, uid, moveAccessory]
+    [dragging, raycaster, pointer, camera, wallWidth, wallHeight, uid, moveAccessory, setIsDraggingAccessory]
   )
 
   return (

@@ -7,7 +7,7 @@ import SceneLight from './SceneLight'
 import AccessoryObject from './AccessoryObject'
 
 export default function Scene() {
-  const { wallWidth, wallHeight, step, tooltipMode } = useVisualizerStore()
+  const { wallWidth, wallHeight, step, tooltipMode, isDraggingAccessory } = useVisualizerStore()
 
   // Camera starts further back, centered on wall height
   const cameraPosition = useMemo(
@@ -49,8 +49,8 @@ export default function Scene() {
       {/* Camera controls */}
       <OrbitControls
         target={orbitTarget}
-        enabled={orbitEnabled}
-        enablePan={tooltipMode === 'settings'}
+        enabled={orbitEnabled && !isDraggingAccessory}
+        enablePan={tooltipMode === 'settings' && !isDraggingAccessory}
         enableZoom
         enableRotate={orbitEnabled}
         minDistance={0.5}

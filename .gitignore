@@ -21,8 +21,11 @@ Thumbs.db
 # Vite cache
 frontend/.vite/
 
-# Local uploads (dev only)
-frontend/public/uploads/
+# Local uploads — exclude generated UUIDs but keep committed models
+frontend/public/uploads/textures/
+frontend/public/uploads/thumbs/
+frontend/public/uploads/logos/
+# Keep models/ committed (GLB files for accessories)
 
 # TypeScript build info
 *.tsbuildinfo

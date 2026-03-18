@@ -1,19 +1,40 @@
-// backend/src/services/r2.ts — DEV VERSION (local file storage)
-// In production: replace with R2 S3Client version
 import { writeFileSync, mkdirSync } from 'fs'
 import { join } from 'path'
 import { v4 as uuid } from 'uuid'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 
 export async function uploadFile(
   buffer: Buffer,
   folder: string,
   originalName: string,
-  _contentType: string
+  contentType: string
 ): Promise<string> {
   const ext = originalName.split('.').pop()?.toLowerCase() || 'bin'
   const filename = `${uuid()}.${ext}`
-  const dir = join(process.cwd(), '../frontend/public/uploads', folder)
-  mkdirSync(dir, { recursive: true })
-  writeFileSync(join(dir, filename), buffer)
-  return `/uploads/${folder}/${filename}`
+
+  // Dev or no R2 configured — save to local filesystem
+  if (!process.env.R2_ACCOUNT_ID || process.env.R2_ACCOUNT_ID === 'skip') {
+    const dir = join(process.cwd(), '../frontend/public/uploads', folder)
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(join(dir, filename), buffer)
+    return `/uploads/${folder}/${filename}`
+  }
+
+  // Production: Cloudflare R2
+  const client = new S3Client({
+    region: 'auto',
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  })
+  const key = `${folder}/${filename}`
+  await client.send(new PutObjectCommand({
+    Bucket: process.env.R2_BUCKET_NAME!,
+    Key: key,
+    Body: buffer,
+    ContentType: contentType,
+  }))
+  return `${process.env.R2_PUBLIC_URL}/${key}`
 }

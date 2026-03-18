@@ -57,6 +57,10 @@ interface VisualizerStore {
   moveAccessory: (uid: string, position: [number, number, number]) => void
   removeAccessory: (uid: string) => void
 
+  // Drag state — disables OrbitControls while dragging accessory
+  isDraggingAccessory: boolean
+  setIsDraggingAccessory: (v: boolean) => void
+
   // Actions — UI flow
   setStep: (step: VisualizerStep) => void
   setTooltipMode: (mode: TooltipMode) => void
@@ -93,6 +97,7 @@ export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
   ...DEFAULT_WALL,
   selectedPanels: [],
   placedAccessories: [],
+  isDraggingAccessory: false,
 
   // UI flow
   step: 'size',
@@ -145,6 +150,8 @@ export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
       placedAccessories: state.placedAccessories.filter((a) => a.uid !== uid),
     }))
   },
+
+  setIsDraggingAccessory: (isDraggingAccessory) => set({ isDraggingAccessory }),
 
   // UI flow
   setStep: (step) => set({ step }),
