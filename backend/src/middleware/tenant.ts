@@ -17,8 +17,8 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
     slug = req.headers['x-tenant-slug'] as string | undefined
   }
 
-  // 3. Query param (dev/testing only)
-  if (!slug && process.env.NODE_ENV === 'development') {
+  // 3. Query param (fallback for single-tenant deploys without custom domain)
+  if (!slug) {
     slug = req.query.store as string | undefined
   }
 
