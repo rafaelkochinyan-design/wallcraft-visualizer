@@ -12,12 +12,14 @@ export const tokenStore = {
 // ── Resolve tenant slug from URL ──────────────────────────────
 export function getTenantSlug(): string {
   const hostname = window.location.hostname
-  const parts = hostname.split('.')
-  // wallcraft.domain.com → parts[0] = 'wallcraft'
-  if (parts.length >= 3 && parts[0] !== 'www') {
-    return parts[0]
+  // Skip platform domains — use env var fallback
+  const isPlatformDomain = hostname.endsWith('.vercel.app') || hostname.endsWith('.onrender.com') || hostname === 'localhost'
+  if (!isPlatformDomain) {
+    const parts = hostname.split('.')
+    if (parts.length >= 3 && parts[0] !== 'www') {
+      return parts[0]
+    }
   }
-  // Dev fallback from env
   return import.meta.env.VITE_TENANT_SLUG || 'wallcraft'
 }
 
