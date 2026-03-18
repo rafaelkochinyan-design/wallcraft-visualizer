@@ -5,21 +5,24 @@ import { fail } from '../utils/response'
 export async function tenantMiddleware(req: Request, res: Response, next: NextFunction) {
   let slug: string | undefined
 
-  // 1. Subdomain: wallcraft.yourdomain.com → slug = 'wallcraft'
-  const host = req.hostname
-  const parts = host.split('.')
-  if (parts.length >= 3 && parts[0] !== 'www') {
-    slug = parts[0]
-  }
+  // 1. Query param — highest priority (works on any domain, including *.onrender.com)
+  slug = req.query.store as string | undefined
 
   // 2. Header (useful for mobile apps or server-to-server)
   if (!slug) {
     slug = req.headers['x-tenant-slug'] as string | undefined
   }
 
-  // 3. Query param (fallback for single-tenant deploys without custom domain)
+  // 3. Subdomain: wallcraft.yourdomain.com → slug = 'wallcraft'
+  //    Skip *.onrender.com and *.vercel.app (deployment platform domains)
   if (!slug) {
-    slug = req.query.store as string | undefined
+    const host = req.hostname
+    const parts = host.split('.')
+    const isCustomDomain = parts.length >= 3 && parts[0] !== 'www'
+      && !host.endsWith('.onrender.com') && !host.endsWith('.vercel.app')
+    if (isCustomDomain) {
+      slug = parts[0]
+    }
   }
 
   if (!slug) {
