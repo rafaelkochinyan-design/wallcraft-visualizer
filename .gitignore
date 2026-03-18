@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment files (NEVER commit)
+.env
+.env.local
+*.local
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vite cache
+frontend/.vite/
+
+# Local uploads (dev only)
+frontend/public/uploads/
+
+# TypeScript build info
+*.tsbuildinfo

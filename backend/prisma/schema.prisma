@@ -1,0 +1,110 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  logo_url      String?
+  primary_color String   @default("#1a1a1a")
+  domain        String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  users       User[]
+  panels      Panel[]
+  accessories Accessory[]
+
+  @@map("tenants")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  tenant_id     String
+  email         String
+  password_hash String
+  role          Role     @default(ADMIN)
+  created_at    DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, email])
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  VIEWER
+}
+
+model PanelCategory {
+  id         String @id @default(cuid())
+  tenant_id  String
+  name       String
+  sort_order Int    @default(0)
+
+  panels Panel[]
+
+  @@map("panel_categories")
+}
+
+model Panel {
+  id           String   @id @default(cuid())
+  tenant_id    String
+  category_id  String?
+  name         String
+  sku          String?
+  texture_url  String
+  thumb_url    String
+  width_mm     Int      @default(500)
+  height_mm    Int      @default(500)
+  depth_mm     Int      @default(19)
+  weight_kg    Float?
+  price        Float?
+  active       Boolean  @default(true)
+  sort_order   Int      @default(0)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  tenant   Tenant         @relation(fields: [tenant_id], references: [id])
+  category PanelCategory? @relation(fields: [category_id], references: [id])
+
+  @@map("panels")
+}
+
+model AccessoryType {
+  id       String @id @default(cuid())
+  name     String @unique
+  label_ru String
+  icon_url String?
+
+  accessories Accessory[]
+
+  @@map("accessory_types")
+}
+
+model Accessory {
+  id         String  @id @default(cuid())
+  tenant_id  String
+  type_id    String
+  name       String
+  model_url  String
+  thumb_url  String
+  scale      Float   @default(1.0)
+  active     Boolean @default(true)
+  sort_order Int     @default(0)
+
+  tenant Tenant        @relation(fields: [tenant_id], references: [id])
+  type   AccessoryType @relation(fields: [type_id], references: [id])
+
+  @@map("accessories")
+}
