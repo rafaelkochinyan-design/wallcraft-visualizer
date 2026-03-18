@@ -183,11 +183,17 @@ router.get('/accessories', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
+// Accept full URLs (https://...) or relative paths (/uploads/...) or data URIs
+const urlOrPath = z.string().min(1).refine(
+  (v) => v.startsWith('/') || v.startsWith('http') || v.startsWith('data:'),
+  { message: 'Must be a URL, relative path, or data URI' }
+)
+
 const accessorySchema = z.object({
   type_id: z.string().min(1),
   name: z.string().min(1).max(100),
-  model_url: z.string().url(),
-  thumb_url: z.string().url(),
+  model_url: urlOrPath,
+  thumb_url: urlOrPath,
   scale: z.coerce.number().min(0.01).max(10).default(1.0),
   active: z.coerce.boolean().default(true),
   sort_order: z.coerce.number().int().default(0),
