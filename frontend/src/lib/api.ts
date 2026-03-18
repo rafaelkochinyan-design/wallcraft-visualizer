@@ -29,11 +29,8 @@ const api = axios.create({
 
 // Request interceptor: attach tenant slug + auth token
 api.interceptors.request.use((config) => {
-  // In dev: inject tenant via query param
-  // In prod: subdomain is detected by backend automatically
-  if (import.meta.env.VITE_APP_ENV === 'development') {
-    config.params = { ...config.params, store: getTenantSlug() }
-  }
+  // Always inject store param — backend supports it on all envs
+  config.params = { ...config.params, store: getTenantSlug() }
 
   const token = tokenStore.get()
   if (token) {
