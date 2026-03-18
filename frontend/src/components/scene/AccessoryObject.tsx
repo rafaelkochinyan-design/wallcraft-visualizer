@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
-import { useThree } from '@react-three/fiber'
+import { useThree, ThreeEvent } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useVisualizerStore } from '../../store/visualizer'
 import { Accessory } from '../../types'
@@ -42,10 +42,10 @@ export default function AccessoryObject({
     return clone
   }, [scene])
 
-  const handlePointerDown = useCallback((e: THREE.Event) => {
+  const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     setDragging(true)
-    ;(e.target as HTMLElement)?.setPointerCapture?.((e as PointerEvent).pointerId)
+    ;(e.target as Element | null)?.setPointerCapture?.(e.pointerId)
   }, [])
 
   const handlePointerUp = useCallback(() => {
@@ -53,7 +53,7 @@ export default function AccessoryObject({
   }, [])
 
   const handlePointerMove = useCallback(
-    (e: THREE.Event) => {
+    (e: ThreeEvent<PointerEvent>) => {
       if (!dragging) return
       e.stopPropagation()
 

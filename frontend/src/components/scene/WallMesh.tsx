@@ -2,6 +2,7 @@ import { useRef, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { useTexture } from '@react-three/drei'
 import { useVisualizerStore } from '../../store/visualizer'
+import { Panel } from '../../types'
 import MeterGrid from './MeterGrid'
 
 const PANEL_W = 0.5   // meters (500mm)
@@ -46,7 +47,7 @@ interface PanelTilingProps {
   wallWidth: number
   wallHeight: number
   wallColor: string
-  panels: ReturnType<typeof useVisualizerStore>['selectedPanels']
+  panels: Panel[]
 }
 
 function PanelTiling({ wallWidth, wallHeight, wallColor, panels }: PanelTilingProps) {

@@ -34,6 +34,7 @@ export interface Panel {
   depth_mm: number
   weight_kg: number | null
   price: number | null
+  active: boolean
   sort_order: number
   category: PanelCategory | null
 }
@@ -53,6 +54,7 @@ export interface Accessory {
   model_url: string
   thumb_url: string
   scale: number
+  active: boolean
   type: AccessoryType
 }
 
