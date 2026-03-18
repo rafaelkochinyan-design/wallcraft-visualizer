@@ -6,9 +6,13 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const [checking, setChecking] = useState(true)
 
-  // Verify auth on mount
+  // Verify auth on mount — try refresh first (httpOnly cookie), then check /me
   useEffect(() => {
-    api.get('/admin/auth/me')
+    api.post('/admin/auth/refresh')
+      .then(res => {
+        tokenStore.set(res.data.data.accessToken)
+        return api.get('/admin/auth/me')
+      })
       .then(() => setChecking(false))
       .catch(() => navigate('/admin/login'))
   }, [navigate])
