@@ -264,6 +264,18 @@ router.post('/accessories/upload-thumb', upload.single('file'), async (req, res,
   } catch (err) { next(err) }
 })
 
+// ── INQUIRIES ─────────────────────────────────────────────────
+
+router.get('/inquiries', async (req, res, next) => {
+  try {
+    const inquiries = await prisma.inquiry.findMany({
+      where: { tenant_id: req.tenant.id },
+      orderBy: { created_at: 'desc' },
+    })
+    ok(res, inquiries)
+  } catch (err) { next(err) }
+})
+
 // ── STORE SETTINGS ────────────────────────────────────────────
 
 router.get('/settings', async (req, res, next) => {

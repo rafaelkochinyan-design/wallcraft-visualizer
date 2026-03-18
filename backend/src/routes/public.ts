@@ -1,6 +1,7 @@
 import { Router } from 'express'
+import { z } from 'zod'
 import { prisma } from '../utils/prisma'
-import { ok } from '../utils/response'
+import { ok, fail } from '../utils/response'
 
 const router = Router()
 
@@ -62,6 +63,35 @@ router.get('/accessory-types', async (_req, res, next) => {
       orderBy: { name: 'asc' },
     })
     ok(res, types)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// POST /api/inquiry — submit quote/sample request
+router.post('/inquiry', async (req, res, next) => {
+  try {
+    const schema = z.object({
+      name: z.string().min(1).max(100),
+      phone: z.string().min(5).max(30),
+      email: z.string().email().optional().or(z.literal('')),
+      message: z.string().max(1000).optional(),
+      wall_width: z.coerce.number().positive().optional(),
+      wall_height: z.coerce.number().positive().optional(),
+      panel_names: z.string().max(500).optional(),
+    })
+    const parsed = schema.safeParse(req.body)
+    if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+
+    const { email, ...rest } = parsed.data
+    const inquiry = await prisma.inquiry.create({
+      data: {
+        ...rest,
+        email: email || null,
+        tenant_id: req.tenant.id,
+      },
+    })
+    ok(res, { id: inquiry.id }, 201)
   } catch (err) {
     next(err)
   }

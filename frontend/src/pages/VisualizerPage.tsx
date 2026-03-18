@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTenant } from '../hooks/useTenant'
 import { useVisualizerStore } from '../store/visualizer'
 import Scene from '../components/scene/Scene'
@@ -5,10 +6,12 @@ import WallSizeStep from '../components/steps/WallSizeStep'
 import PanelSelectStep from '../components/steps/PanelSelectStep'
 import { TooltipMain, TooltipSettings } from '../components/ui/Tooltips'
 import PriceCalculator from '../components/ui/PriceCalculator'
+import InquiryModal from '../components/ui/InquiryModal'
 
 export default function VisualizerPage() {
   const { loading, error } = useTenant()
   const { tenant, step, tooltipMode } = useVisualizerStore()
+  const [showInquiry, setShowInquiry] = useState(false)
 
   if (loading) {
     return (
@@ -68,6 +71,26 @@ export default function VisualizerPage() {
           <PriceCalculator />
         </div>
       )}
+
+      {/* Quote button — bottom left, interactive step only */}
+      {step === 'interactive' && (
+        <div className="absolute bottom-6 left-6 z-20">
+          <button
+            onClick={() => setShowInquiry(true)}
+            className="px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105 active:scale-95"
+            style={{
+              background: 'rgba(255,255,255,0.92)',
+              color: '#111',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+            }}
+          >
+            Запросить консультацию
+          </button>
+        </div>
+      )}
+
+      {/* Inquiry modal */}
+      {showInquiry && <InquiryModal onClose={() => setShowInquiry(false)} />}
     </div>
   )
 }

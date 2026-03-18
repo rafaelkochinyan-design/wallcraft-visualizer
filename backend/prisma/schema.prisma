@@ -24,6 +24,7 @@ model Tenant {
   users       User[]
   panels      Panel[]
   accessories Accessory[]
+  inquiries   Inquiry[]
 
   @@map("tenants")
 }
@@ -108,4 +109,21 @@ model Accessory {
   type   AccessoryType @relation(fields: [type_id], references: [id])
 
   @@map("accessories")
+}
+
+model Inquiry {
+  id           String   @id @default(cuid())
+  tenant_id    String
+  name         String
+  phone        String
+  email        String?
+  message      String?
+  wall_width   Float?
+  wall_height  Float?
+  panel_names  String?
+  created_at   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@map("inquiries")
 }
