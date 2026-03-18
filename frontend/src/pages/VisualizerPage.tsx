@@ -4,6 +4,7 @@ import Scene from '../components/scene/Scene'
 import WallSizeStep from '../components/steps/WallSizeStep'
 import PanelSelectStep from '../components/steps/PanelSelectStep'
 import { TooltipMain, TooltipSettings } from '../components/ui/Tooltips'
+import PriceCalculator from '../components/ui/PriceCalculator'
 
 export default function VisualizerPage() {
   const { loading, error } = useTenant()
@@ -64,6 +65,7 @@ export default function VisualizerPage() {
         <div className="absolute inset-0 pointer-events-none">
           {tooltipMode === null && <TooltipMain />}
           {tooltipMode === 'settings' && <TooltipSettings />}
+          <PriceCalculator />
         </div>
       )}
     </div>
