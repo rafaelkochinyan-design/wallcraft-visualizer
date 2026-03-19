@@ -1,64 +1,132 @@
-# Agent: Admin Panel
+# Agent: Admin
+# Scope: frontend/src/pages/admin/
 
-## My scope
-`/frontend/src/pages/admin/` и `/frontend/src/components/admin/`
+## Моя зона
+Только `frontend/src/pages/admin/`.
+Я НЕ трогаю визуализатор, backend, scene компоненты.
 
-## Routes
+---
+
+## Страницы
+
 ```
-/admin              → redirect to /admin/panels
-/admin/login        → LoginPage (no auth required)
-/admin/panels       → PanelsPage
-/admin/accessories  → AccessoriesPage
-/admin/settings     → StoreSettingsPage
+AdminLoginPage.tsx    ← /admin/login (без auth)
+AdminLayout.tsx       ← sidebar nav + auth guard
+PanelsPage.tsx        ← CRUD панелей + upload текстур
+AccessoriesPage.tsx   ← CRUD аксессуаров + upload .glb
+StoreSettingsPage.tsx ← logo, primary_color, name
 ```
+
+---
 
 ## Auth pattern
+
 ```typescript
-// Store access token in memory (NOT localStorage)
-let accessToken: string | null = null
+// Токен в ПАМЯТИ (не localStorage):
+import { tokenStore } from '../../lib/api'
+tokenStore.set(accessToken)   // после login
+tokenStore.get()              // при запросах (автоматически через api.ts)
+tokenStore.clear()            // при logout
 
-// After login:
-accessToken = response.data.accessToken
-// refreshToken is set in httpOnly cookie automatically
-
-// On 401: try /admin/auth/refresh → get new accessToken
-// If refresh fails: redirect to /admin/login
+// AdminLayout: проверяет auth на mount
+useEffect(() => {
+  api.get('/admin/auth/me')
+    .then(() => setChecking(false))
+    .catch(() => navigate('/admin/login'))
+}, [])
 ```
 
-## Page: PanelsPage
-- Table with columns: thumbnail, name, sku, price, active toggle, actions (edit/delete)
-- "Добавить панель" button → opens modal/drawer
-- Modal fields: name, sku, price, active checkbox, texture upload, thumb upload
-- Texture upload: drag & drop или click, shows preview, sends to POST /admin/panels/upload-texture
-- Edit: same modal prefilled
-- Delete: confirm dialog, then DELETE /admin/panels/:id
+---
 
-## Page: AccessoriesPage
-- Table: thumbnail, name, type, scale, active toggle, actions
-- "Добавить аксессуар" button → modal
-- Modal fields: name, type (dropdown), scale (0.1-5.0), .glb upload, thumb upload
-- .glb upload: shows filename after upload, sends to POST /admin/accessories/upload-model
+## API calls
 
-## Page: StoreSettingsPage
-- Logo upload (shows current logo preview)
-- Store name input
-- Primary color: input type="color" + hex input
-- Save button
+```typescript
+import api from '../../lib/api'
+// api.ts автоматически добавляет:
+// - Authorization: Bearer <token>
+// - ?store=<tenantSlug> (в dev)
 
-## Styling
-- Use Tailwind only
-- Simple and clean — this is internal tool, not customer-facing
-- Table rows: hover highlight
-- Modals: centered overlay with backdrop
-- Toast notifications for success/error (use a simple state-based toast, no library needed)
+// Все запросы к admin:
+api.get('/admin/panels')
+api.post('/admin/panels', payload)
+api.put('/admin/panels/:id', payload)
+api.delete('/admin/panels/:id')
 
-## CRITICAL RULES
-1. ALL admin API calls: include `Authorization: Bearer ${accessToken}` header
-2. ALL file uploads: use multipart/form-data (FormData)
-3. Show loading spinners during API calls
-4. Validate file types client-side before uploading:
-   - Textures: jpg, png, webp only
-   - Models: .glb only
-   - Logo: jpg, png, webp only
-5. After CRUD operations: refetch the list (don't manually update local state)
-6. Tenant context: same subdomain/query-param mechanism as visualizer
+// Upload файлов:
+const fd = new FormData()
+fd.append('file', file)
+const res = await api.post('/admin/panels/upload-texture', fd)
+const url = res.data.data.url
+```
+
+---
+
+## Upload правила
+
+```typescript
+// Перед upload валидировать на клиенте:
+
+// Текстуры (jpg/png/webp):
+const allowed = ['image/jpeg', 'image/png', 'image/webp']
+if (!allowed.includes(file.type)) { toast.error('Только JPG, PNG, WebP'); return }
+if (file.size > 5 * 1024 * 1024) { toast.error('Максимум 5MB'); return }
+
+// 3D модели (.glb):
+const ext = file.name.split('.').pop()?.toLowerCase()
+if (ext !== 'glb') { toast.error('Только .glb файлы'); return }
+if (file.size > 20 * 1024 * 1024) { toast.error('Максимум 20MB'); return }
+
+// Логотип:
+if (file.size > 2 * 1024 * 1024) { toast.error('Максимум 2MB'); return }
+```
+
+---
+
+## Toast в admin
+
+```typescript
+import { toast } from 'sonner'
+
+// После успешных операций:
+toast.success('Панель сохранена')
+toast.success('Аксессуар добавлен')
+toast.success('Настройки обновлены')
+
+// При ошибках:
+toast.error(err?.response?.data?.error?.message || 'Ошибка сохранения')
+
+// Confirmation перед удалением:
+if (!confirm('Удалить панель?')) return
+// потом delete request
+```
+
+---
+
+## Стили для admin
+
+Admin pages используют Tailwind (legacy) — это нормально.
+Не нужно мигрировать на CSS tokens, если работает.
+
+Если добавляешь новые компоненты — можно использовать как Tailwind так и tokens.css.
+
+---
+
+## Паттерн CRUD страницы
+
+```
+1. useEffect → load() → setState(data)
+2. Таблица с данными
+3. "+ Добавить" button → открывает Modal
+4. Modal: form + file upload + save/cancel
+5. После save: закрыть modal + load() снова
+6. Удаление: confirm() → api.delete → load()
+7. Toast на каждое действие
+```
+
+---
+
+## Чего НЕ делать
+- НЕ хранить токен в localStorage
+- НЕ делать прямые запросы минуя api.ts (axios instance с interceptors)
+- НЕ показывать пустой экран при загрузке — всегда spinner
+- НЕ использовать useThree/THREE в admin компонентах

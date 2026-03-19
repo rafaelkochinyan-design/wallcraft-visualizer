@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import api, { tokenStore } from '../../lib/api'
+import '../../styles/admin.css'
 
 export default function AdminLayout() {
   const navigate = useNavigate()

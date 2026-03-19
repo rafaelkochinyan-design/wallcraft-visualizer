@@ -65,8 +65,9 @@ model Panel {
   category_id  String?
   name         String
   sku          String?
-  texture_url  String
+  texture_url  String?
   thumb_url    String
+  model_url    String?
   width_mm     Int      @default(500)
   height_mm    Int      @default(500)
   depth_mm     Int      @default(19)

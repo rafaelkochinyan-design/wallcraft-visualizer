@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import VisualizerPage from './pages/VisualizerPage'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminLayout from './pages/admin/AdminLayout'
@@ -9,6 +10,17 @@ import StoreSettingsPage from './pages/admin/StoreSettingsPage'
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="bottom-center"
+        theme="dark"
+        richColors
+        toastOptions={{
+          style: {
+            fontFamily: 'var(--font)',
+            fontSize: 'var(--text-sm)',
+          }
+        }}
+      />
       <Routes>
         {/* Visualizer (public) */}
         <Route path="/" element={<VisualizerPage />} />

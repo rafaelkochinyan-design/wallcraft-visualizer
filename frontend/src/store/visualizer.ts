@@ -70,6 +70,14 @@ interface VisualizerStore {
   setLightAngle: (angle: number) => void
   setLightElevation: (elevation: number) => void
 
+  // Tooltip drag/collapse state
+  tooltipCollapsed:    boolean
+  tooltipPosition:     { x: number; y: number }
+  pendingSave:         boolean
+  setTooltipCollapsed: (v: boolean) => void
+  setTooltipPosition:  (pos: { x: number; y: number }) => void
+  setPendingSave:      (v: boolean) => void
+
   // Reset everything (Убрать всё button)
   resetAll: () => void
 }
@@ -103,6 +111,11 @@ export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
   step: 'size',
   tooltipMode: null,
   settingsTab: 'light',
+
+  // Tooltip drag/collapse
+  tooltipCollapsed: false,
+  tooltipPosition: { x: 20, y: -1 },
+  pendingSave: false,
 
   // Lighting defaults — 45° azimuth, 60° elevation (nice dramatic angle for panels)
   lightAngle: 45,
@@ -162,6 +175,11 @@ export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
   setLightAngle: (lightAngle) => set({ lightAngle }),
   setLightElevation: (lightElevation) => set({ lightElevation }),
 
+  // Tooltip drag/collapse
+  setTooltipCollapsed: (tooltipCollapsed) => set({ tooltipCollapsed }),
+  setTooltipPosition:  (tooltipPosition)  => set({ tooltipPosition }),
+  setPendingSave:      (pendingSave)       => set({ pendingSave }),
+
   // Reset — clears everything except loaded tenant/panels/accessories data
   resetAll: () =>
     set((state) => ({
@@ -173,6 +191,9 @@ export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
       settingsTab: 'light',
       lightAngle: 45,
       lightElevation: 60,
+      tooltipCollapsed: false,
+      tooltipPosition: { x: 20, y: -1 },
+      pendingSave: false,
       // Keep loaded data
       tenant: state.tenant,
       availablePanels: state.availablePanels,

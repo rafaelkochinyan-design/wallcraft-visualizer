@@ -1,0 +1,89 @@
+/* ═══════════════════════════════════════════════════════
+   WALLCRAFT DESIGN TOKENS — единственный источник правды
+   ═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+
+:root {
+  /* ── Цвета ──────────────────────────────────────────── */
+  --c-black:        #0a0a0a;
+  --c-white:        #ffffff;
+  --c-gray-50:      #f7f7f5;
+  --c-gray-100:     #efefec;
+  --c-gray-200:     #deddd8;
+  --c-gray-300:     #c8c7c1;
+  --c-gray-400:     #9a9890;
+  --c-gray-500:     #6e6d68;
+  --c-gray-600:     #4a4946;
+  --c-gray-800:     #252422;
+  --c-gray-900:     #141412;
+
+  --c-accent:       #0a0a0a;
+  --c-danger:       #dc2626;
+  --c-danger-soft:  rgba(220, 38, 38, 0.1);
+  --c-success:      #16a34a;
+  --c-success-soft: rgba(22, 163, 74, 0.1);
+
+  /* ── Стекло (оверлеи поверх 3D) ─────────────────────── */
+  --glass-dark:         rgba(10, 10, 10, 0.84);
+  --glass-dark-border:  rgba(255, 255, 255, 0.10);
+  --glass-light:        rgba(255, 255, 255, 0.97);
+  --glass-light-border: rgba(0, 0, 0, 0.08);
+  --glass-blur:         blur(20px);
+  --glass-shadow:       0 8px 40px rgba(0, 0, 0, 0.32);
+
+  /* ── Типографика ────────────────────────────────────── */
+  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --text-2xs: 10px;
+  --text-xs:  12px;
+  --text-sm:  14px;
+  --text-md:  16px;
+  --text-lg:  18px;
+  --text-xl:  22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ── Скругления ─────────────────────────────────────── */
+  --r-xs:   6px;
+  --r-sm:   10px;
+  --r-md:   14px;
+  --r-lg:   20px;
+  --r-xl:   28px;
+  --r-2xl:  36px;
+  --r-full: 9999px;
+
+  /* ── Отступы ────────────────────────────────────────── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 28px;
+  --sp-8: 32px;
+
+  /* ── Высоты элементов ───────────────────────────────── */
+  --h-input: 52px;
+  --h-btn-sm:  40px;
+  --h-btn-md:  52px;
+  --h-btn-lg:  60px;
+
+  /* ── Переходы ───────────────────────────────────────── */
+  --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:   cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:  cubic-bezier(0, 0, 0.2, 1);
+  --dur-fast:  120ms;
+  --dur-base:  220ms;
+  --dur-slow:  380ms;
+
+  /* ── Z-index ────────────────────────────────────────── */
+  --z-tooltip:  10;
+  --z-overlay:  20;
+  --z-top:      30;
+}

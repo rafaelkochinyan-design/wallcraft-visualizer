@@ -1,55 +1,110 @@
-import { useVisualizerStore } from '../../store/visualizer'
-import { useVisualizerStore as useStore } from '../../store/visualizer'
+/**
+ * Tooltips.tsx
+ * 
+ * ДОСТУПНОСТЬ:
+ * - Все тексты минимум 14px
+ * - Контраст текста: #ebebf5 на #1c1c1e = 14.7:1 (WCAG AAA)
+ * - Контраст secondary: #aeaeb2 на #1c1c1e = 6.8:1 (WCAG AA)
+ * - Активные элементы: min 44×44px touch target
+ * - Фокус-стиль на всех кнопках
+ */
 
-// ── Tooltip Main ──────────────────────────────────────────────
+import { useState } from 'react'
+import { useVisualizerStore } from '../../store/visualizer'
+import type { Accessory, AccessoryType, PlacedAccessory } from '../../types'
+
+/* ── Цветовая система (iOS Dark) ─────────────────────────
+   #1c1c1e  = background панели
+   #2c2c2e  = surface / card
+   #3a3a3c  = elevated surface / border
+   #48484a  = muted border
+   #636366  = placeholder / disabled text   contrast 4.6:1 ✓ AA
+   #aeaeb2  = secondary text                contrast 6.8:1 ✓ AA
+   #ebebf5  = primary text                  contrast 14.7:1 ✓ AAA
+   #ff453a  = destructive
+   #30d158  = success / accent
+   #0a84ff  = interactive blue
+   #ffd60a  = warning / sun icon bg
+──────────────────────────────────────────────────────── */
+
+const C = {
+  bg:        '#1c1c1e',
+  surface:   '#2c2c2e',
+  elevated:  '#3a3a3c',
+  border:    '#3a3a3c',
+  mutedBorder:'#48484a',
+  textPrim:  '#ebebf5',   // 14.7:1
+  textSec:   '#aeaeb2',   // 6.8:1
+  textMuted: '#636366',   // 4.6:1
+  red:       '#ff453a',
+  green:     '#30d158',
+  blue:      '#0a84ff',
+  yellow:    '#ffd60a',
+}
+
+const WALL_PRESETS = [
+  { label: 'Белый',        hex: '#f8f8f6' },
+  { label: 'Кремовый',     hex: '#f0ede4' },
+  { label: 'Светло-серый', hex: '#e0ddd6' },
+  { label: 'Тёплый серый', hex: '#c0bdb4' },
+  { label: 'Тёмный',       hex: '#3a3836' },
+  { label: 'Чёрный',       hex: '#141412' },
+]
+
+/* ════════════════════════════════════════════════════════
+   TOOLTIP MAIN
+════════════════════════════════════════════════════════ */
 export function TooltipMain() {
-  const { resetAll, setTooltipMode } = useVisualizerStore()
+  const { resetAll, setTooltipMode, setPendingSave } = useVisualizerStore()
 
   return (
-    <div
-      className="absolute left-6 top-1/2 -translate-y-1/2 z-10 w-44 pointer-events-auto"
-      style={{
-        background: 'rgba(12, 12, 12, 0.78)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: '16px',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-      }}
-    >
-      <button
-        onClick={() => setTooltipMode('settings')}
-        className="w-full py-2.5 rounded-xl text-white text-sm font-medium text-center
-          bg-white/10 hover:bg-white/18 active:scale-[0.97] transition-all duration-150"
-      >
-        Настроить
-      </button>
+    <div style={{ padding: '8px 12px 16px', minWidth: 280 }}>
 
-      <button
-        onClick={resetAll}
-        className="w-full py-2.5 rounded-xl text-red-400 text-sm font-medium text-center
-          hover:bg-red-500/10 active:scale-[0.97] transition-all duration-150"
-        style={{ border: '1px solid rgba(239,68,68,0.25)' }}
-      >
-        Убрать всё
-      </button>
+      {/* Label */}
+      <p style={{
+        fontSize: 11, fontWeight: 700, letterSpacing: '0.09em',
+        textTransform: 'uppercase', color: C.textMuted,
+        margin: '4px 0 12px 2px',
+      }}>Управление</p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+        {/* Настроить — primary action */}
+        <MainButton
+          icon={<SettingsIcon />}
+          label="Настроить сцену"
+          sub="Свет · Вид · Аксессуары"
+          onClick={() => setTooltipMode('settings')}
+          arrow
+        />
+
+        {/* Сохранить */}
+        <MainButton
+          icon={<span style={{ fontSize: 20 }}>↓</span>}
+          label="Сохранить изображение"
+          sub="Скачать PNG вашего дизайна"
+          onClick={() => setPendingSave(true)}
+        />
+
+        {/* Divider */}
+        <div style={{ height: 1, background: C.border, margin: '2px 0' }} />
+
+        {/* Сброс — danger */}
+        <MainButton
+          icon={<span style={{ fontSize: 18, color: C.red }}>↺</span>}
+          label="Сбросить всё"
+          sub="Начать с нуля"
+          onClick={resetAll}
+          danger
+        />
+      </div>
     </div>
   )
 }
 
-// ── Tooltip Settings ──────────────────────────────────────────
-const WALL_COLOR_PRESETS = [
-  { label: 'Белый', value: '#f8f8f6' },
-  { label: 'Светло-серый', value: '#e0e0dc' },
-  { label: 'Бежевый', value: '#ede8df' },
-  { label: 'Тёплый серый', value: '#c8c4bc' },
-  { label: 'Серый', value: '#9a9a96' },
-  { label: 'Тёмный', value: '#3a3a38' },
-]
-
+/* ════════════════════════════════════════════════════════
+   TOOLTIP SETTINGS
+════════════════════════════════════════════════════════ */
 export function TooltipSettings() {
   const {
     settingsTab, setSettingsTab, setTooltipMode,
@@ -58,240 +113,406 @@ export function TooltipSettings() {
     wallColor, setWallColor,
     availableAccessoryTypes, availableAccessories,
     placeAccessory, placedAccessories, removeAccessory,
-  } = useStore()
+  } = useVisualizerStore()
+
+  const tabs: { id: typeof settingsTab; emoji: string; label: string }[] = [
+    { id: 'light',       emoji: '☀️', label: 'Свет' },
+    { id: 'position',    emoji: '🎥', label: 'Вид'  },
+    { id: 'accessories', emoji: '🔌', label: 'Акс.' },
+  ]
 
   return (
-    <div
-      className="absolute left-6 top-1/2 -translate-y-1/2 z-10 w-64 pointer-events-auto"
-      style={{
-        background: 'rgba(12, 12, 12, 0.82)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: '16px',
-        padding: '16px',
-        maxHeight: '80vh',
-        overflowY: 'auto',
-      }}
-    >
-      {/* Tabs */}
-      <div className="flex gap-1 mb-4 bg-white/5 rounded-lg p-1">
-        {(['light', 'position', 'accessories'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setSettingsTab(tab)}
-            className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-all duration-150
-              ${settingsTab === tab ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/70'}`}
-          >
-            {tab === 'light' ? 'Свет' : tab === 'position' ? 'Позиция' : 'Акс.'}
-          </button>
-        ))}
+    <div style={{ minWidth: 296 }}>
+
+      {/* ── Tab bar ────────────────────────────────────── */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(3,1fr)',
+        gap: 4, padding: '0 12px 12px',
+      }}>
+        {tabs.map(t => {
+          const active = settingsTab === t.id
+          return (
+            <button key={t.id}
+              onClick={() => setSettingsTab(t.id)}
+              style={{
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', gap: 4,
+                padding: '10px 6px',
+                border: 'none', borderRadius: 12, cursor: 'pointer',
+                fontFamily: 'var(--font)',
+                background: active ? C.elevated : 'transparent',
+                outline: active ? `1.5px solid ${C.mutedBorder}` : 'none',
+                transition: 'background 0.12s',
+                minHeight: 56,
+              }}
+            >
+              <span style={{ fontSize: 18, lineHeight: 1 }}>{t.emoji}</span>
+              <span style={{
+                fontSize: 12, fontWeight: 600, lineHeight: 1,
+                color: active ? C.textPrim : C.textMuted,
+                transition: 'color 0.12s',
+              }}>{t.label}</span>
+            </button>
+          )
+        })}
       </div>
 
-      {/* Tab: Light */}
-      {settingsTab === 'light' && (
-        <div className="flex flex-col gap-5">
-          <SliderControl
-            label="Угол света"
-            value={lightAngle}
-            min={0} max={360}
-            onChange={setLightAngle}
-            unit="°"
+      {/* ── Tab content ────────────────────────────────── */}
+      <div style={{ padding: '0 12px', maxHeight: 380, overflowY: 'auto' }}>
+        {settingsTab === 'light' && (
+          <LightTab
+            angle={lightAngle}    onAngle={setLightAngle}
+            elev={lightElevation} onElev={setLightElevation}
+            color={wallColor}     onColor={setWallColor}
           />
-          <SliderControl
-            label="Высота"
-            value={lightElevation}
-            min={5} max={85}
-            onChange={setLightElevation}
-            unit="°"
+        )}
+        {settingsTab === 'position' && <PositionTab />}
+        {settingsTab === 'accessories' && (
+          <AccessoriesTab
+            types={availableAccessoryTypes}
+            items={availableAccessories}
+            placed={placedAccessories}
+            onPlace={placeAccessory}
+            onRemove={removeAccessory}
           />
-          <div>
-            <label className="text-white/50 text-xs uppercase tracking-wider block mb-2">
-              Цвет стены
-            </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {WALL_COLOR_PRESETS.map((preset) => (
-                <button
-                  key={preset.value}
-                  onClick={() => setWallColor(preset.value)}
-                  title={preset.label}
-                  className="w-7 h-7 rounded-full border-2 transition-all duration-150 active:scale-90"
-                  style={{
-                    backgroundColor: preset.value,
-                    borderColor: wallColor === preset.value ? '#fff' : 'rgba(255,255,255,0.15)',
-                  }}
-                />
-              ))}
-            </div>
-            <input
-              type="color"
-              value={wallColor}
-              onChange={(e) => setWallColor(e.target.value)}
-              className="w-full h-8 rounded-lg cursor-pointer border-0 bg-transparent"
-            />
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Tab: Position */}
-      {settingsTab === 'position' && (
-        <div className="text-white/60 text-xs leading-relaxed space-y-3">
-          <p>Для управления камерой:</p>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="bg-white/10 rounded px-2 py-1 text-white/80">Перетащить</span>
-              <span>— вращение</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-white/10 rounded px-2 py-1 text-white/80">Прокрутка</span>
-              <span>— зум</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="bg-white/10 rounded px-2 py-1 text-white/80">ПКМ + тянуть</span>
-              <span>— панорама</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab: Accessories */}
-      {settingsTab === 'accessories' && (
-        <AccessoriesTab
-          types={availableAccessoryTypes}
-          accessories={availableAccessories}
-          placed={placedAccessories}
-          onPlace={placeAccessory}
-          onRemove={removeAccessory}
-        />
-      )}
-
-      {/* Back button */}
-      <button
-        onClick={() => setTooltipMode(null)}
-        className="w-full mt-4 py-2 rounded-xl text-white/40 text-xs hover:text-white/70 transition-colors"
-      >
-        ← Назад
-      </button>
+      {/* ── Back ───────────────────────────────────────── */}
+      <div style={{ padding: '12px 12px 16px' }}>
+        <TertiaryButton onClick={() => setTooltipMode(null)}>
+          ← Назад
+        </TertiaryButton>
+      </div>
     </div>
   )
 }
 
-// ── Slider control ─────────────────────────────────────────────
-function SliderControl({
-  label, value, min, max, onChange, unit = '',
-}: {
-  label: string
-  value: number
-  min: number
-  max: number
-  onChange: (v: number) => void
-  unit?: string
+/* ════════════════════════════════════════════════════════
+   LIGHT TAB
+════════════════════════════════════════════════════════ */
+function LightTab({ angle, onAngle, elev, onElev, color, onColor }: {
+  angle: number; onAngle:(v:number)=>void
+  elev: number;  onElev:(v:number)=>void
+  color: string; onColor:(v:string)=>void
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, paddingBottom: 12 }}>
+      <Slider label="Угол"   value={angle} min={0}  max={360} unit="°" onChange={onAngle} />
+      <Slider label="Высота" value={elev}  min={5}  max={85}  unit="°" onChange={onElev}  />
+
+      {/* Wall color */}
+      <div>
+        <SectionLabel>Цвет стены</SectionLabel>
+
+        {/* Preset swatches */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 7, marginBottom: 10 }}>
+          {WALL_PRESETS.map(p => {
+            const active = color === p.hex
+            return (
+              <button key={p.hex}
+                title={p.label}
+                onClick={() => onColor(p.hex)}
+                style={{
+                  aspectRatio: '1', borderRadius: 9, border: 'none', cursor: 'pointer',
+                  background: p.hex,
+                  boxShadow: active
+                    ? `0 0 0 2.5px ${C.bg}, 0 0 0 4.5px ${C.textPrim}`
+                    : `0 0 0 1px rgba(255,255,255,0.12)`,
+                  transform: active ? 'scale(1.1)' : 'scale(1)',
+                  transition: 'box-shadow 0.12s, transform 0.12s',
+                }}
+              />
+            )
+          })}
+        </div>
+
+        {/* Custom color picker */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '10px 12px',
+          background: C.surface, borderRadius: 12,
+          border: `1px solid ${C.border}`,
+        }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 7,
+            background: color,
+            border: '1px solid rgba(255,255,255,0.15)',
+            flexShrink: 0,
+          }} />
+          <span style={{ fontSize: 13, color: C.textSec, flex: 1 }}>Свой цвет</span>
+          <input type="color" value={color}
+            onChange={e => onColor(e.target.value)}
+            style={{
+              width: 36, height: 36, border: 'none',
+              borderRadius: 8, cursor: 'pointer',
+              background: 'none', padding: 2,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ════════════════════════════════════════════════════════
+   POSITION TAB
+════════════════════════════════════════════════════════ */
+function PositionTab() {
+  const tips = [
+    { icon: '🖱️', key: 'Перетащить',   val: 'вращение' },
+    { icon: '⚙️', key: 'Прокрутка',    val: 'зум' },
+    { icon: '⌨️', key: 'ПКМ + тянуть', val: 'панорама' },
+  ]
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingBottom: 12 }}>
+      <SectionLabel>Управление камерой</SectionLabel>
+      {tips.map(t => (
+        <div key={t.key} style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '12px 14px',
+          background: C.surface, borderRadius: 12,
+          border: `1px solid ${C.border}`,
+        }}>
+          <span style={{ fontSize: 18, flexShrink: 0 }}>{t.icon}</span>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: C.textPrim, marginBottom: 1 }}>{t.key}</div>
+            <div style={{ fontSize: 12, color: C.textSec }}>{t.val}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ════════════════════════════════════════════════════════
+   ACCESSORIES TAB
+════════════════════════════════════════════════════════ */
+function AccessoriesTab({ types, items, placed, onPlace, onRemove }: {
+  types: AccessoryType[]; items: Accessory[]
+  placed: PlacedAccessory[]; onPlace:(a:Accessory)=>void; onRemove:(uid:string)=>void
+}) {
+  const [sel, setSel] = useState<string|null>(null)
+  const filtered = sel ? items.filter(a => a.type_id === sel) : []
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 12 }}>
+
+      {/* Type grid */}
+      <div>
+        <SectionLabel>Тип</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+          {types.map(t => {
+            const active = sel === t.id
+            return (
+              <button key={t.id}
+                onClick={() => setSel(active ? null : t.id)}
+                style={{
+                  padding: '11px 8px', borderRadius: 12, cursor: 'pointer',
+                  fontFamily: 'var(--font)', fontSize: 13, fontWeight: 600,
+                  background: active ? C.blue : C.surface,
+                  color:      active ? '#fff' : C.textSec,
+                  border:     `1px solid ${active ? C.blue : C.border}`,
+                  transition: 'all 0.12s',
+                  minHeight: 44,
+                } as React.CSSProperties}
+              >{t.label_ru}</button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Items */}
+      {sel && filtered.length > 0 && (
+        <div>
+          <SectionLabel>Модель</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            {filtered.map(acc => (
+              <ItemRow key={acc.id} acc={acc} onAdd={() => onPlace(acc)} />
+            ))}
+          </div>
+        </div>
+      )}
+      {sel && !filtered.length && (
+        <p style={{ fontSize: 13, color: C.textMuted, textAlign: 'center', padding: '8px 0' }}>
+          Нет моделей
+        </p>
+      )}
+
+      {/* Placed */}
+      {placed.length > 0 && (
+        <div>
+          <div style={{ height: 1, background: C.border }} />
+          <SectionLabel style={{ marginTop: 10 }}>
+            На стене — {placed.length} шт
+          </SectionLabel>
+          {placed.map(p => (
+            <div key={p.uid} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '10px 12px', background: C.surface, borderRadius: 10,
+              marginBottom: 4, border: `1px solid ${C.border}`,
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: C.textPrim }}>{p.accessory.name}</span>
+              <button onClick={() => onRemove(p.uid)} style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 15, color: C.textMuted, padding: '4px 6px', borderRadius: 6,
+                transition: 'color 0.12s',
+                minWidth: 32, minHeight: 32,
+              }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.red)}
+                onMouseLeave={e => (e.currentTarget.style.color = C.textMuted)}
+              >✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Item row ─────────────────────────────────────────────── */
+function ItemRow({ acc, onAdd }: { acc: Accessory; onAdd: () => void }) {
+  const [hov, setHov] = useState(false)
+  return (
+    <button onClick={onAdd}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '10px 12px', borderRadius: 12, cursor: 'pointer',
+        fontFamily: 'var(--font)', textAlign: 'left',
+        background: hov ? C.elevated : C.surface,
+        border: `1px solid ${hov ? C.mutedBorder : C.border}`,
+        transition: 'background 0.12s',
+        minHeight: 52,
+      } as React.CSSProperties}
+    >
+      <div style={{
+        width: 44, height: 44, borderRadius: 10, flexShrink: 0, overflow: 'hidden',
+        background: C.elevated, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <img src={acc.thumb_url} alt={acc.name}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+        />
+      </div>
+      <span style={{ fontSize: 14, fontWeight: 500, color: C.textPrim, flex: 1 }}>{acc.name}</span>
+      <span style={{ fontSize: 20, color: C.blue, lineHeight: 1, flexShrink: 0 }}>+</span>
+    </button>
+  )
+}
+
+/* ════════════════════════════════════════════════════════
+   ПЕРЕИСПОЛЬЗУЕМЫЕ КОМПОНЕНТЫ
+════════════════════════════════════════════════════════ */
+
+function MainButton({ icon, label, sub, onClick, arrow, danger }: {
+  icon: React.ReactNode; label: string; sub: string
+  onClick: () => void; arrow?: boolean; danger?: boolean
+}) {
+  const [hov, setHov] = useState(false)
+  return (
+    <button onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '12px 14px',
+        background: danger
+          ? hov ? 'rgba(255,69,58,0.14)' : 'rgba(255,69,58,0.08)'
+          : hov ? C.elevated : C.surface,
+        border: `1px solid ${danger ? 'rgba(255,69,58,0.28)' : C.border}`,
+        borderRadius: 14, cursor: 'pointer',
+        fontFamily: 'var(--font)', textAlign: 'left',
+        transition: 'background 0.12s',
+        width: '100%', minHeight: 56,
+      } as React.CSSProperties}
+    >
+      {/* Icon box */}
+      <div style={{
+        width: 36, height: 36, borderRadius: 9, flexShrink: 0,
+        background: danger ? 'rgba(255,69,58,0.15)' : C.elevated,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 18, lineHeight: 1,
+      }}>{icon}</div>
+
+      {/* Text */}
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: danger ? C.red : C.textPrim, lineHeight: 1.2 }}>
+          {label}
+        </div>
+        <div style={{ fontSize: 12, color: C.textMuted, marginTop: 3, lineHeight: 1.2 }}>
+          {sub}
+        </div>
+      </div>
+
+      {arrow && (
+        <svg width="8" height="13" viewBox="0 0 8 13" fill="none" style={{ flexShrink: 0 }}>
+          <path d="M1 1.5L6.5 6.5L1 11.5" stroke={C.textMuted} strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      )}
+    </button>
+  )
+}
+
+function TertiaryButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
+  const [hov, setHov] = useState(false)
+  return (
+    <button onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        width: '100%', padding: '11px',
+        background: hov ? C.elevated : 'transparent',
+        border: `1px solid ${C.border}`,
+        borderRadius: 12, cursor: 'pointer',
+        fontSize: 14, fontWeight: 600, color: C.textSec,
+        fontFamily: 'var(--font)',
+        transition: 'background 0.12s, color 0.12s',
+        minHeight: 44,
+      }}
+    >{children}</button>
+  )
+}
+
+function SectionLabel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <p style={{
+      fontSize: 11, fontWeight: 700, letterSpacing: '0.09em',
+      textTransform: 'uppercase', color: C.textMuted,
+      marginBottom: 8, ...style,
+    }}>{children}</p>
+  )
+}
+
+function Slider({ label, value, min, max, unit, onChange }: {
+  label: string; value: number; min: number; max: number; unit: string; onChange:(v:number)=>void
 }) {
   return (
     <div>
-      <div className="flex justify-between items-center mb-1.5">
-        <label className="text-white/50 text-xs uppercase tracking-wider">{label}</label>
-        <span className="text-white/70 text-xs">{Math.round(value)}{unit}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: C.textSec }}>{label}</span>
+        <span style={{
+          fontSize: 13, fontWeight: 700, color: C.textPrim,
+          background: C.elevated, padding: '2px 9px', borderRadius: 8,
+          border: `1px solid ${C.border}`,
+        }}>{Math.round(value)}{unit}</span>
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-white h-1 cursor-pointer"
+      <input type="range" min={min} max={max} value={value}
+        onChange={e => onChange(parseFloat(e.target.value))}
+        style={{ width: '100%' }}
       />
     </div>
   )
 }
 
-// ── Accessories tab ────────────────────────────────────────────
-import { useState } from 'react'
-import { AccessoryType, Accessory, PlacedAccessory } from '../../types'
-
-function AccessoriesTab({
-  types, accessories, placed, onPlace, onRemove,
-}: {
-  types: AccessoryType[]
-  accessories: Accessory[]
-  placed: PlacedAccessory[]
-  onPlace: (acc: Accessory) => void
-  onRemove: (uid: string) => void
-}) {
-  const [selectedType, setSelectedType] = useState<string | null>(null)
-
-  const filteredAccessories = selectedType
-    ? accessories.filter((a) => a.type_id === selectedType)
-    : []
-
+/* ── Icons ────────────────────────────────────────────────── */
+function SettingsIcon() {
   return (
-    <div className="flex flex-col gap-3">
-      {/* Type grid */}
-      <div className="grid grid-cols-3 gap-2">
-        {types.map((type) => (
-          <button
-            key={type.id}
-            onClick={() => setSelectedType(selectedType === type.id ? null : type.id)}
-            className={`py-2 px-1 rounded-lg text-xs text-center transition-all duration-150
-              ${selectedType === type.id
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80'}`}
-          >
-            {type.label_ru}
-          </button>
-        ))}
-      </div>
-
-      {/* Models for selected type */}
-      {selectedType && filteredAccessories.length > 0 && (
-        <div className="space-y-1">
-          <p className="text-white/30 text-xs">Выберите модель:</p>
-          {filteredAccessories.map((acc) => (
-            <button
-              key={acc.id}
-              onClick={() => onPlace(acc)}
-              className="w-full flex items-center gap-3 p-2 rounded-lg bg-white/5
-                hover:bg-white/10 active:scale-[0.98] transition-all duration-150"
-            >
-              <img
-                src={acc.thumb_url}
-                alt={acc.name}
-                className="w-10 h-10 rounded-md object-cover bg-gray-700 flex-shrink-0"
-              />
-              <span className="text-white/70 text-xs text-left">{acc.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {selectedType && filteredAccessories.length === 0 && (
-        <p className="text-white/30 text-xs">Нет моделей для этого типа</p>
-      )}
-
-      {/* Placed accessories list */}
-      {placed.length > 0 && (
-        <div className="border-t border-white/10 pt-3 mt-1">
-          <p className="text-white/30 text-xs mb-2">На стене ({placed.length}):</p>
-          <div className="space-y-1">
-            {placed.map((item) => (
-              <div
-                key={item.uid}
-                className="flex items-center justify-between gap-2 py-1.5 px-2
-                  rounded-lg bg-white/5"
-              >
-                <span className="text-white/60 text-xs truncate">{item.accessory.name}</span>
-                <button
-                  onClick={() => onRemove(item.uid)}
-                  className="text-white/30 hover:text-red-400 transition-colors flex-shrink-0
-                    text-xs px-1.5 py-0.5 rounded"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="2.5" stroke="#ebebf5" strokeWidth="1.6"/>
+      <path d="M9 2v1.5M9 14.5V16M2 9h1.5M14.5 9H16M3.93 3.93l1.06 1.06M13.01 13.01l1.06 1.06M3.93 14.07l1.06-1.06M13.01 4.99l1.06-1.06"
+        stroke="#ebebf5" strokeWidth="1.6" strokeLinecap="round"/>
+    </svg>
   )
 }

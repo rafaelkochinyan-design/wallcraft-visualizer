@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import api from '../lib/api'
 import { useVisualizerStore } from '../store/visualizer'
 import type { Tenant, Panel, Accessory, AccessoryType } from '../types'
@@ -42,6 +43,7 @@ export function useTenant(): UseTenantResult {
       } catch (err) {
         if (!cancelled) {
           setError('Failed to load store data. Please refresh the page.')
+          toast.error('Не удалось загрузить данные магазина')
           console.error('useTenant error:', err)
         }
       } finally {

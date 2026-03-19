@@ -26,6 +26,7 @@ router.get('/panels', async (req, res, next) => {
         sku: true,
         texture_url: true,
         thumb_url: true,
+        model_url: true,
         width_mm: true,
         height_mm: true,
         depth_mm: true,

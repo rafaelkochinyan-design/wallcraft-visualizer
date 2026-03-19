@@ -27,8 +27,9 @@ export interface Panel {
   tenant_id: string
   name: string
   sku: string | null
-  texture_url: string
+  texture_url: string | null
   thumb_url: string
+  model_url: string | null
   width_mm: number
   height_mm: number
   depth_mm: number

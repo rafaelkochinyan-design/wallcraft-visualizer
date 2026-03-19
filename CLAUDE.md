@@ -1,211 +1,250 @@
-# WallCraft Visualizer — Claude Code Master Context
-
-## Project in one sentence
-A SaaS 3D wall panel visualizer. Users input wall dimensions, pick decorative gypsum panels and accessories, and see a real-time 3D preview. Multi-tenant: each store gets its own branded instance.
-
-## First (and only) client right now
-**Wallcraft** — decorative gypsum panel store in Yerevan, Armenia.
-Panel: "Консул" — 500×500×19mm, ridge/rib texture, paintable gypsum.
+# WallCraft Visualizer — Master Context
+# Читай этот файл ПЕРВЫМ перед любым действием в проекте.
 
 ---
 
-## Tech Stack — NEVER deviate from this
+## Проект в одном предложении
+SaaS 3D визуализатор декоративных настенных панелей.
+Пользователь вводит размеры стены → выбирает панели → видит реалтайм 3D превью → добавляет аксессуары.
+Мультитенантный: каждый магазин получает свой брендированный инстанс.
 
-| Layer | Tech | Version |
-|-------|------|---------|
-| Frontend | React + Vite + TypeScript | React 18, Vite 5 |
-| 3D | React Three Fiber + drei | @react-three/fiber ^8, @react-three/drei ^9 |
-| State | Zustand | ^4 |
-| Styling | Tailwind CSS | ^3 |
-| Backend | Node.js + Express | Express ^4 |
-| ORM | Prisma | ^5 |
-| Database | PostgreSQL | 15+ |
-| Auth | JWT (jsonwebtoken) | access 15min, refresh 7d |
-| File Storage | Cloudflare R2 via @aws-sdk/client-s3 | S3-compatible |
-| Validation | Zod | ^3 |
-| Multi-tenancy | Shared schema, tenant_id on every row | row-level isolation |
+**Первый клиент:** Wallcraft, Ереван — гипсовые панели «Консул» 500×500×19мм.
+**Продакшн:** https://frontend-beige-six-43.vercel.app
 
-## Monorepo structure
+---
+
+## Стек — НИКОГДА не менять без явного запроса
+
+| Слой | Технология |
+|------|-----------|
+| Frontend | React 18 + Vite 5 + TypeScript |
+| 3D | React Three Fiber ^8 + @react-three/drei ^9 |
+| State | Zustand ^4 |
+| Styling | **CSS Variables (tokens.css + components.css)** — НЕ Tailwind |
+| Animations | @react-spring/three + @react-spring/web |
+| Gestures | @use-gesture/react |
+| Toasts | sonner |
+| Backend | Node.js + Express ^4 + Prisma ^5 |
+| DB | PostgreSQL 15+ |
+| Auth | JWT (access 15min / refresh 7d) |
+| Storage | Cloudflare R2 (S3-compatible) |
+| Validation | Zod ^3 |
+| Multi-tenancy | Shared schema, tenant_id on EVERY row |
+
+---
+
+## КРИТИЧЕСКАЯ ГРАНИЦА — R3F vs DOM
+
+Это главный источник ошибок в проекте. Запомни навсегда:
+
 ```
-wallcraft-visualizer/
-├── CLAUDE.md                    ← you are here
-├── backend/
-│   ├── CLAUDE.md                ← backend-specific context
-│   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── seed.ts
-│   ├── src/
-│   │   ├── middleware/
-│   │   │   ├── tenant.ts        ← tenant resolver (CRITICAL)
-│   │   │   ├── auth.ts          ← JWT verify
-│   │   │   └── errorHandler.ts
-│   │   ├── routes/
-│   │   │   ├── public.ts        ← /api/* (no auth)
-│   │   │   └── admin.ts         ← /admin/* (JWT required)
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   │   └── r2.ts            ← Cloudflare R2 upload
-│   │   ├── utils/
-│   │   │   └── response.ts      ← standard {data, error} shape
-│   │   └── index.ts
-│   ├── .env.example
-│   └── package.json
-├── frontend/
-│   ├── CLAUDE.md                ← frontend-specific context
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── scene/           ← R3F components only
-│   │   │   │   ├── Scene.tsx
-│   │   │   │   ├── WallMesh.tsx
-│   │   │   │   ├── PanelTiling.tsx
-│   │   │   │   ├── MeterGrid.tsx
-│   │   │   │   ├── SceneLight.tsx
-│   │   │   │   └── AccessoryObject.tsx
-│   │   │   ├── ui/              ← HTML overlay UI
-│   │   │   │   ├── TooltipMain.tsx
-│   │   │   │   ├── TooltipSettings.tsx
-│   │   │   │   ├── TooltipAccessories.tsx
-│   │   │   │   └── ColorPicker.tsx
-│   │   │   ├── steps/           ← wizard steps
-│   │   │   │   ├── WallSizeStep.tsx
-│   │   │   │   └── PanelSelectStep.tsx
-│   │   │   └── admin/           ← admin panel pages
-│   │   ├── hooks/
-│   │   │   ├── useTenant.ts
-│   │   │   └── useApi.ts
-│   │   ├── store/
-│   │   │   └── visualizer.ts    ← Zustand store
-│   │   ├── types/
-│   │   │   └── index.ts         ← shared TS types
-│   │   ├── lib/
-│   │   │   └── api.ts           ← axios instance
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── public/
-│   │   └── textures/            ← panel textures (jpg)
-│   ├── .env.example
-│   └── package.json
-└── agents/                      ← Claude Code agent contexts
-    ├── backend/CLAUDE.md
-    ├── 3d-scene/CLAUDE.md
-    ├── ui-tooltip/CLAUDE.md
-    └── admin/CLAUDE.md
+ВНУТРИ <Canvas>                    СНАРУЖИ <Canvas>
+─────────────────────────────     ─────────────────────────────
+useThree ✅                        useThree ❌ → CRASH
+useFrame ✅                        useFrame ❌ → CRASH
+<mesh>, <group> ✅                 <div>, <button> ❌ → не работает
+THREE.* напрямую ✅                THREE.* ❌ → не нужно
+НЕТ Tailwind, НЕТ CSS классов     CSS классы ✅, Tailwind ✅ (legacy)
 ```
 
----
-
-## Multi-tenancy — HOW IT WORKS
-
-**Strategy:** Shared PostgreSQL database, `tenant_id` column on every tenant-scoped table.
-
-**Tenant resolution order:**
-1. Subdomain: `wallcraft.yourdomain.com` → slug = `wallcraft`
-2. Query param fallback (dev only): `?store=wallcraft`
-3. Header: `x-tenant-slug: wallcraft`
-
-**Middleware** (`src/middleware/tenant.ts`) runs on EVERY request:
-- Resolves tenant slug from request
-- Looks up tenant in DB
-- Attaches `req.tenant` to request
-- Returns 404 if tenant not found
-
-**RULE: Every DB query on tenant-scoped tables MUST filter by `tenant_id`.**
-Never query panels/accessories/users without tenant filter.
+**Правило:** данные между Canvas и DOM передаются ТОЛЬКО через Zustand store.
+Никаких props drilling через границу Canvas.
 
 ---
 
-## API Response Shape — ALWAYS use this
+## Design System
+
+### Файлы (единственный источник правды)
+```
+frontend/src/styles/tokens.css      ← CSS переменные (цвета, шрифты, отступы)
+frontend/src/styles/components.css  ← классы (.btn, .card, .card-dark, .input и т.д.)
+```
+
+### Ключевые переменные
+```css
+--font: 'DM Sans', sans-serif
+--c-black: #0a0a0a
+--c-white: #ffffff
+--glass-dark: rgba(10,10,10,0.84)    /* все тёмные оверлеи */
+--glass-light: rgba(255,255,255,0.97) /* карточки на 3D */
+--h-btn-md: 52px                      /* минимальная высота кнопки */
+--r-full: 9999px                      /* pill/таблетка */
+--ease: cubic-bezier(0.16,1,0.3,1)   /* все анимации */
+```
+
+### Переиспользуемые компоненты
+```
+Button.tsx     → <Button variant="primary|secondary|ghost|danger" size="sm|md|lg" full>
+InputField.tsx → <InputField label suffix error value onChange>
+```
+
+### НЕЛЬЗЯ
+- Хардкодить цвета в компонентах — только через CSS variables
+- Создавать новые CSS файлы — только tokens.css и components.css
+- Использовать Tailwind для новых компонентов (legacy admin pages — ок)
+
+---
+
+## Multi-tenancy — ЖЕЛЕЗНОЕ ПРАВИЛО
+
+**Каждый** запрос к БД на tenant-scoped таблицах ОБЯЗАН содержать `tenant_id`:
+
+```typescript
+// ✅ ПРАВИЛЬНО
+prisma.panel.findMany({ where: { tenant_id: req.tenant.id } })
+
+// ❌ НЕПРАВИЛЬНО — утечка данных между тенантами!
+prisma.panel.findMany()
+```
+
+Tenant-scoped таблицы: `Panel`, `Accessory`, `User`
+Глобальные таблицы: `AccessoryType`, `Tenant` (сами по себе)
+
+**Резолюция тенанта** (порядок приоритетов):
+1. Субдомен: `wallcraft.domain.com` → slug = `wallcraft`
+2. Header: `x-tenant-slug: wallcraft`
+3. Query param (только dev): `?store=wallcraft`
+
+---
+
+## API Response shape — всегда
 
 ```typescript
 // Success
-{ data: T, error: null }
+res.json({ data: T, error: null })
 
 // Error
-{ data: null, error: { message: string, code?: string } }
+res.json({ data: null, error: { message: string, code?: string } })
 ```
 
-Use `src/utils/response.ts` helpers: `ok(res, data)` and `fail(res, status, message)`.
+Использовать только `ok(res, data)` и `fail(res, status, message)` из `utils/response.ts`.
 
 ---
 
-## Authentication
+## 3D Сцена — координаты
 
-- Admin login → POST `/admin/auth/login` → returns `{ accessToken, refreshToken }`
-- Access token: 15 min expiry, sent in `Authorization: Bearer <token>`
-- Refresh token: 7 days, stored in httpOnly cookie AND returned in body
-- `auth` middleware verifies access token, attaches `req.user` with `{ id, tenant_id, role }`
-- All `/admin/*` routes (except login/refresh) require valid JWT
-
----
-
-## Environment Variables
-
-### Backend `.env`
 ```
-DATABASE_URL=postgresql://user:pass@localhost:5432/wallcraft
-JWT_SECRET=<random 64 char hex>
-JWT_REFRESH_SECRET=<different random 64 char hex>
-R2_ACCOUNT_ID=
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_BUCKET_NAME=wallcraft-assets
-R2_PUBLIC_URL=https://pub-XXXX.r2.dev
-PORT=3001
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
-```
+Стена:
+  X: [-wallWidth/2, +wallWidth/2]    (ширина в метрах)
+  Y: [0, wallHeight]                 (высота в метрах, от пола)
+  Z: 0                               (плоскость стены)
 
-### Frontend `.env`
-```
-VITE_API_URL=http://localhost:3001
-VITE_APP_ENV=development
+Камера старт: [0, wallHeight/2, max(w,h)*1.6]
+OrbitControls target: [0, wallHeight/2, 0]
+
+Панель: 0.5м × 0.5м × 0.019м (500×500×19mm)
+Тайлинг: InstancedMesh ОБЯЗАТЕЛЬНО (не individual meshes)
+Аксессуары: drag через wallPlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0)
 ```
 
 ---
 
-## Key Business Rules
+## Zustand Store — ключевые поля
 
-1. **Panel tile size is always 500×500mm (0.5m × 0.5m)**
-2. **Max 2 panels selectable at once** in the visualizer
-3. **Panel "Консул"** has 2 visual variants = same texture, variant B is rotated 180°
-4. **Wall dimensions:** min 0.5m, max 10m for both width and height
-5. **Accessories** are placed on the wall surface (Z = wall Z + small offset)
-6. **Accessories** can be dragged along wall surface (constrained to wall bounds)
-7. **Reset ("Убрать всё")** clears everything and goes back to wall size input
-8. **Admin panel** is at `/admin` route, completely separate from visualizer
-9. **Tenant branding** (logo, primary_color) is loaded once on app start via `/api/tenant`
+```typescript
+// Стена
+wallWidth, wallHeight: number        // метры
+wallColor: string                    // hex
 
----
+// UI flow
+step: 'size' | 'panel_select' | 'interactive'
+tooltipMode: null | 'settings'
+settingsTab: 'light' | 'position' | 'accessories'
+tooltipCollapsed: boolean
+tooltipPosition: { x: number, y: number }  // y=-1 = по центру
 
-## 3D Scene Rules
+// 3D
+lightAngle: number      // azimuth 0-360°
+lightElevation: number  // 0-90°
 
-- **Wall position:** centered at world origin, faces +Z axis
-  - Wall spans X: [-width/2, +width/2], Y: [0, height], Z: 0
-- **Camera start:** position [0, height/2, Math.max(width, height) * 1.5], target [0, height/2, 0]
-- **Light:** DirectionalLight, position controlled by azimuth + elevation angles
-  - `x = distance * cos(elevation) * sin(azimuth)`
-  - `y = distance * sin(elevation)`
-  - `z = distance * cos(elevation) * cos(azimuth)`
-- **Panel tiling:** Use `THREE.InstancedMesh` — DO NOT create individual meshes per tile
-- **Texture tiling:** `texture.wrapS = texture.wrapT = THREE.RepeatWrapping`
-- **Panel texture UV:** each tile shows exactly 1 panel = UV repeat per tile, not whole wall
-- **Accessory drag:** Raycasting against invisible wall plane (`THREE.Plane(normal, 0)`)
+// Screenshot
+pendingSave: boolean    // триггер из UI → Canvas подхватывает
 
----
-
-## DO NOT
-
-- Do NOT use `create-react-app` — use Vite
-- Do NOT use `axios` on backend — use native `fetch` or keep it simple
-- Do NOT store tokens in localStorage — use memory + httpOnly cookie for refresh
-- Do NOT skip `tenant_id` filter on any DB query
-- Do NOT create individual `THREE.Mesh` per panel tile — use `InstancedMesh`
-- Do NOT put business logic in React components — use hooks or Zustand actions
-- Do NOT import THREE directly in R3F components when drei equivalent exists
-- Do NOT use `any` TypeScript type — be explicit
+// Данные
+selectedPanels: Panel[]         // max 2
+placedAccessories: PlacedAccessory[]
+availablePanels, availableAccessories, availableAccessoryTypes
+```
 
 ---
 
-## Current Status
-Phase 0 — Starting from scratch. Nothing built yet.
-Start with: backend setup → prisma schema → seed → public API endpoints.
+## Структура проекта
+
+```
+wallcraft-visualizer/
+├── CLAUDE.md                     ← ты здесь
+├── backend/
+│   ├── CLAUDE.md
+│   ├── prisma/schema.prisma
+│   └── src/
+│       ├── middleware/tenant.ts  ← КРИТИЧНО
+│       ├── routes/public.ts
+│       ├── routes/admin.ts
+│       ├── services/r2.ts
+│       └── utils/response.ts
+└── frontend/
+    ├── CLAUDE.md
+    └── src/
+        ├── styles/
+        │   ├── tokens.css        ← design tokens
+        │   └── components.css    ← component classes
+        ├── components/
+        │   ├── scene/            ← R3F only (Canvas context)
+        │   │   ├── Scene.tsx     ← preserveDrawingBuffer:true
+        │   │   ├── WallMesh.tsx
+        │   │   ├── PanelTiling.tsx
+        │   │   ├── MeterGrid.tsx
+        │   │   ├── SceneLight.tsx
+        │   │   └── AccessoryObject.tsx
+        │   ├── ui/               ← DOM only (outside Canvas)
+        │   │   ├── Button.tsx
+        │   │   ├── InputField.tsx
+        │   │   ├── TooltipWrapper.tsx
+        │   │   ├── Tooltips.tsx
+        │   │   └── Utils.tsx     ← PanelCounter, LoadingScreen, SaveScene
+        │   └── steps/
+        │       ├── WallSizeStep.tsx
+        │       └── PanelSelectStep.tsx
+        ├── store/visualizer.ts
+        ├── hooks/useTenant.ts
+        ├── lib/api.ts
+        ├── types/index.ts
+        └── pages/
+            ├── VisualizerPage.tsx
+            └── admin/
+                ├── AdminLayout.tsx
+                ├── AdminLoginPage.tsx
+                ├── PanelsPage.tsx
+                ├── AccessoriesPage.tsx
+                └── StoreSettingsPage.tsx
+```
+
+---
+
+## Агенты — кто за что отвечает
+
+| Агент | Папка | Задачи |
+|-------|-------|--------|
+| `3d-scene` | `frontend/src/components/scene/` | R3F компоненты, WebGL, тени, тайлинг |
+| `ui` | `frontend/src/components/ui/`, `steps/`, `pages/VisualizerPage.tsx` | DOM компоненты, design system |
+| `backend` | `backend/` | API, Prisma, auth, tenant middleware |
+| `admin` | `frontend/src/pages/admin/` | Admin CRUD UI |
+
+**Slash commands:**
+- `/review-3d` — проверка 3D компонентов
+- `/review-be` — проверка бэкенда + tenant isolation
+- `/review-ui` — проверка UI + design system
+- `/add-panel` — добавить новую панель через API
+- `/fix` — исправить конкретный баг
+
+---
+
+## Частые ошибки — ЗАПРЕЩЕНО
+
+1. `useThree()` вне `<Canvas>` — CRASH
+2. `prisma.panel.findMany()` без `tenant_id` — DATA LEAK
+3. Создавать `new THREE.Mesh()` в цикле тайлинга — используй InstancedMesh
+4. `texture.clone()` без `needsUpdate = true` — текстура не обновится
+5. Хардкодить цвета (`color: '#333'`) — используй CSS variables
+6. Импортировать THREE напрямую в UI компонентах — ненужная зависимость
+7. `localStorage` для токенов — только в памяти + httpOnly cookie
