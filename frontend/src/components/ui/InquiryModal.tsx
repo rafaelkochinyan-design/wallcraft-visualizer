@@ -16,7 +16,7 @@ export default function InquiryModal({ onClose }: Props) {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const panelNames = selectedPanels.map((p) => p.name).join(', ')
+  const panelNames = selectedPanels.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => p.name).join(', ')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

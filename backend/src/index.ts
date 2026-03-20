@@ -6,6 +6,7 @@ import { tenantMiddleware } from './middleware/tenant'
 import { errorHandler } from './middleware/errorHandler'
 import publicRouter from './routes/public'
 import adminRouter from './routes/admin'
+import leadsRouter from './routes/leads'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -31,6 +32,7 @@ app.use(tenantMiddleware)
 // ── Routes ────────────────────────────────────────────────────
 app.use('/api', publicRouter)
 app.use('/admin', adminRouter)
+app.use(leadsRouter)
 
 // ── Error handler (must be last) ─────────────────────────────
 app.use(errorHandler)

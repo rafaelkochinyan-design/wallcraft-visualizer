@@ -12,7 +12,7 @@
  * 4. Snap to edge — притягивается к ближайшему краю, но НЕ сбрасывает на середину
  *
  * НЕТ backdrop-filter — ломает transparent bg при CSS transform.
- * Фон: solid #1c1c1e
+ * Фон: solid var(--ui-bg)
  */
 
 import { useRef, useCallback, useEffect, ReactNode, useState } from 'react'
@@ -171,8 +171,8 @@ export function TooltipWrapper({ children }: Props) {
         pointerEvents: tooltipCollapsed ? 'none' : 'auto',
       }}>
         <div style={{
-          background:   '#1c1c1e',
-          border:       '1px solid #3a3a3c',
+          background:   'var(--ui-bg)',
+          border:       '1px solid var(--ui-border)',
           borderRadius: 20,
           boxShadow:    '0 20px 60px rgba(0,0,0,0.50), 0 4px 16px rgba(0,0,0,0.28)',
           overflow:     'hidden',
@@ -203,7 +203,7 @@ function Chrome({ onCollapse }: { onCollapse: () => void }) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '12px 16px 10px',
-      borderBottom: '1px solid #2c2c2e',
+      borderBottom: '1px solid var(--ui-surface)',
       cursor: 'grab',
     }}>
       {/* Dots */}
@@ -214,7 +214,7 @@ function Chrome({ onCollapse }: { onCollapse: () => void }) {
           onMouseLeave={() => setHov(false)}
           style={{
             width: 13, height: 13, borderRadius: '50%', border: 'none',
-            background: hov ? '#ff5f57' : '#ff453a',
+            background: hov ? 'var(--accent-red)' : 'var(--accent-red)',
             cursor: 'pointer', padding: 0, flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 0 0 1px rgba(0,0,0,0.18)',
@@ -235,7 +235,7 @@ function Chrome({ onCollapse }: { onCollapse: () => void }) {
       {/* Grip dots */}
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap', maxWidth: 48 }}>
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} style={{ width: 3, height: 3, borderRadius: '50%', background: '#48484a' }} />
+          <div key={i} style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--ui-elevated)' }} />
         ))}
       </div>
       <div style={{ width: 51 }} />
@@ -254,8 +254,8 @@ function Pill({ onExpand }: { onExpand: () => void }) {
       style={{
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '11px 18px 11px 14px',
-        background: hov ? '#2c2c2e' : '#1c1c1e',
-        border: `1px solid ${hov ? '#545456' : '#3a3a3c'}`,
+        background: hov ? 'var(--ui-surface)' : 'var(--ui-bg)',
+        border: `1px solid ${hov ? 'var(--ui-elevated)' : 'var(--ui-border)'}`,
         borderRadius: 99, cursor: 'pointer',
         boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
         transition: 'background 0.13s, border-color 0.13s',
@@ -263,16 +263,16 @@ function Pill({ onExpand }: { onExpand: () => void }) {
       }}
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#ebebf5" fillOpacity=".9"/>
-        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#ebebf5" fillOpacity=".9"/>
-        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#ebebf5" fillOpacity=".9"/>
-        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#ebebf5" fillOpacity=".45"/>
+        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="var(--text-primary)" fillOpacity=".9"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="var(--text-primary)" fillOpacity=".9"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="var(--text-primary)" fillOpacity=".9"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="var(--text-primary)" fillOpacity=".45"/>
       </svg>
-      <span style={{ fontSize: 14, fontWeight: 600, color: '#ebebf5', letterSpacing: 0.1 }}>
+      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: 0.1 }}>
         Настройки
       </span>
       <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ marginLeft: 2 }}>
-        <path d="M1 5L5 1L9 5" stroke="#636366" strokeWidth="1.6" strokeLinecap="round"/>
+        <path d="M1 5L5 1L9 5" stroke="var(--text-muted)" strokeWidth="1.6" strokeLinecap="round"/>
       </svg>
     </button>
   )

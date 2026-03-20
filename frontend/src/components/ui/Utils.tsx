@@ -6,8 +6,8 @@ import { useThree } from '@react-three/fiber'
 import { useVisualizerStore } from '../../store/visualizer'
 
 export function PanelCounter() {
-  const { wallWidth, wallHeight, selectedPanels, step } = useVisualizerStore()
-  if (step !== 'interactive' || selectedPanels.length === 0) return null
+  const { wallWidth, wallHeight, selectedPanels } = useVisualizerStore()
+  if (!selectedPanels.some(p => p !== null)) return null
 
   const cols  = Math.ceil(wallWidth  / 0.5)
   const rows  = Math.ceil(wallHeight / 0.5)

@@ -3,7 +3,7 @@
  * Камера: смотрит на стену немного сверху и спереди.
  * Угол даёт реальную перспективу комнаты — виден пол, потолок, боковые стены.
  */
-import { Suspense, useMemo } from 'react'
+import { Suspense, useMemo, Component, ReactNode } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, SoftShadows } from '@react-three/drei'
 import { useVisualizerStore } from '../../store/visualizer'
@@ -13,8 +13,16 @@ import AccessoryObject from './AccessoryObject'
 import RoomEnvironment from './RoomEnvironment'
 import { SaveSceneWirer } from '../ui/Utils'
 
+// Silently catches any render error — returns null instead of crashing the Canvas
+class SceneErrorBoundary extends Component<{ children: ReactNode }, { error: boolean }> {
+  state = { error: false }
+  static getDerivedStateFromError() { return { error: true } }
+  componentDidCatch(e: Error) { console.warn('[SceneErrorBoundary]', e.message) }
+  render() { return this.state.error ? null : this.props.children }
+}
+
 export default function Scene() {
-  const { wallWidth, wallHeight, step, tooltipMode, placedAccessories } = useVisualizerStore()
+  const { wallWidth, wallHeight, isDraggingAccessory, placedAccessories } = useVisualizerStore()
 
   // Камера: стоит напротив стены, чуть выше середины, чуть наискосок
   // Это даёт перспективу — виден пол и потолок
@@ -37,41 +45,46 @@ export default function Scene() {
         alpha: false,
         preserveDrawingBuffer: true,
         toneMapping: 3,        // ACESFilmic
-        toneMappingExposure: 0.88,
+        toneMappingExposure: 0.95,
       }}
     >
       {/* Цвет фона = цвет потолка комнаты */}
       <color attach="background" args={['#f2efe9']} />
 
-      <ambientLight intensity={0.20} color="#fff5e8" />
+      <ambientLight intensity={0.12} color="#fff5e8" />
       <SoftShadows size={22} samples={14} focus={0.55} />
       <SceneLight />
 
-      <Suspense fallback={null}>
-        <RoomEnvironment />
-      </Suspense>
+      <SceneErrorBoundary>
+        <Suspense fallback={null}>
+          <RoomEnvironment />
+        </Suspense>
+      </SceneErrorBoundary>
 
-      <Suspense fallback={null}>
-        <WallMesh />
-      </Suspense>
+      <SceneErrorBoundary>
+        <Suspense fallback={null}>
+          <WallMesh />
+        </Suspense>
+      </SceneErrorBoundary>
 
-      <Suspense fallback={null}>
-        {placedAccessories.map(a => (
-          <AccessoryObject
-            key={a.uid}
-            uid={a.uid}
-            accessory={a.accessory}
-            position={a.position}
-            wallWidth={wallWidth}
-            wallHeight={wallHeight}
-          />
-        ))}
-      </Suspense>
+      {placedAccessories.map(a => (
+        <SceneErrorBoundary key={a.uid}>
+          <Suspense fallback={null}>
+            <AccessoryObject
+              uid={a.uid}
+              accessory={a.accessory}
+              position={a.position}
+              wallWidth={wallWidth}
+              wallHeight={wallHeight}
+            />
+          </Suspense>
+        </SceneErrorBoundary>
+      ))}
 
       <OrbitControls
         target={target}
-        enabled={step === 'interactive'}
-        enablePan={tooltipMode === 'settings'}
+        enabled={!isDraggingAccessory}
+        enablePan={true}
         enableZoom
         minDistance={0.6}
         maxDistance={camDist * 2.5}

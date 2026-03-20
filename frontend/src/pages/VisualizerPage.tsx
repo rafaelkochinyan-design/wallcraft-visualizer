@@ -1,64 +1,62 @@
-import { useTenant }        from '../hooks/useTenant'
+/**
+ * VisualizerPage.tsx — Single-screen layout (Homestyler-inspired)
+ *
+ * Layout:
+ * ┌─────────────────────────────────────────────────────────┐
+ * │  TOP TOOLBAR (logo | wall size inputs | actions)        │
+ * ├──────────────┬──────────────────────────────────────────┤
+ * │              │                                          │
+ * │  LEFT        │         3D SCENE (fullscreen)            │
+ * │  SIDEBAR     │                                          │
+ * │  (panels /   │    ┌──────────────────────┐              │
+ * │  accessories │    │   SETTINGS TOOLTIP   │              │
+ * │  / settings) │    │   (draggable)        │              │
+ * │              │    └──────────────────────┘              │
+ * │              │                                          │
+ * └──────────────┴──────────────────────────────────────────┘
+ */
+
 import { useVisualizerStore } from '../store/visualizer'
-import Scene                  from '../components/scene/Scene'
-import WallSizeStep           from '../components/steps/WallSizeStep'
-import PanelSelectStep        from '../components/steps/PanelSelectStep'
-import { TooltipMain, TooltipSettings } from '../components/ui/Tooltips'
-import { TooltipWrapper }     from '../components/ui/TooltipWrapper'
-import { PanelCounter, LoadingScreen } from '../components/ui/Utils'
+import { useTenant } from '../hooks/useTenant'
+import { useUrlState } from '../hooks/useUrlState'
+import Scene              from '../components/scene/Scene'
+import LeftSidebar        from '../components/sidebar/LeftSidebar'
+import TopToolbar         from '../components/ui/TopToolbar'
+import { LoadingScreen }  from '../components/ui/Utils'
+import PriceCalculator    from '../components/ui/PriceCalculator'
 
 export default function VisualizerPage() {
   const { loading, error } = useTenant()
-  const { tenant, step, tooltipMode } = useVisualizerStore()
+  useUrlState()
 
   if (loading || error) {
     return <LoadingScreen error={error} onRetry={() => window.location.reload()} />
   }
 
-  const progress = step === 'size' ? 33 : step === 'panel_select' ? 66 : 100
-
   return (
-    <div style={{ width:'100vw', height:'100vh', position:'relative', overflow:'hidden' }}>
+    <div style={{
+      width: '100vw', height: '100vh',
+      display: 'flex', flexDirection: 'column',
+      overflow: 'hidden',
+      background: '#f2efe9',
+    }}>
+      {/* Top toolbar */}
+      <TopToolbar />
 
-      {/* ── 3D Canvas full-screen ── */}
-      <Scene />
+      {/* Main area: sidebar + 3D */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
 
-      {/* ── Progress bar ── */}
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${progress}%` }} />
+        {/* Left sidebar */}
+        <LeftSidebar />
+
+        {/* 3D scene — fills remaining space */}
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+          <Scene />
+
+          {/* Price calculator bottom-right */}
+          <PriceCalculator />
+        </div>
       </div>
-
-      {/* ── Logo top-center ── */}
-      <div style={{
-        position:'absolute', top:20, left:'50%', transform:'translateX(-50%)',
-        zIndex:'var(--z-overlay)', pointerEvents:'none', userSelect:'none',
-      }}>
-        {tenant?.logo_url ? (
-          <img src={tenant.logo_url} alt={tenant.name}
-            style={{ height:32, width:'auto', opacity:0.75, filter:'none' }} />
-        ) : (
-          <img
-            src="/wallcraft_logo_dark.png"
-            alt={tenant?.name ?? 'Wallcraft'}
-            style={{ height:32, width:'auto', opacity:0.75, filter:'none' }}
-          />
-        )}
-      </div>
-
-      {/* ── Steps ── */}
-      {step === 'size'         && <WallSizeStep />}
-      {step === 'panel_select' && <PanelSelectStep />}
-
-      {/* ── Tooltip + controls (interactive mode) ── */}
-      {step === 'interactive' && (
-        <TooltipWrapper>
-          {tooltipMode === null       && <TooltipMain />}
-          {tooltipMode === 'settings' && <TooltipSettings />}
-        </TooltipWrapper>
-      )}
-
-      {/* ── Panel counter bottom-right ── */}
-      <PanelCounter />
     </div>
   )
 }

@@ -18,6 +18,10 @@ model Tenant {
   logo_url      String?
   primary_color String   @default("#1a1a1a")
   domain        String?
+  email         String?
+  phone         String?
+  address       String?
+  active        Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -25,6 +29,7 @@ model Tenant {
   panels      Panel[]
   accessories Accessory[]
   inquiries   Inquiry[]
+  leads       Lead[]
 
   @@map("tenants")
 }
@@ -100,9 +105,11 @@ model Accessory {
   tenant_id  String
   type_id    String
   name       String
+  sku        String?
   model_url  String
   thumb_url  String
   scale      Float   @default(1.0)
+  price      Float?
   active     Boolean @default(true)
   sort_order Int     @default(0)
 
@@ -127,4 +134,23 @@ model Inquiry {
   tenant Tenant @relation(fields: [tenant_id], references: [id])
 
   @@map("inquiries")
+}
+
+model Lead {
+  id          String   @id @default(cuid())
+  tenant_id   String
+  name        String
+  phone       String
+  comment     String?
+  wall_config Json
+  screenshot  String?
+  status      String   @default("new")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([status])
+  @@map("leads")
 }

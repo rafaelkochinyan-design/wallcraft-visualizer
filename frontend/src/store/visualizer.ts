@@ -1,203 +1,166 @@
+/**
+ * visualizer.ts — обновлённый store (Homestyler-style)
+ *
+ * Убран wizard (step: size/panel_select/interactive).
+ * Теперь single-screen: всё сразу на экране.
+ *
+ * Новые поля:
+ * - sidebarTab: 'panels' | 'accessories' | 'settings'
+ * - hoverPanelId — для hover preview при наведении в сайдбаре
+ * - selectedPanelSlot: 0 | 1 — какой из 2 слотов сейчас редактируется
+ * - selectedPanels: (Panel|null)[] — два слота вместо массива
+ */
+
 import { create } from 'zustand'
-import { v4 as uuid } from 'uuid'
-import {
-  Panel,
-  Accessory,
-  PlacedAccessory,
-  VisualizerStep,
-  TooltipMode,
-  SettingsTab,
-  Tenant,
-  AccessoryType,
-} from '../types'
+import type { Panel, Accessory, AccessoryType, PlacedAccessory, Tenant } from '../types'
+
+type SidebarTab = 'panels' | 'accessories' | 'settings'
 
 interface VisualizerStore {
-  // Tenant
+  // ── Tenant ──────────────────────────────────────────────
   tenant: Tenant | null
-  setTenant: (tenant: Tenant) => void
+  setTenant: (t: Tenant) => void
 
-  // Available data (loaded from API)
-  availablePanels: Panel[]
-  availableAccessories: Accessory[]
-  availableAccessoryTypes: AccessoryType[]
-  setAvailablePanels: (panels: Panel[]) => void
-  setAvailableAccessories: (accessories: Accessory[]) => void
-  setAvailableAccessoryTypes: (types: AccessoryType[]) => void
+  // ── Wall dimensions ──────────────────────────────────────
+  wallWidth:    number
+  wallHeight:   number
+  setWallSize:  (w: number, h: number) => void
 
-  // Wall
-  wallWidth: number     // meters
-  wallHeight: number    // meters
-  wallColor: string     // hex
+  // ── Wall appearance ──────────────────────────────────────
+  wallColor:    string
+  setWallColor: (c: string) => void
 
-  // Selected panels (max 2)
-  selectedPanels: Panel[]
+  // ── Panels ───────────────────────────────────────────────
+  availablePanels:    Panel[]
+  setAvailablePanels: (p: Panel[]) => void
 
-  // Placed accessories on the wall
+  // Два слота: slot 0 = основной паттерн, slot 1 = чередующийся
+  selectedPanels:   (Panel | null)[]   // [slotA, slotB]
+  activeSlot:       0 | 1
+  setActiveSlot:    (s: 0 | 1) => void
+  setPanelInSlot:   (panel: Panel | null, slot: 0 | 1) => void
+
+  // Hover preview — панель подсвечивается в 3D при наведении в сайдбаре
+  hoverPanelId:     string | null
+  setHoverPanelId:  (id: string | null) => void
+
+  // ── Accessories ──────────────────────────────────────────
+  availableAccessories:       Accessory[]
+  availableAccessoryTypes:    AccessoryType[]
+  setAvailableAccessories:    (a: Accessory[]) => void
+  setAvailableAccessoryTypes: (t: AccessoryType[]) => void
+
   placedAccessories: PlacedAccessory[]
-
-  // UI flow
-  step: VisualizerStep
-  tooltipMode: TooltipMode
-  settingsTab: SettingsTab
-
-  // Lighting
-  lightAngle: number      // azimuth 0-360 degrees
-  lightElevation: number  // elevation 0-90 degrees
-
-  // Actions — wall
-  setWallSize: (width: number, height: number) => void
-  setWallColor: (color: string) => void
-
-  // Actions — panels
-  togglePanelSelect: (panel: Panel) => void
-  clearPanels: () => void
-
-  // Actions — accessories
-  placeAccessory: (accessory: Accessory) => void
-  moveAccessory: (uid: string, position: [number, number, number]) => void
-  removeAccessory: (uid: string) => void
+  placeAccessory:   (a: Accessory) => void
+  moveAccessory:    (uid: string, pos: [number, number, number]) => void
+  removeAccessory:  (uid: string) => void
 
   // Drag state — disables OrbitControls while dragging accessory
-  isDraggingAccessory: boolean
+  isDraggingAccessory:    boolean
   setIsDraggingAccessory: (v: boolean) => void
 
-  // Actions — UI flow
-  setStep: (step: VisualizerStep) => void
-  setTooltipMode: (mode: TooltipMode) => void
-  setSettingsTab: (tab: SettingsTab) => void
+  // ── Sidebar ──────────────────────────────────────────────
+  sidebarOpen:    boolean
+  sidebarTab:     SidebarTab
+  setSidebarOpen: (v: boolean) => void
+  setSidebarTab:  (t: SidebarTab) => void
 
-  // Actions — lighting
-  setLightAngle: (angle: number) => void
-  setLightElevation: (elevation: number) => void
+  // ── Lighting ─────────────────────────────────────────────
+  lightAngle:        number
+  lightElevation:    number
+  setLightAngle:     (v: number) => void
+  setLightElevation: (v: number) => void
 
-  // Tooltip drag/collapse state
+  // ── Tooltip (draggable settings panel) ───────────────────
   tooltipCollapsed:    boolean
   tooltipPosition:     { x: number; y: number }
-  pendingSave:         boolean
   setTooltipCollapsed: (v: boolean) => void
   setTooltipPosition:  (pos: { x: number; y: number }) => void
-  setPendingSave:      (v: boolean) => void
 
-  // Reset everything (Убрать всё button)
+  // ── Screenshot ───────────────────────────────────────────
+  pendingSave:    boolean
+  setPendingSave: (v: boolean) => void
+
+  // ── Reset ────────────────────────────────────────────────
   resetAll: () => void
 }
 
-const DEFAULT_WALL = {
-  wallWidth: 3,
-  wallHeight: 2.7,
-  wallColor: '#f0ede8',
+const DEFAULT = {
+  wallWidth:          3.0,
+  wallHeight:         2.7,
+  wallColor:          '#f0ede4',
+  selectedPanels:     [null, null] as (Panel | null)[],
+  activeSlot:         0 as 0 | 1,
+  hoverPanelId:       null as string | null,
+  placedAccessories:  [] as PlacedAccessory[],
+  isDraggingAccessory: false,
+  sidebarOpen:        true,
+  sidebarTab:         'panels' as SidebarTab,
+  lightAngle:         45,
+  lightElevation:     60,
+  tooltipCollapsed:   false,
+  tooltipPosition:    { x: 20, y: -1 },
+  pendingSave:        false,
 }
 
 export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
-  // Tenant
-  tenant: null,
-  setTenant: (tenant) => set({ tenant }),
+  ...DEFAULT,
 
-  // Available data
+  tenant: null,
   availablePanels: [],
   availableAccessories: [],
   availableAccessoryTypes: [],
-  setAvailablePanels: (panels) => set({ availablePanels: panels }),
-  setAvailableAccessories: (accessories) => set({ availableAccessories: accessories }),
-  setAvailableAccessoryTypes: (types) => set({ availableAccessoryTypes: types }),
 
-  // Wall
-  ...DEFAULT_WALL,
-  selectedPanels: [],
-  placedAccessories: [],
-  isDraggingAccessory: false,
+  setTenant:                  (tenant) => set({ tenant }),
+  setAvailablePanels:         (availablePanels) => set({ availablePanels }),
+  setAvailableAccessories:    (availableAccessories) => set({ availableAccessories }),
+  setAvailableAccessoryTypes: (availableAccessoryTypes) => set({ availableAccessoryTypes }),
 
-  // UI flow
-  step: 'size',
-  tooltipMode: null,
-  settingsTab: 'light',
-
-  // Tooltip drag/collapse
-  tooltipCollapsed: false,
-  tooltipPosition: { x: 20, y: -1 },
-  pendingSave: false,
-
-  // Lighting defaults — 45° azimuth, 60° elevation (nice dramatic angle for panels)
-  lightAngle: 45,
-  lightElevation: 60,
-
-  // Wall actions
-  setWallSize: (wallWidth, wallHeight) => set({ wallWidth, wallHeight }),
+  setWallSize:  (wallWidth, wallHeight) => set({ wallWidth, wallHeight }),
   setWallColor: (wallColor) => set({ wallColor }),
 
-  // Panel select — toggle, max 2
-  togglePanelSelect: (panel) => {
-    const { selectedPanels } = get()
-    const isSelected = selectedPanels.some((p) => p.id === panel.id)
-    if (isSelected) {
-      set({ selectedPanels: selectedPanels.filter((p) => p.id !== panel.id) })
-    } else if (selectedPanels.length < 2) {
-      set({ selectedPanels: [...selectedPanels, panel] })
-    }
-    // If already 2 selected and user clicks a third, do nothing (handled in UI by disabling)
-  },
-  clearPanels: () => set({ selectedPanels: [] }),
+  setActiveSlot:   (activeSlot) => set({ activeSlot }),
+  setHoverPanelId: (hoverPanelId) => set({ hoverPanelId }),
+  setPanelInSlot:  (panel, slot) => set(s => {
+    const next = [...s.selectedPanels] as (Panel | null)[]
+    next[slot] = panel
+    return { selectedPanels: next }
+  }),
 
-  // Accessory actions
-  placeAccessory: (accessory) => {
-    const { wallWidth, wallHeight, placedAccessories } = get()
-    const newItem: PlacedAccessory = {
-      uid: uuid(),
-      accessory,
-      // Place in center of wall, slightly in front of surface
-      position: [0, wallHeight / 2, 0.025],
-    }
-    set({ placedAccessories: [...placedAccessories, newItem] })
-  },
-
-  moveAccessory: (uid, position) => {
-    set((state) => ({
-      placedAccessories: state.placedAccessories.map((a) =>
-        a.uid === uid ? { ...a, position } : a
-      ),
-    }))
-  },
-
-  removeAccessory: (uid) => {
-    set((state) => ({
-      placedAccessories: state.placedAccessories.filter((a) => a.uid !== uid),
-    }))
-  },
+  placeAccessory: (accessory) => set(s => ({
+    placedAccessories: [
+      ...s.placedAccessories,
+      {
+        uid: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        accessory,
+        position: [0, s.wallHeight / 2, 0.025] as [number, number, number],
+      },
+    ],
+  })),
+  moveAccessory: (uid, position) => set(s => ({
+    placedAccessories: s.placedAccessories.map(a => a.uid === uid ? { ...a, position } : a),
+  })),
+  removeAccessory: (uid) => set(s => ({
+    placedAccessories: s.placedAccessories.filter(a => a.uid !== uid),
+  })),
 
   setIsDraggingAccessory: (isDraggingAccessory) => set({ isDraggingAccessory }),
 
-  // UI flow
-  setStep: (step) => set({ step }),
-  setTooltipMode: (tooltipMode) => set({ tooltipMode }),
-  setSettingsTab: (settingsTab) => set({ settingsTab }),
+  setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
+  setSidebarTab:  (sidebarTab)  => set({ sidebarTab }),
 
-  // Lighting
-  setLightAngle: (lightAngle) => set({ lightAngle }),
+  setLightAngle:     (lightAngle)     => set({ lightAngle }),
   setLightElevation: (lightElevation) => set({ lightElevation }),
 
-  // Tooltip drag/collapse
   setTooltipCollapsed: (tooltipCollapsed) => set({ tooltipCollapsed }),
   setTooltipPosition:  (tooltipPosition)  => set({ tooltipPosition }),
-  setPendingSave:      (pendingSave)       => set({ pendingSave }),
+  setPendingSave:      (pendingSave)      => set({ pendingSave }),
 
-  // Reset — clears everything except loaded tenant/panels/accessories data
-  resetAll: () =>
-    set((state) => ({
-      ...DEFAULT_WALL,
-      selectedPanels: [],
-      placedAccessories: [],
-      step: 'size',
-      tooltipMode: null,
-      settingsTab: 'light',
-      lightAngle: 45,
-      lightElevation: 60,
-      tooltipCollapsed: false,
-      tooltipPosition: { x: 20, y: -1 },
-      pendingSave: false,
-      // Keep loaded data
-      tenant: state.tenant,
-      availablePanels: state.availablePanels,
-      availableAccessories: state.availableAccessories,
-      availableAccessoryTypes: state.availableAccessoryTypes,
-    })),
+  resetAll: () => set({
+    ...DEFAULT,
+    tenant:                  get().tenant,
+    availablePanels:         get().availablePanels,
+    availableAccessories:    get().availableAccessories,
+    availableAccessoryTypes: get().availableAccessoryTypes,
+  }),
 }))

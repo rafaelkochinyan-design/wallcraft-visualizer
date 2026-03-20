@@ -290,7 +290,7 @@ router.put('/settings', async (req, res, next) => {
     const schema = z.object({
       name: z.string().min(1).max(100).optional(),
       primary_color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Must be hex color').optional(),
-      logo_url: z.string().url().optional().nullable(),
+      logo_url: urlOrPath.optional().nullable(),
     })
     const parsed = schema.safeParse(req.body)
     if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)

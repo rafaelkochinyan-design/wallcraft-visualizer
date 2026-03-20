@@ -3,17 +3,18 @@ import { useVisualizerStore } from '../../store/visualizer'
 export default function PriceCalculator() {
   const { wallWidth, wallHeight, selectedPanels } = useVisualizerStore()
 
-  if (selectedPanels.length === 0) return null
+  const nonNullPanels = selectedPanels.filter(p => p !== null)
+  if (nonNullPanels.length === 0) return null
 
   const wallArea = wallWidth * wallHeight
 
   // Calculate per panel type
-  const lines = selectedPanels.map((panel, idx) => {
+  const lines = nonNullPanels.map((panel, idx) => {
     const panelArea = (panel.width_mm / 1000) * (panel.height_mm / 1000)
     const totalPanels = Math.ceil(wallArea / panelArea)
 
     // If 2 panels selected — split roughly in half (checkerboard ~50/50)
-    const count = selectedPanels.length === 2
+    const count = nonNullPanels.length === 2
       ? (idx === 0 ? Math.ceil(totalPanels / 2) : Math.floor(totalPanels / 2))
       : totalPanels
 
@@ -71,7 +72,7 @@ export default function PriceCalculator() {
       </div>
 
       {/* Total */}
-      {totalCost !== null && selectedPanels.length === 2 && (
+      {totalCost !== null && nonNullPanels.length === 2 && (
         <div className="border-t border-white/10 mt-3 pt-3 flex justify-between items-center">
           <span className="text-white/40 text-xs">Итого</span>
           <span className="text-white text-sm font-semibold">

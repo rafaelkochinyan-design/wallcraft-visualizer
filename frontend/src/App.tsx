@@ -6,6 +6,7 @@ import AdminLayout from './pages/admin/AdminLayout'
 import PanelsPage from './pages/admin/PanelsPage'
 import AccessoriesPage from './pages/admin/AccessoriesPage'
 import StoreSettingsPage from './pages/admin/StoreSettingsPage'
+import LeadsPage from './pages/admin/LeadsPage'
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="panels" element={<PanelsPage />} />
           <Route path="accessories" element={<AccessoriesPage />} />
           <Route path="settings" element={<StoreSettingsPage />} />
+          <Route path="leads" element={<LeadsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

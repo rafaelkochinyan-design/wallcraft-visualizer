@@ -48,6 +48,7 @@ export default function AdminLayout() {
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
+          <NavLink to="/admin/leads" className={navClass}>Заявки</NavLink>
           <NavLink to="/admin/panels" className={navClass}>Панели</NavLink>
           <NavLink to="/admin/accessories" className={navClass}>Аксессуары</NavLink>
           <NavLink to="/admin/settings" className={navClass}>Настройки магазина</NavLink>
