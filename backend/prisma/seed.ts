@@ -163,16 +163,12 @@ async function main() {
     },
   ]
 
+  // Delete all panels first to avoid duplicates from old SKUs
+  await prisma.panel.deleteMany({ where: { tenant_id: tenant.id } })
+
   let panelCount = 0
   for (const p of panels) {
-    const existing = await prisma.panel.findFirst({
-      where: { tenant_id: tenant.id, sku: p.sku },
-    })
-    if (existing) {
-      await prisma.panel.update({ where: { id: existing.id }, data: { ...p, tenant_id: tenant.id } })
-    } else {
-      await prisma.panel.create({ data: { ...p, tenant_id: tenant.id } })
-    }
+    await prisma.panel.create({ data: { ...p, tenant_id: tenant.id } })
     panelCount++
     process.stdout.write(`\r  Panels: ${panelCount}/${panels.length}`)
   }
