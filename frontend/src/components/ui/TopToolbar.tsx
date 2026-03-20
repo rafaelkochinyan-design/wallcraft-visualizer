@@ -1,7 +1,5 @@
 /**
- * TopToolbar.tsx
- * Homestyler-style top bar:
- *   [☰] [Logo] [Ш: ___м × В: ___м] [Применить]   →   [↓ Сохранить] [✕ Сброс]
+ * TopToolbar.tsx — Light theme version
  */
 
 import { useState } from 'react'
@@ -42,20 +40,21 @@ export default function TopToolbar() {
     <div style={{
       height: 52,
       background: 'var(--ui-bg)',
-      borderBottom: '1px solid var(--ui-surface)',
+      borderBottom: '1px solid var(--ui-border)',
       display: 'flex', alignItems: 'center',
       padding: '0 16px',
       gap: 12,
       flexShrink: 0,
       zIndex: 20,
+      boxShadow: '0 1px 0 var(--ui-border)',
     }}>
 
       {/* Sidebar toggle */}
       <button onClick={() => setSidebarOpen(!sidebarOpen)} style={iconBtnStyle} title="Каталог">
         <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
-          <rect y="0" width="18" height="2" rx="1" fill="rgba(255,255,255,0.6)"/>
-          <rect y="6" width="18" height="2" rx="1" fill="rgba(255,255,255,0.6)"/>
-          <rect y="12" width="18" height="2" rx="1" fill="rgba(255,255,255,0.6)"/>
+          <rect y="0" width="18" height="2" rx="1" fill="var(--text-secondary)"/>
+          <rect y="6" width="18" height="2" rx="1" fill="var(--text-secondary)"/>
+          <rect y="12" width="18" height="2" rx="1" fill="var(--text-secondary)"/>
         </svg>
       </button>
 
@@ -63,8 +62,8 @@ export default function TopToolbar() {
 
       {/* Logo */}
       {tenant?.logo_url
-        ? <img src={tenant.logo_url} alt={tenant.name} style={{ height: 26, width: 'auto', opacity: 0.9 }} />
-        : <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        ? <img src={tenant.logo_url} alt={tenant.name} style={{ height: 26, width: 'auto' }} />
+        : <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.10em', textTransform: 'uppercase' }}>
             {tenant?.name ?? 'Wallcraft'}
           </span>
       }
@@ -79,18 +78,10 @@ export default function TopToolbar() {
       {/* Wall size inputs */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={labelStyle}>Ш:</span>
-        <SizeInput
-          value={w}
-          onChange={v => { setW(v); setDirty(true) }}
-          onKeyDown={handleKey}
-        />
+        <SizeInput value={w} onChange={v => { setW(v); setDirty(true) }} onKeyDown={handleKey} />
         <span style={labelStyle}>×</span>
         <span style={labelStyle}>В:</span>
-        <SizeInput
-          value={h}
-          onChange={v => { setH(v); setDirty(true) }}
-          onKeyDown={handleKey}
-        />
+        <SizeInput value={h} onChange={v => { setH(v); setDirty(true) }} onKeyDown={handleKey} />
         <span style={labelStyle}>м</span>
       </div>
 
@@ -100,7 +91,6 @@ export default function TopToolbar() {
         </button>
       )}
 
-      {/* Spacer */}
       <div style={{ flex: 1 }} />
 
       {/* Right actions */}
@@ -133,7 +123,7 @@ export default function TopToolbar() {
 
       <button
         onClick={() => { resetAll(); setW('3.0'); setH('2.7') }}
-        style={{ ...actionBtnStyle, color: 'rgba(255,69,58,0.8)', borderColor: 'rgba(255,69,58,0.22)' }}
+        style={{ ...actionBtnStyle, color: 'var(--accent-red)', borderColor: 'rgba(192,57,43,0.22)' }}
         title="Сбросить всё"
       >
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -147,7 +137,6 @@ export default function TopToolbar() {
   )
 }
 
-/* ── Sub-components ──────────────────────────────────────── */
 function SizeInput({ value, onChange, onKeyDown }: {
   value: string; onChange: (v: string) => void; onKeyDown: (e: React.KeyboardEvent) => void
 }) {
@@ -158,7 +147,7 @@ function SizeInput({ value, onChange, onKeyDown }: {
       onKeyDown={onKeyDown}
       style={{
         width: 52, height: 30, padding: '0 8px',
-        background: 'var(--ui-surface)', border: '1px solid var(--ui-border)',
+        background: '#fff', border: '1px solid var(--ui-border)',
         borderRadius: 8, color: 'var(--text-primary)',
         fontFamily: 'var(--font)', fontSize: 13, fontWeight: 600,
         textAlign: 'center', outline: 'none',
@@ -169,7 +158,6 @@ function SizeInput({ value, onChange, onKeyDown }: {
   )
 }
 
-/* ── Styles ──────────────────────────────────────────────── */
 const iconBtnStyle: React.CSSProperties = {
   background: 'none', border: 'none', cursor: 'pointer',
   padding: '6px 8px', borderRadius: 8, display: 'flex', alignItems: 'center',
@@ -191,8 +179,8 @@ const applyBtnStyle: React.CSSProperties = {
 const actionBtnStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6,
   height: 32, padding: '0 12px',
-  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 8, color: 'rgba(255,255,255,0.65)',
+  background: 'var(--ui-surface)', border: '1px solid var(--ui-border)',
+  borderRadius: 8, color: 'var(--text-secondary)',
   fontSize: 12, fontWeight: 600, fontFamily: 'var(--font)',
   cursor: 'pointer', transition: 'all 0.12s', flexShrink: 0,
 }

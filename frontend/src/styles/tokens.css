@@ -1,30 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
-   WALLCRAFT — NEW DESIGN TOKENS v2
-   
-   ФИЛОСОФИЯ НОВОЙ ПАЛИТРЫ:
-   Тёплые нейтральные тона — как интерьер из которого пришли панели.
-   Не холодный iOS/Vercel стиль. Не корпоративный синий.
-   Земляные, тёплые, приятные — как гипс, известь, натуральный камень.
-   
-   СТРУКТУРА UI КОНТЕКСТОВ:
-   
-   1. TopToolbar + LeftSidebar (тёмный UI поверх 3D)
-      Старо: #1c1c1e (холодный iOS-серый)
-      Ново:  #1a1714 (тёплый почти-чёрный, как дымчатое дерево)
-      ВАЖНО: должен контрастировать с 3D комнатой (#f2efe9 потолок)
-   
-   2. 3D комната (сцена) — НЕ ТРОГАЕМ токенами
-      Живёт в RoomEnvironment.tsx, управляется напрямую.
-      Потолок: #f2efe9, пол: #ccc4b4 — эти цвета ПРАВИЛЬНЫЕ, не меняем.
-   
-   3. Admin панель (светлый) — использует Tailwind, не css vars
-      Добавляем светлые токены для будущего.
-   
-   КОНТРАСТНОСТЬ (WCAG 2.1 AA минимум 4.5:1 для текста):
-   --text-primary  #f0ece6  на  --ui-bg  #1a1714  = 13.8:1  ✅ AAA
-   --text-secondary #a8a29c  на  --ui-bg  #1a1714  =  5.6:1  ✅ AA
-   --text-muted    #6b6560  на  --ui-bg  #1a1714  =  4.6:1  ✅ AA (граница)
-   
+   WALLCRAFT — LIGHT THEME TOKENS v3
+   Тёплая светлая палитра — дружелюбная, как интерьерный шоурум.
+   Sidebar/toolbar: тёплый кремовый белый, не тёмный.
    ═══════════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
@@ -32,93 +9,74 @@
 :root {
 
   /* ──────────────────────────────────────────────────────
-     UI SURFACE COLORS — тёмный UI (sidebar, toolbar, panels)
-     Тёплая, почти чёрная гамма — как обугленное дерево или 
-     тёмная глина. Не холодный #1c1c1e, а тёплый #1a1714.
+     UI SURFACE COLORS — светлый UI (sidebar, toolbar)
+     Тёплые off-white тона, как бумага или гипс
   ────────────────────────────────────────────────────── */
-  --ui-bg:           #1a1714;   /* фон sidebar, toolbar, tooltips */
-  --ui-surface:      #242019;   /* карточки, инпуты внутри ui-bg  */
-  --ui-elevated:     #2e2a25;   /* hover states, raised elements   */
-  --ui-border:       #3a352e;   /* границы, dividers               */
-  --ui-border-muted: #2e2a25;   /* тихие границы                   */
+  --ui-bg:           #faf8f5;   /* фон sidebar, toolbar — тёплый белый   */
+  --ui-surface:      #f3f0eb;   /* карточки, инпуты                      */
+  --ui-elevated:     #ece8e1;   /* hover states, raised elements         */
+  --ui-border:       #ddd8d0;   /* границы, dividers                     */
+  --ui-border-muted: #e8e4dc;   /* тихие границы                         */
 
   /* ──────────────────────────────────────────────────────
-     TEXT COLORS — на тёмном фоне (#1a1714)
-     Все тёплые, не холодно-белые
+     TEXT COLORS — на светлом фоне (#faf8f5)
   ────────────────────────────────────────────────────── */
-  --text-primary:    #f0ece6;   /* 13.8:1 ✅ AAA — основной текст  */
-  --text-secondary:  #a8a29c;   /*  5.6:1 ✅ AA  — вторичный       */
-  --text-muted:      #6b6560;   /*  4.6:1 ✅ AA  — placeholder      */
-  --text-disabled:   #4a4540;   /*  3.1:1 ⚠️      — disabled        */
+  --text-primary:    #1a1714;   /* основной текст — почти чёрный тёплый  */
+  --text-secondary:  #5a5550;   /* вторичный                             */
+  --text-muted:      #8a8480;   /* placeholder, labels                   */
+  --text-disabled:   #b8b4b0;   /* disabled                              */
 
   /* ──────────────────────────────────────────────────────
-     ADMIN / LIGHT MODE COLORS — светлые поверхности
-     Тёплые off-white, не чисто белые (#Notion-like)
+     ADMIN / LIGHT MODE — те же значения, совместимость
   ────────────────────────────────────────────────────── */
-  --light-bg:        #faf8f5;   /* страница admin, карточки        */
-  --light-surface:   #f3f0eb;   /* поверхность карточек            */
-  --light-border:    #e6e1d8;   /* границы в light mode            */
-  --light-text:      #1a1714;   /* текст на светлом  14.7:1 ✅ AAA */
-  --light-text-sec:  #6b6560;   /* вторичный на светлом 4.6:1 ✅  */
+  --light-bg:        #faf8f5;
+  --light-surface:   #f3f0eb;
+  --light-border:    #ddd8d0;
+  --light-text:      #1a1714;
+  --light-text-sec:  #5a5550;
 
   /* ──────────────────────────────────────────────────────
-     ACCENT COLORS — интерактивные элементы
-     Тёплый терракотово-медный тон вместо холодного #0a84ff.
-     Почему: панели из гипса → тёплая палитра → медный акцент
-     органичен. Синий был бы чужеродным.
-     
-     АЛЬТЕРНАТИВА: если хочешь оставить нейтральным — 
-     используй вариант B (белый акцент).
+     ACCENT — тёплый терракотово-медный
   ────────────────────────────────────────────────────── */
+  --accent:          #c4622d;
+  --accent-hover:    #d4713c;
+  --accent-soft:     rgba(196, 98, 45, 0.12);
+  --accent-border:   rgba(196, 98, 45, 0.30);
 
-  /* Вариант A — Тёплый медно-терракотовый акцент */
-  --accent:          #c4622d;   /* основной accent    4.8:1 ✅ AA  */
-  --accent-hover:    #d4713c;   /* hover state                     */
-  --accent-soft:     rgba(196, 98, 45, 0.15);  /* soft bg          */
-  --accent-border:   rgba(196, 98, 45, 0.35);  /* border           */
+  /* Семантические */
+  --accent-blue:     #3b6fb5;
+  --accent-green:    #2e7d52;
+  --accent-red:      #c0392b;
+  --accent-yellow:   #a07820;
 
-  /* Вариант B — Нейтральный белый акцент (раскомментируй если нужен) */
-  /* --accent:       #e8e4de; */
-  /* --accent-hover: #f0ece6; */
-
-  /* Семантические (оставляем нейтральными для clarity) */
-  --accent-blue:     #5b8fd4;   /* info, ссылки      5.2:1 ✅ AA  */
-  --accent-green:    #4a9e6b;   /* success            4.7:1 ✅ AA  */
-  --accent-red:      #d45454;   /* danger             4.9:1 ✅ AA  */
-  --accent-yellow:   #c49a3a;   /* warning            4.5:1 ✅ AA  */
-
-  /* Soft versions (для фонов кнопок) */
-  --accent-blue-soft:  rgba(91, 143, 212, 0.15);
-  --accent-green-soft: rgba(74, 158, 107, 0.15);
-  --accent-red-soft:   rgba(212, 84, 84, 0.15);
+  --accent-blue-soft:  rgba(59, 111, 181, 0.12);
+  --accent-green-soft: rgba(46, 125, 82, 0.12);
+  --accent-red-soft:   rgba(192, 57, 43, 0.12);
 
   /* ──────────────────────────────────────────────────────
-     WALL COLOR PRESETS — для color picker в UI
-     Тёплые нейтральные стены (основная аудитория — интерьер)
+     WALL COLOR PRESETS
   ────────────────────────────────────────────────────── */
-  --wall-white:      #f8f5f0;   /* тёплый белый                    */
-  --wall-cream:      #ede8de;   /* сливочный                       */
-  --wall-sand:       #d8d0c0;   /* песочный                        */
-  --wall-warm-gray:  #b8b2a8;   /* тёплый серый                    */
-  --wall-dark:       #3c3830;   /* тёмный тон                      */
-  --wall-charcoal:   #1e1c18;   /* почти чёрный                    */
+  --wall-white:      #f8f5f0;
+  --wall-cream:      #ede8de;
+  --wall-sand:       #d8d0c0;
+  --wall-warm-gray:  #b8b2a8;
+  --wall-dark:       #3c3830;
+  --wall-charcoal:   #1e1c18;
 
   /* ──────────────────────────────────────────────────────
-     LEGACY COMPATIBILITY — старые переменные
-     Маппим на новые чтобы не ломать существующие компоненты.
-     Можно удалить после миграции всех компонентов.
+     LEGACY COMPATIBILITY
   ────────────────────────────────────────────────────── */
-  --c-black:        var(--ui-bg);
+  --c-black:        #1a1714;
   --c-white:        #ffffff;
-  --c-gray-50:      var(--light-bg);
-  --c-gray-100:     var(--light-surface);
-  --c-gray-200:     var(--light-border);
+  --c-gray-50:      var(--ui-bg);
+  --c-gray-100:     var(--ui-surface);
+  --c-gray-200:     var(--ui-border);
   --c-gray-300:     #c8c4bc;
   --c-gray-400:     var(--text-muted);
-  --c-gray-500:     #524e4a;
-  --c-gray-600:     #3e3a36;
-  --c-gray-800:     var(--ui-surface);
-  --c-gray-900:     var(--ui-bg);
+  --c-gray-500:     #6b6560;
+  --c-gray-600:     #4a4540;
+  --c-gray-800:     #2e2a25;
+  --c-gray-900:     #1a1714;
 
   --c-accent:       var(--accent);
   --c-danger:       var(--accent-red);
@@ -126,16 +84,16 @@
   --c-success:      var(--accent-green);
   --c-success-soft: var(--accent-green-soft);
 
-  /* Glass — тоже тёплые */
-  --glass-dark:         rgba(26, 23, 20, 0.88);
-  --glass-dark-border:  rgba(240, 236, 230, 0.10);
+  /* Glass */
+  --glass-dark:         rgba(250, 248, 245, 0.95);
+  --glass-dark-border:  rgba(26, 23, 20, 0.10);
   --glass-light:        rgba(250, 248, 245, 0.97);
   --glass-light-border: rgba(26, 23, 20, 0.08);
   --glass-blur:         blur(20px);
-  --glass-shadow:       0 8px 40px rgba(0, 0, 0, 0.36);
+  --glass-shadow:       0 8px 40px rgba(0, 0, 0, 0.12);
 
   /* ──────────────────────────────────────────────────────
-     TYPOGRAPHY — не меняем, DM Sans уже правильный
+     TYPOGRAPHY
   ────────────────────────────────────────────────────── */
   --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -154,7 +112,7 @@
   --weight-bold:     700;
 
   /* ──────────────────────────────────────────────────────
-     SHAPE — скругления чуть мягче для тёплого стиля
+     SHAPE
   ────────────────────────────────────────────────────── */
   --r-xs:   6px;
   --r-sm:   10px;
@@ -165,7 +123,7 @@
   --r-full: 9999px;
 
   /* ──────────────────────────────────────────────────────
-     SPACING — без изменений
+     SPACING
   ────────────────────────────────────────────────────── */
   --sp-1: 4px;
   --sp-2: 8px;
@@ -182,7 +140,7 @@
   --h-btn-lg:  60px;
 
   /* ──────────────────────────────────────────────────────
-     ANIMATION — без изменений
+     ANIMATION
   ────────────────────────────────────────────────────── */
   --ease:     cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in:  cubic-bezier(0.4, 0, 1, 1);

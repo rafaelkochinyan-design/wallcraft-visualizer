@@ -10,7 +10,7 @@ const PANEL_SIZE  = 0.5
 const PANEL_DEPTH = 0.019
 const GEO = new THREE.BoxGeometry(PANEL_SIZE, PANEL_SIZE, PANEL_DEPTH)
 
-// ── Simple reliable panel tiling — no normal maps, just works ──
+// ── Simple reliable panel tiling ──
 function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   wallWidth:  number
   wallHeight: number
@@ -24,6 +24,7 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   const [texB, setTexB] = useState<THREE.Texture | null>(null)
 
   useEffect(() => {
+    setTexA(null)
     const loader = new THREE.TextureLoader()
     loader.load(urlA, (t) => {
       t.colorSpace = THREE.SRGBColorSpace
@@ -35,6 +36,7 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   }, [urlA])
 
   useEffect(() => {
+    setTexB(null)
     const loader = new THREE.TextureLoader()
     loader.load(urlB, (t) => {
       t.colorSpace = THREE.SRGBColorSpace
@@ -46,23 +48,18 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
     })
   }, [urlB])
 
-  const cols        = Math.ceil(wallWidth / PANEL_SIZE)
+  const cols        = Math.ceil(wallWidth  / PANEL_SIZE)
   const rows        = Math.ceil(wallHeight / PANEL_SIZE)
-  const count       = cols * rows
   const hasTwoSlots = !!panels[1]
 
-  const refA = useRef<THREE.InstancedMesh>(null)
-  const refB = useRef<THREE.InstancedMesh>(null)
-
-  useEffect(() => {
-    const m    = new THREE.Matrix4()
+  // Pre-compute positions so we know exact counts before InstancedMesh is created
+  const { posA, posB } = useMemo(() => {
     const posA: [number, number, number][] = []
     const posB: [number, number, number][] = []
-
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const x = -wallWidth / 2 + PANEL_SIZE / 2 + col * PANEL_SIZE
-        const y = PANEL_SIZE / 2 + row * PANEL_SIZE
+        const y =  PANEL_SIZE / 2 + row * PANEL_SIZE
         if (hasTwoSlots && (row + col) % 2 === 1) {
           posB.push([x, y, 0])
         } else {
@@ -70,18 +67,31 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
         }
       }
     }
-
-    if (refA.current) {
-      posA.forEach((p, i) => { m.setPosition(...p); refA.current!.setMatrixAt(i, m) })
-      refA.current.count = posA.length
-      refA.current.instanceMatrix.needsUpdate = true
-    }
-    if (refB.current) {
-      posB.forEach((p, i) => { m.setPosition(...p); refB.current!.setMatrixAt(i, m) })
-      refB.current.count = posB.length
-      refB.current.instanceMatrix.needsUpdate = true
-    }
+    return { posA, posB }
   }, [cols, rows, wallWidth, wallHeight, hasTwoSlots])
+
+  const countA = posA.length
+  const countB = posB.length
+
+  const refA = useRef<THREE.InstancedMesh>(null)
+  const refB = useRef<THREE.InstancedMesh>(null)
+
+  // Set matrices after mount — texA in deps ensures mesh is mounted
+  useEffect(() => {
+    if (!refA.current || !texA) return
+    const m = new THREE.Matrix4()
+    posA.forEach((p, i) => { m.setPosition(...p); refA.current!.setMatrixAt(i, m) })
+    refA.current.count = countA
+    refA.current.instanceMatrix.needsUpdate = true
+  }, [posA, countA, texA])
+
+  useEffect(() => {
+    if (!refB.current || !texB) return
+    const m = new THREE.Matrix4()
+    posB.forEach((p, i) => { m.setPosition(...p); refB.current!.setMatrixAt(i, m) })
+    refB.current.count = countB
+    refB.current.instanceMatrix.needsUpdate = true
+  }, [posB, countB, texB])
 
   const matA = useMemo(() => new THREE.MeshStandardMaterial({
     map: texA ?? undefined, color: '#ffffff',
@@ -99,9 +109,20 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
 
   return (
     <>
-      <instancedMesh ref={refA} args={[GEO, matA, count]} castShadow receiveShadow />
+      {/* key forces full remount when grid or panel changes — InstancedMesh args are NOT reactive */}
+      <instancedMesh
+        key={`A-${cols}-${rows}-${hasTwoSlots}-${urlA}`}
+        ref={refA}
+        args={[GEO, matA, countA]}
+        castShadow receiveShadow
+      />
       {hasTwoSlots && texB && (
-        <instancedMesh ref={refB} args={[GEO, matB, count]} castShadow receiveShadow />
+        <instancedMesh
+          key={`B-${cols}-${rows}-${urlB}`}
+          ref={refB}
+          args={[GEO, matB, countB]}
+          castShadow receiveShadow
+        />
       )}
     </>
   )
@@ -114,15 +135,15 @@ export default function WallMesh() {
     selectedPanels, hoverPanelId, availablePanels,
   } = useVisualizerStore()
 
-  const hoverPanel   = hoverPanelId ? (availablePanels.find(p => p.id === hoverPanelId) ?? null) : null
+  const hoverPanel    = hoverPanelId ? (availablePanels.find(p => p.id === hoverPanelId) ?? null) : null
   const displayPanels = hoverPanel ? [hoverPanel, selectedPanels[1]] : selectedPanels
-  const hasPanels    = displayPanels.some(p => p !== null)
+  const hasPanels     = displayPanels.some(p => p !== null)
 
   const { animColor } = useSpring({ animColor: wallColor, config: { tension: 110, friction: 22 } })
 
   return (
     <group>
-      {/* Background wall plane — color controlled by wallColor */}
+      {/* Background wall plane */}
       {/* @ts-ignore */}
       <animated.mesh position={[0, wallHeight / 2, -PANEL_DEPTH - 0.002]} receiveShadow>
         <planeGeometry args={[wallWidth, wallHeight]} />
