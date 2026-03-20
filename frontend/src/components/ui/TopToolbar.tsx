@@ -77,8 +77,6 @@ export default function TopToolbar() {
       <div style={dividerStyle} />
 
       {/* Wall size inputs */}
-      <span style={labelStyle}>Размер стены</span>
-
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={labelStyle}>Ш:</span>
         <SizeInput
@@ -165,6 +163,8 @@ function SizeInput({ value, onChange, onKeyDown }: {
         fontFamily: 'var(--font)', fontSize: 13, fontWeight: 600,
         textAlign: 'center', outline: 'none',
       }}
+      onFocus={e => { e.currentTarget.style.border = '1px solid var(--accent)' }}
+      onBlur={e => { e.currentTarget.style.border = '1px solid var(--ui-border)' }}
     />
   )
 }
@@ -179,7 +179,7 @@ const dividerStyle: React.CSSProperties = {
   width: 1, height: 24, background: 'var(--ui-border)', flexShrink: 0,
 }
 const labelStyle: React.CSSProperties = {
-  fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, flexShrink: 0,
+  fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, flexShrink: 0,
 }
 const applyBtnStyle: React.CSSProperties = {
   height: 30, padding: '0 12px',

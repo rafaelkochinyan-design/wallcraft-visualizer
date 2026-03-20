@@ -1,6 +1,6 @@
-import { useRef, useEffect, useMemo, Suspense } from 'react'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
-import { useTexture, Html } from '@react-three/drei'
+import { Html } from '@react-three/drei'
 import { useSpring, animated } from '@react-spring/three'
 import { useVisualizerStore } from '../../store/visualizer'
 import MeterGrid from './MeterGrid'
@@ -20,25 +20,31 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   const urlA = panels[0]?.texture_url ?? '/textures/consul_a.jpg'
   const urlB = panels[1]?.texture_url ?? urlA
 
-  const texA = useTexture(urlA)
-  const texB = useTexture(urlB)
+  const [texA, setTexA] = useState<THREE.Texture | null>(null)
+  const [texB, setTexB] = useState<THREE.Texture | null>(null)
 
   useEffect(() => {
-    [texA, texB].forEach(t => {
+    const loader = new THREE.TextureLoader()
+    loader.load(urlA, (t) => {
       t.colorSpace = THREE.SRGBColorSpace
       t.wrapS = t.wrapT = THREE.RepeatWrapping
       t.repeat.set(1, 1)
       t.needsUpdate = true
+      setTexA(t)
     })
-  }, [texA, texB])
+  }, [urlA])
 
-  const texBRot = useMemo(() => {
-    const t = texB.clone()
-    t.rotation = Math.PI
-    t.center.set(0.5, 0.5)
-    t.needsUpdate = true
-    return t
-  }, [texB])
+  useEffect(() => {
+    const loader = new THREE.TextureLoader()
+    loader.load(urlB, (t) => {
+      t.colorSpace = THREE.SRGBColorSpace
+      t.wrapS = t.wrapT = THREE.RepeatWrapping
+      t.rotation = Math.PI
+      t.center.set(0.5, 0.5)
+      t.needsUpdate = true
+      setTexB(t)
+    })
+  }, [urlB])
 
   const cols        = Math.ceil(wallWidth / PANEL_SIZE)
   const rows        = Math.ceil(wallHeight / PANEL_SIZE)
@@ -78,21 +84,23 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   }, [cols, rows, wallWidth, wallHeight, hasTwoSlots])
 
   const matA = useMemo(() => new THREE.MeshStandardMaterial({
-    map: texA, color: '#ffffff',
+    map: texA ?? undefined, color: '#ffffff',
     roughness: 0.88, metalness: 0,
     transparent: !!isPreview, opacity: isPreview ? 0.7 : 1,
   }), [texA, isPreview])
 
   const matB = useMemo(() => new THREE.MeshStandardMaterial({
-    map: texBRot, color: '#ffffff',
+    map: texB ?? undefined, color: '#ffffff',
     roughness: 0.88, metalness: 0,
     transparent: !!isPreview, opacity: isPreview ? 0.7 : 1,
-  }), [texBRot, isPreview])
+  }), [texB, isPreview])
+
+  if (!texA) return null
 
   return (
     <>
       <instancedMesh ref={refA} args={[GEO, matA, count]} castShadow receiveShadow />
-      {hasTwoSlots && (
+      {hasTwoSlots && texB && (
         <instancedMesh ref={refB} args={[GEO, matB, count]} castShadow receiveShadow />
       )}
     </>
@@ -124,14 +132,12 @@ export default function WallMesh() {
 
       {/* Panel tiling */}
       {hasPanels && (
-        <Suspense fallback={null}>
-          <PanelTiling
-            wallWidth={wallWidth}
-            wallHeight={wallHeight}
-            panels={displayPanels}
-            isPreview={!!hoverPanel}
-          />
-        </Suspense>
+        <PanelTiling
+          wallWidth={wallWidth}
+          wallHeight={wallHeight}
+          panels={displayPanels}
+          isPreview={!!hoverPanel}
+        />
       )}
 
       <MeterGrid wallWidth={wallWidth} wallHeight={wallHeight} />

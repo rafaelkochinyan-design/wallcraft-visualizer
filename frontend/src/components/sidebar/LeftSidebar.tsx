@@ -68,8 +68,8 @@ export default function LeftSidebar() {
           >
             <span style={{ fontSize: 16 }}>{t.emoji}</span>
             <span style={{
-              fontSize: 11, fontWeight: 600,
-              color: sidebarTab === t.id ? 'var(--text-primary)' : 'var(--text-muted)',
+              fontSize: 12, fontWeight: 600,
+              color: sidebarTab === t.id ? 'var(--text-primary)' : '#8a8480',
               transition: 'color 0.12s',
             }}>{t.label}</span>
           </button>

@@ -24,7 +24,7 @@ export function RoomPresets({ onApply }: { onApply?: (w: number, h: number) => v
             style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               gap: 1, padding: '4px 8px',
-              background: active ? 'rgba(10,132,255,0.2)' : 'transparent',
+              background: active ? 'rgba(196,98,45,0.15)' : 'transparent',
               border: `1px solid ${active ? 'var(--accent)' : 'transparent'}`,
               borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font)', transition: 'all 0.12s',
@@ -33,7 +33,7 @@ export function RoomPresets({ onApply }: { onApply?: (w: number, h: number) => v
             onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
           >
             <span style={{ fontSize: 14, lineHeight: 1 }}>{p.icon}</span>
-            <span style={{ fontSize: 9, color: active ? 'var(--accent)' : 'var(--text-muted)', fontWeight: 600, lineHeight: 1 }}>
+            <span style={{ fontSize: 9, color: active ? 'var(--text-primary)' : '#c8c4bc', fontWeight: 600, lineHeight: 1 }}>
               {p.label}
             </span>
           </button>

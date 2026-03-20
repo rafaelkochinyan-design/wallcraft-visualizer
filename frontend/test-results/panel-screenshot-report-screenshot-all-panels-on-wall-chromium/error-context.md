@@ -1,0 +1,190 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - heading "Wallcraft Admin" [level=1] [ref=e6]
+        - paragraph [ref=e7]: Управление контентом
+      - navigation [ref=e8]:
+        - link "Заявки" [ref=e9] [cursor=pointer]:
+          - /url: /admin/leads
+        - link "Панели" [ref=e10] [cursor=pointer]:
+          - /url: /admin/panels
+        - link "Аксессуары" [ref=e11] [cursor=pointer]:
+          - /url: /admin/accessories
+        - link "Настройки магазина" [ref=e12] [cursor=pointer]:
+          - /url: /admin/settings
+      - button "Выйти" [ref=e13] [cursor=pointer]
+    - main [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - heading "Панели" [level=2] [ref=e17]
+          - button "+ Добавить панель" [ref=e18] [cursor=pointer]
+        - table [ref=e20]:
+          - rowgroup [ref=e21]:
+            - row "Панель SKU Размер (мм) Цена Статус" [ref=e22]:
+              - columnheader "Панель" [ref=e23]
+              - columnheader "SKU" [ref=e24]
+              - columnheader "Размер (мм)" [ref=e25]
+              - columnheader "Цена" [ref=e26]
+              - columnheader "Статус" [ref=e27]
+              - columnheader [ref=e28]
+          - rowgroup [ref=e29]:
+            - row "Консул А Консул А KON-A 500×500×19 450 ₽ Активна Изменить Удалить" [ref=e30]:
+              - cell "Консул А Консул А" [ref=e31]:
+                - generic [ref=e32]:
+                  - img "Консул А" [ref=e33]
+                  - generic [ref=e34]: Консул А
+              - cell "KON-A" [ref=e35]
+              - cell "500×500×19" [ref=e36]
+              - cell "450 ₽" [ref=e37]
+              - cell "Активна" [ref=e38]:
+                - generic [ref=e39]: Активна
+              - cell "Изменить Удалить" [ref=e40]:
+                - generic [ref=e41]:
+                  - button "Изменить" [ref=e42] [cursor=pointer]
+                  - button "Удалить" [ref=e43] [cursor=pointer]
+            - row "Консул Б Консул Б KON-B 500×500×19 450 ₽ Активна Изменить Удалить" [ref=e44]:
+              - cell "Консул Б Консул Б" [ref=e45]:
+                - generic [ref=e46]:
+                  - img "Консул Б" [ref=e47]
+                  - generic [ref=e48]: Консул Б
+              - cell "KON-B" [ref=e49]
+              - cell "500×500×19" [ref=e50]
+              - cell "450 ₽" [ref=e51]
+              - cell "Активна" [ref=e52]:
+                - generic [ref=e53]: Активна
+              - cell "Изменить Удалить" [ref=e54]:
+                - generic [ref=e55]:
+                  - button "Изменить" [ref=e56] [cursor=pointer]
+                  - button "Удалить" [ref=e57] [cursor=pointer]
+            - row "Drop Drop DROP-01 500×500×25 680 ₽ Активна Изменить Удалить" [ref=e58]:
+              - cell "Drop Drop" [ref=e59]:
+                - generic [ref=e60]:
+                  - img "Drop" [ref=e61]
+                  - generic [ref=e62]: Drop
+              - cell "DROP-01" [ref=e63]
+              - cell "500×500×25" [ref=e64]
+              - cell "680 ₽" [ref=e65]
+              - cell "Активна" [ref=e66]:
+                - generic [ref=e67]: Активна
+              - cell "Изменить Удалить" [ref=e68]:
+                - generic [ref=e69]:
+                  - button "Изменить" [ref=e70] [cursor=pointer]
+                  - button "Удалить" [ref=e71] [cursor=pointer]
+            - row "Asia C-03 Asia C-03 ASIA-03 500×500×20 590 ₽ Активна Изменить Удалить" [ref=e72]:
+              - cell "Asia C-03 Asia C-03" [ref=e73]:
+                - generic [ref=e74]:
+                  - img "Asia C-03" [ref=e75]
+                  - generic [ref=e76]: Asia C-03
+              - cell "ASIA-03" [ref=e77]
+              - cell "500×500×20" [ref=e78]
+              - cell "590 ₽" [ref=e79]
+              - cell "Активна" [ref=e80]:
+                - generic [ref=e81]: Активна
+              - cell "Изменить Удалить" [ref=e82]:
+                - generic [ref=e83]:
+                  - button "Изменить" [ref=e84] [cursor=pointer]
+                  - button "Удалить" [ref=e85] [cursor=pointer]
+            - row "Taza Gic Taza Gic TAZA-01 500×500×22 520 ₽ Активна Изменить Удалить" [ref=e86]:
+              - cell "Taza Gic Taza Gic" [ref=e87]:
+                - generic [ref=e88]:
+                  - img "Taza Gic" [ref=e89]
+                  - generic [ref=e90]: Taza Gic
+              - cell "TAZA-01" [ref=e91]
+              - cell "500×500×22" [ref=e92]
+              - cell "520 ₽" [ref=e93]
+              - cell "Активна" [ref=e94]:
+                - generic [ref=e95]: Активна
+              - cell "Изменить Удалить" [ref=e96]:
+                - generic [ref=e97]:
+                  - button "Изменить" [ref=e98] [cursor=pointer]
+                  - button "Удалить" [ref=e99] [cursor=pointer]
+            - row "Aliq Atlantic Aliq Atlantic ALIQ-AT 500×500×20 560 ₽ Активна Изменить Удалить" [ref=e100]:
+              - cell "Aliq Atlantic Aliq Atlantic" [ref=e101]:
+                - generic [ref=e102]:
+                  - img "Aliq Atlantic" [ref=e103]
+                  - generic [ref=e104]: Aliq Atlantic
+              - cell "ALIQ-AT" [ref=e105]
+              - cell "500×500×20" [ref=e106]
+              - cell "560 ₽" [ref=e107]
+              - cell "Активна" [ref=e108]:
+                - generic [ref=e109]: Активна
+              - cell "Изменить Удалить" [ref=e110]:
+                - generic [ref=e111]:
+                  - button "Изменить" [ref=e112] [cursor=pointer]
+                  - button "Удалить" [ref=e113] [cursor=pointer]
+            - row "Klips Blade Klips Blade KLIPS-BL 500×500×30 780 ₽ Активна Изменить Удалить" [ref=e114]:
+              - cell "Klips Blade Klips Blade" [ref=e115]:
+                - generic [ref=e116]:
+                  - img "Klips Blade" [ref=e117]
+                  - generic [ref=e118]: Klips Blade
+              - cell "KLIPS-BL" [ref=e119]
+              - cell "500×500×30" [ref=e120]
+              - cell "780 ₽" [ref=e121]
+              - cell "Активна" [ref=e122]:
+                - generic [ref=e123]: Активна
+              - cell "Изменить Удалить" [ref=e124]:
+                - generic [ref=e125]:
+                  - button "Изменить" [ref=e126] [cursor=pointer]
+                  - button "Удалить" [ref=e127] [cursor=pointer]
+            - row "Hin Gic Omega Hin Gic Omega OMEGA-2 500×500×20 540 ₽ Активна Изменить Удалить" [ref=e128]:
+              - cell "Hin Gic Omega Hin Gic Omega" [ref=e129]:
+                - generic [ref=e130]:
+                  - img "Hin Gic Omega" [ref=e131]
+                  - generic [ref=e132]: Hin Gic Omega
+              - cell "OMEGA-2" [ref=e133]
+              - cell "500×500×20" [ref=e134]
+              - cell "540 ₽" [ref=e135]
+              - cell "Активна" [ref=e136]:
+                - generic [ref=e137]: Активна
+              - cell "Изменить Удалить" [ref=e138]:
+                - generic [ref=e139]:
+                  - button "Изменить" [ref=e140] [cursor=pointer]
+                  - button "Удалить" [ref=e141] [cursor=pointer]
+            - row "D-03 D-03 D-03 500×500×18 480 ₽ Активна Изменить Удалить" [ref=e142]:
+              - cell "D-03 D-03" [ref=e143]:
+                - generic [ref=e144]:
+                  - img "D-03" [ref=e145]
+                  - generic [ref=e146]: D-03
+              - cell "D-03" [ref=e147]
+              - cell "500×500×18" [ref=e148]
+              - cell "480 ₽" [ref=e149]
+              - cell "Активна" [ref=e150]:
+                - generic [ref=e151]: Активна
+              - cell "Изменить Удалить" [ref=e152]:
+                - generic [ref=e153]:
+                  - button "Изменить" [ref=e154] [cursor=pointer]
+                  - button "Удалить" [ref=e155] [cursor=pointer]
+            - row "Deco Line M-50 Deco Line M-50 DECO-50 500×500×50 890 ₽ Активна Изменить Удалить" [ref=e156]:
+              - cell "Deco Line M-50 Deco Line M-50" [ref=e157]:
+                - generic [ref=e158]:
+                  - img "Deco Line M-50" [ref=e159]
+                  - generic [ref=e160]: Deco Line M-50
+              - cell "DECO-50" [ref=e161]
+              - cell "500×500×50" [ref=e162]
+              - cell "890 ₽" [ref=e163]
+              - cell "Активна" [ref=e164]:
+                - generic [ref=e165]: Активна
+              - cell "Изменить Удалить" [ref=e166]:
+                - generic [ref=e167]:
+                  - button "Изменить" [ref=e168] [cursor=pointer]
+                  - button "Удалить" [ref=e169] [cursor=pointer]
+            - row "Декор Паргев Декор Паргев PARG-01 500×500×22 510 ₽ Активна Изменить Удалить" [ref=e170]:
+              - cell "Декор Паргев Декор Паргев" [ref=e171]:
+                - generic [ref=e172]:
+                  - img "Декор Паргев" [ref=e173]
+                  - generic [ref=e174]: Декор Паргев
+              - cell "PARG-01" [ref=e175]
+              - cell "500×500×22" [ref=e176]
+              - cell "510 ₽" [ref=e177]
+              - cell "Активна" [ref=e178]:
+                - generic [ref=e179]: Активна
+              - cell "Изменить Удалить" [ref=e180]:
+                - generic [ref=e181]:
+                  - button "Изменить" [ref=e182] [cursor=pointer]
+                  - button "Удалить" [ref=e183] [cursor=pointer]
+```

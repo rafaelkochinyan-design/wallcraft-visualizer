@@ -1,15 +1,14 @@
 /**
  * seed.ts — демо данные для Wallcraft
- * 
- * Запуск: cd backend && npx prisma db seed
- * или:    npx ts-node prisma/seed.ts
- * 
- * Добавляет:
+ *
+ * Запуск: cd backend && npx ts-node prisma/seed.ts
+ *
+ * Добавляет / обновляет:
  * - 1 tenant (Wallcraft Yerevan)
  * - 1 admin user
- * - 13 панелей (все из каталога клиента)
+ * - 11 панелей (реальные текстуры из /public/textures/)
  * - 6 типов аксессуаров
- * - 6 аксессуаров
+ * - 6 аксессуаров (GLB из /public/uploads/models/)
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -17,25 +16,27 @@ import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
+const PLACEHOLDER_THUMB = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg=='
+
 async function main() {
-  console.log('🌱 Seeding WallCraft demo data...')
+  console.log('Seeding WallCraft demo data...')
 
   // ── 1. Tenant ──────────────────────────────────────────
   const tenant = await prisma.tenant.upsert({
     where: { slug: 'wallcraft' },
-    update: {},
+    update: { primary_color: '#c4622d' },
     create: {
       slug:          'wallcraft',
       name:          'Wallcraft',
       logo_url:      '/wallcraft_logo.png',
-      primary_color: '#1c1c1e',
+      primary_color: '#c4622d',
       email:         'info@wallcraft.am',
       phone:         '+374 77 123456',
       address:       'Ереван, Армения',
       active:        true,
     },
   })
-  console.log('✅ Tenant:', tenant.slug)
+  console.log('Tenant:', tenant.slug)
 
   // ── 2. Admin user ──────────────────────────────────────
   const passwordHash = await bcrypt.hash('admin123', 10)
@@ -48,7 +49,7 @@ async function main() {
       password_hash: passwordHash,
     },
   })
-  console.log('✅ User:', user.email)
+  console.log('User:', user.email)
 
   // ── 3. Accessory types (глобальные) ──────────────────
   const accTypes = await Promise.all([
@@ -65,206 +66,177 @@ async function main() {
       create: t,
     })
   ))
-  console.log('✅ Accessory types:', accTypes.length)
+  console.log('Accessory types:', accTypes.length)
 
   const typeMap = Object.fromEntries(accTypes.map(t => [t.name, t.id]))
 
-  // ── 4. Панели ─────────────────────────────────────────
+  // ── 4. Панели — 11 реальных панелей ───────────────────
+  // texture_url и thumb_url должны совпадать с файлами в frontend/public/textures/
   const panels = [
     {
-      name:        'Консул А',
       sku:         'KON-A',
-      description:'Классический рифлёный гипс. Оригинальный паттерн.',
+      name:        'Консул А',
       texture_url: '/textures/consul_a.jpg',
       thumb_url:   '/textures/consul_a_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 19,
-      price:       450, active: true, sort_order: 1,
+      width_mm: 500, height_mm: 500, depth_mm: 19,
+      price: 450, active: true, sort_order: 1,
     },
     {
-      name:        'Консул Б',
       sku:         'KON-B',
-      description:'Консул повёрнутый 180° — для шахматного паттерна.',
+      name:        'Консул Б',
       texture_url: '/textures/consul_b.jpg',
       thumb_url:   '/textures/consul_b_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 19,
-      price:       450, active: true, sort_order: 2,
+      width_mm: 500, height_mm: 500, depth_mm: 19,
+      price: 450, active: true, sort_order: 2,
     },
     {
-      name:        'Drop',
       sku:         'DROP-01',
-      description:'Объёмные капли. Эффектный акцент на любой стене.',
-      texture_url: '/textures/drop.jpg',
-      thumb_url:   '/textures/drop_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 25,
-      price:       680, active: true, sort_order: 3,
+      name:        'Drop',
+      texture_url: '/textures/002_drop.jpg',
+      thumb_url:   '/textures/002_drop_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 25,
+      price: 680, active: true, sort_order: 3,
     },
     {
-      name:        'Asia C-03',
       sku:         'ASIA-03',
-      description:'Геометрический восточный орнамент.',
-      texture_url: '/textures/asia_c03.jpg',
-      thumb_url:   '/textures/asia_c03_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 20,
-      price:       590, active: true, sort_order: 4,
+      name:        'Asia C-03',
+      texture_url: '/textures/003_asia_c03.jpg',
+      thumb_url:   '/textures/003_asia_c03_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 20,
+      price: 590, active: true, sort_order: 4,
     },
     {
-      name:        'Taza Gic',
       sku:         'TAZA-01',
-      description:'Плавные изогнутые линии.',
-      texture_url: '/textures/taza_gic.jpg',
-      thumb_url:   '/textures/taza_gic_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 22,
-      price:       520, active: true, sort_order: 5,
+      name:        'Taza Gic',
+      texture_url: '/textures/004_taza_gic.jpg',
+      thumb_url:   '/textures/004_taza_gic_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 22,
+      price: 520, active: true, sort_order: 5,
     },
     {
-      name:        'Aliq Atlantic',
       sku:         'ALIQ-AT',
-      description:'Волновой рельеф в морском стиле.',
-      texture_url: '/textures/aliq_atlantic.jpg',
-      thumb_url:   '/textures/aliq_atlantic_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 20,
-      price:       560, active: true, sort_order: 6,
+      name:        'Aliq Atlantic',
+      texture_url: '/textures/005_atlantic.jpg',
+      thumb_url:   '/textures/005_atlantic_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 20,
+      price: 560, active: true, sort_order: 6,
     },
     {
-      name:        'Klips Blade',
       sku:         'KLIPS-BL',
-      description:'Острые лезвия. Максимальный 3D-эффект.',
-      texture_url: '/textures/klips_blade.jpg',
-      thumb_url:   '/textures/klips_blade_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 30,
-      price:       780, active: true, sort_order: 7,
+      name:        'Klips Blade',
+      texture_url: '/textures/007_blade.jpg',
+      thumb_url:   '/textures/007_blade_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 30,
+      price: 780, active: true, sort_order: 7,
     },
     {
-      name:        'Metax Wave',
-      sku:         'META-WV',
-      description:'Глубокие волны 600×400мм. Премиум сегмент.',
-      texture_url: '/textures/metax_wave.jpg',
-      thumb_url:   '/textures/metax_wave_thumb.jpg',
-      width_mm:    600, height_mm: 400, depth_mm: 80,
-      price:       1200, active: true, sort_order: 8,
-    },
-    {
-      name:        'Tuxt M-35',
-      sku:         'TUXT-35',
-      description:'Пирамидальный рельеф M-35.',
-      texture_url: '/textures/tuxt_m35.jpg',
-      thumb_url:   '/textures/tuxt_m35_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 35,
-      price:       690, active: true, sort_order: 9,
-    },
-    {
-      name:        'Hin Gic Omega',
       sku:         'OMEGA-2',
-      description:'Лаконичный геометрический орнамент.',
-      texture_url: '/textures/omega2.jpg',
-      thumb_url:   '/textures/omega2_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 20,
-      price:       540, active: true, sort_order: 10,
+      name:        'Hin Gic Omega',
+      texture_url: '/textures/010_omega2.jpg',
+      thumb_url:   '/textures/010_omega2_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 20,
+      price: 540, active: true, sort_order: 8,
     },
     {
-      name:        'D-03',
       sku:         'D-03',
-      description:'Классическая ромбовидная сетка.',
-      texture_url: '/textures/d03.jpg',
-      thumb_url:   '/textures/d03_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 18,
-      price:       480, active: true, sort_order: 11,
+      name:        'D-03',
+      texture_url: '/textures/011_d03.jpg',
+      thumb_url:   '/textures/011_d03.jpg',       // no separate thumb — use texture
+      width_mm: 500, height_mm: 500, depth_mm: 18,
+      price: 480, active: true, sort_order: 9,
     },
     {
-      name:        'Deco Line M-50',
       sku:         'DECO-50',
-      description:'Глубокие рейки M-50. Максимальная глубина рельефа.',
-      texture_url: '/textures/deco_m50.jpg',
-      thumb_url:   '/textures/deco_m50_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 50,
-      price:       890, active: true, sort_order: 12,
+      name:        'Deco Line M-50',
+      texture_url: '/textures/012_deco_m50.jpg',
+      thumb_url:   '/textures/012_deco_m50.jpg',  // no separate thumb — use texture
+      width_mm: 500, height_mm: 500, depth_mm: 50,
+      price: 890, active: true, sort_order: 10,
     },
     {
-      name:        'Декор Паргев',
       sku:         'PARG-01',
-      description:'Армянский декоративный мотив. Эксклюзивный дизайн.',
-      texture_url: '/textures/pargev.jpg',
-      thumb_url:   '/textures/pargev_thumb.jpg',
-      width_mm:    500, height_mm: 500, depth_mm: 22,
-      price:       510, active: true, sort_order: 13,
+      name:        'Декор Паргев',
+      texture_url: '/textures/001_pargev.jpg',
+      thumb_url:   '/textures/001_pargev_thumb.jpg',
+      width_mm: 500, height_mm: 500, depth_mm: 22,
+      price: 510, active: true, sort_order: 11,
     },
   ]
 
   let panelCount = 0
   for (const p of panels) {
-    const { description: _d, ...panelData } = p as any
-    const existing = await prisma.panel.findFirst({ where: { tenant_id: tenant.id, sku: panelData.sku } })
+    const existing = await prisma.panel.findFirst({
+      where: { tenant_id: tenant.id, sku: p.sku },
+    })
     if (existing) {
-      await prisma.panel.update({ where: { id: existing.id }, data: { ...panelData, tenant_id: tenant.id } })
+      await prisma.panel.update({ where: { id: existing.id }, data: { ...p, tenant_id: tenant.id } })
     } else {
-      await prisma.panel.create({ data: { ...panelData, tenant_id: tenant.id } })
+      await prisma.panel.create({ data: { ...p, tenant_id: tenant.id } })
     }
     panelCount++
     process.stdout.write(`\r  Panels: ${panelCount}/${panels.length}`)
   }
-  console.log('\n✅ Panels:', panelCount)
+  console.log(`\nPanels: ${panelCount}`)
 
-  // ── 5. Аксессуары ─────────────────────────────────────
+  // ── 5. Аксессуары — GLB из /public/uploads/models/ ────
+  // Upsert by name (sku may be null in existing DB rows)
   const accessories = [
     {
-      name:      'Настенная полка',
-      sku:       'ACC-SHELF-01',
-      type_id:   typeMap['shelf'],
-      model_url: '/models/shelf.glb',
-      thumb_url: '/models/thumbs/shelf.jpg',
-      scale:     1.0,
-      price:     2500, active: true,
-    },
-    {
-      name:      'Розетка',
+      name:      'Розетка EU',
       sku:       'ACC-SOCK-01',
       type_id:   typeMap['socket'],
-      model_url: '/models/socket.glb',
-      thumb_url: '/models/thumbs/socket.jpg',
-      scale:     0.8,
-      price:     350, active: true,
+      model_url: '/uploads/models/socket.glb',
+      thumb_url: PLACEHOLDER_THUMB,
+      scale: 0.8, price: 350, active: true, sort_order: 1,
     },
     {
       name:      'Выключатель',
       sku:       'ACC-SWIT-01',
       type_id:   typeMap['switch'],
-      model_url: '/models/switch.glb',
-      thumb_url: '/models/thumbs/switch.jpg',
-      scale:     0.8,
-      price:     280, active: true,
-    },
-    {
-      name:      'Настенное бра',
-      sku:       'ACC-LAMP-01',
-      type_id:   typeMap['lamp'],
-      model_url: '/models/wall_lamp.glb',
-      thumb_url: '/models/thumbs/lamp.jpg',
-      scale:     1.2,
-      price:     4500, active: true,
+      model_url: '/uploads/models/switch.glb',
+      thumb_url: PLACEHOLDER_THUMB,
+      scale: 0.8, price: 280, active: true, sort_order: 2,
     },
     {
       name:      'Телевизор 55"',
       sku:       'ACC-TV-55',
       type_id:   typeMap['tv'],
-      model_url: '/models/tv.glb',
-      thumb_url: '/models/thumbs/tv.jpg',
-      scale:     1.5,
-      price:     35000, active: true,
+      model_url: '/uploads/models/tv.glb',
+      thumb_url: PLACEHOLDER_THUMB,
+      scale: 1.5, price: 35000, active: true, sort_order: 3,
     },
     {
-      name:      'Картина в раме',
+      name:      'Настенная лампа',
+      sku:       'ACC-LAMP-01',
+      type_id:   typeMap['lamp'],
+      model_url: '/uploads/models/wall_lamp.glb',
+      thumb_url: PLACEHOLDER_THUMB,
+      scale: 1.2, price: 4500, active: true, sort_order: 4,
+    },
+    {
+      name:      'Рамка для картины',
       sku:       'ACC-PIC-01',
       type_id:   typeMap['picture'],
-      model_url: '/models/picture_frame.glb',
-      thumb_url: '/models/thumbs/picture.jpg',
-      scale:     1.0,
-      price:     1800, active: true,
+      model_url: '/uploads/models/picture_frame.glb',
+      thumb_url: PLACEHOLDER_THUMB,
+      scale: 1.0, price: 1800, active: true, sort_order: 5,
+    },
+    {
+      name:      'Настенная полка',
+      sku:       'ACC-SHELF-01',
+      type_id:   typeMap['shelf'],
+      model_url: '/uploads/models/shelf.glb',
+      thumb_url: PLACEHOLDER_THUMB,
+      scale: 1.0, price: 2500, active: true, sort_order: 6,
     },
   ]
 
   let accCount = 0
   for (const a of accessories) {
-    const existing = await prisma.accessory.findFirst({ where: { tenant_id: tenant.id, sku: a.sku } })
+    // Upsert by name — safe even if sku was null in DB
+    const existing = await prisma.accessory.findFirst({
+      where: { tenant_id: tenant.id, name: a.name },
+    })
     if (existing) {
       await prisma.accessory.update({ where: { id: existing.id }, data: { ...a, tenant_id: tenant.id } })
     } else {
@@ -272,7 +244,7 @@ async function main() {
     }
     accCount++
   }
-  console.log('✅ Accessories:', accCount)
+  console.log('Accessories:', accCount)
 
   // ── 6. Демо заявка (для показа в admin) ────────────────
   await prisma.lead.upsert({
@@ -296,11 +268,11 @@ async function main() {
       },
     },
   })
-  console.log('✅ Demo lead created')
+  console.log('Demo lead: ok')
 
-  console.log('\n🎉 Seed completed!')
-  console.log('   Admin: admin@wallcraft.am / admin123')
-  console.log('   Store: ?store=wallcraft (dev) or wallcraft.yourdomain.com')
+  console.log('\nSeed completed!')
+  console.log('  Admin: admin@wallcraft.am / admin123')
+  console.log('  Store: ?store=wallcraft')
 }
 
 main()
