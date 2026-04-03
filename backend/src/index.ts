@@ -9,7 +9,6 @@ import adminRouter from './routes/admin'
 import leadsRouter from './routes/leads'
 import contentRouter from './routes/content'
 import adminContentRouter from './routes/adminContent'
-import seedOnceRouter from './routes/seedOnce'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -28,7 +27,6 @@ app.use(express.urlencoded({ extended: true }))
 
 // ── Health check (no tenant required) ────────────────────────
 app.get('/health', (_req, res) => res.json({ ok: true }))
-app.use(seedOnceRouter)   // TEMP — remove after seeding prod
 
 // ── Tenant resolution (all routes below require tenant) ────────
 app.use(tenantMiddleware)
