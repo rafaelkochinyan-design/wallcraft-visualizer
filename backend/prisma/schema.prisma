@@ -25,11 +25,20 @@ model Tenant {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  users       User[]
-  panels      Panel[]
-  accessories Accessory[]
-  inquiries   Inquiry[]
-  leads       Lead[]
+  users        User[]
+  panels       Panel[]
+  accessories  Accessory[]
+  inquiries    Inquiry[]
+  leads        Lead[]
+  projects     Project[]
+  galleryItems GalleryItem[]
+  blogPosts    BlogPost[]
+  designers    Designer[]
+  dealers      Dealer[]
+  partners     Partner[]
+  teamMembers  TeamMember[]
+  heroSlides   HeroSlide[]
+  pageContents PageContent[]
 
   @@map("tenants")
 }
@@ -153,4 +162,180 @@ model Lead {
   @@index([tenant_id])
   @@index([status])
   @@map("leads")
+}
+
+// ── CONTENT MODELS ────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(cuid())
+  tenant_id   String
+  title       String
+  slug        String
+  description String?
+  cover_url   String?
+  images      Json     @default("[]")
+  space_type  String?
+  panel_ids   Json     @default("[]")
+  active      Boolean  @default(true)
+  sort_order  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, slug])
+  @@index([tenant_id])
+  @@map("projects")
+}
+
+model GalleryItem {
+  id         String   @id @default(cuid())
+  tenant_id  String
+  image_url  String
+  thumb_url  String?
+  caption    String?
+  space_type String?
+  tags       Json     @default("[]")
+  sort_order Int      @default(0)
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("gallery_items")
+}
+
+model BlogPost {
+  id           String    @id @default(cuid())
+  tenant_id    String
+  slug         String
+  title        Json
+  excerpt      Json
+  body         Json
+  cover_url    String?
+  category     String?
+  tags         Json      @default("[]")
+  published    Boolean   @default(false)
+  published_at DateTime?
+  sort_order   Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, slug])
+  @@index([tenant_id])
+  @@index([published])
+  @@map("blog_posts")
+}
+
+model Designer {
+  id         String   @id @default(cuid())
+  tenant_id  String
+  name       String
+  slug       String
+  photo_url  String?
+  bio        Json?
+  specialty  String?
+  portfolio  Json     @default("[]")
+  instagram  String?
+  website    String?
+  active     Boolean  @default(true)
+  sort_order Int      @default(0)
+  created_at DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, slug])
+  @@index([tenant_id])
+  @@map("designers")
+}
+
+model Dealer {
+  id         String   @id @default(cuid())
+  tenant_id  String
+  name       String
+  country    String
+  region     String?
+  city       String
+  address    String?
+  phone      String?
+  email      String?
+  website    String?
+  map_url    String?
+  lat        Float?
+  lng        Float?
+  logo_url   String?
+  active     Boolean  @default(true)
+  sort_order Int      @default(0)
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([country])
+  @@map("dealers")
+}
+
+model Partner {
+  id         String   @id @default(cuid())
+  tenant_id  String
+  name       String
+  logo_url   String
+  website    String?
+  sort_order Int      @default(0)
+  active     Boolean  @default(true)
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("partners")
+}
+
+model TeamMember {
+  id         String   @id @default(cuid())
+  tenant_id  String
+  name       String
+  role       Json
+  photo_url  String?
+  bio        Json?
+  sort_order Int      @default(0)
+  active     Boolean  @default(true)
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("team_members")
+}
+
+model HeroSlide {
+  id          String   @id @default(cuid())
+  tenant_id   String
+  image_url   String
+  video_url   String?
+  headline    Json
+  subheadline Json?
+  cta_label   Json?
+  cta_url     String?
+  sort_order  Int      @default(0)
+  active      Boolean  @default(true)
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("hero_slides")
+}
+
+model PageContent {
+  id         String   @id @default(cuid())
+  tenant_id  String
+  page_key   String
+  content    Json
+  updated_at DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, page_key])
+  @@index([tenant_id])
+  @@map("page_contents")
 }

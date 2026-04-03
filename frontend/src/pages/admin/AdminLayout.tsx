@@ -48,9 +48,25 @@ export default function AdminLayout() {
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
+          <p className="text-xs text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1">Заявки</p>
           <NavLink to="/admin/leads" className={navClass}>Заявки</NavLink>
+
+          <p className="text-xs text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">Продукты</p>
           <NavLink to="/admin/panels" className={navClass}>Панели</NavLink>
           <NavLink to="/admin/accessories" className={navClass}>Аксессуары</NavLink>
+
+          <p className="text-xs text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">Сайт</p>
+          <NavLink to="/admin/hero-slides" className={navClass}>Главная (слайды)</NavLink>
+          <NavLink to="/admin/projects" className={navClass}>Проекты</NavLink>
+          <NavLink to="/admin/gallery" className={navClass}>Галерея</NavLink>
+          <NavLink to="/admin/blog" className={navClass}>Блог</NavLink>
+          <NavLink to="/admin/designers" className={navClass}>Дизайнеры</NavLink>
+          <NavLink to="/admin/dealers" className={navClass}>Дилеры</NavLink>
+          <NavLink to="/admin/partners" className={navClass}>Партнёры</NavLink>
+          <NavLink to="/admin/team" className={navClass}>Команда</NavLink>
+          <NavLink to="/admin/pages" className={navClass}>Страницы (CMS)</NavLink>
+
+          <p className="text-xs text-gray-400 uppercase tracking-wider px-3 pt-3 pb-1">Настройки</p>
           <NavLink to="/admin/settings" className={navClass}>Настройки магазина</NavLink>
         </nav>
 

@@ -7,6 +7,8 @@ import { errorHandler } from './middleware/errorHandler'
 import publicRouter from './routes/public'
 import adminRouter from './routes/admin'
 import leadsRouter from './routes/leads'
+import contentRouter from './routes/content'
+import adminContentRouter from './routes/adminContent'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -31,7 +33,9 @@ app.use(tenantMiddleware)
 
 // ── Routes ────────────────────────────────────────────────────
 app.use('/api', publicRouter)
+app.use('/api', contentRouter)
 app.use('/admin', adminRouter)
+app.use('/admin', adminContentRouter)
 app.use(leadsRouter)
 
 // ── Error handler (must be last) ─────────────────────────────

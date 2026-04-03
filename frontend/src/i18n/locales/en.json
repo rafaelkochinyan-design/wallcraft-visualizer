@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "products": "Products",
+    "projects": "Projects",
+    "gallery": "Gallery",
+    "designers": "Designers",
+    "dealers": "Where to Buy",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "try3d": "Try in 3D"
+  },
+  "home": {
+    "hero_cta": "Explore Collection",
+    "visualizer_title": "Design Your Wall in 3D",
+    "visualizer_subtitle": "Place panels, adjust lighting, visualize your space in real time",
+    "visualizer_cta": "Open 3D Configurator",
+    "view_all": "View All",
+    "partners_title": "Trusted By"
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "Decorative wall panels for every interior",
+    "all": "All",
+    "try_in_3d": "Try in 3D",
+    "sku": "SKU",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "price": "Price",
+    "related": "Related Products"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Real interiors. Real results.",
+    "view": "View Project"
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "Discover the possibilities",
+    "filter_all": "All Spaces",
+    "filter_living": "Living Room",
+    "filter_bedroom": "Bedroom",
+    "filter_office": "Office",
+    "filter_hotel": "Hotel",
+    "filter_restaurant": "Restaurant",
+    "filter_bathroom": "Bathroom"
+  },
+  "designers": {
+    "title": "Design Line",
+    "subtitle": "Collaboration with leading interior designers"
+  },
+  "dealers": {
+    "title": "Where to Buy",
+    "subtitle": "Find an authorized dealer near you",
+    "all_countries": "All Countries",
+    "all_regions": "All Regions",
+    "visit_website": "Visit Website",
+    "get_directions": "Get Directions"
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Sculpting emotions since 2013",
+    "values_title": "Our Values",
+    "team_title": "Our Team"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Design tips, news and inspiration",
+    "all": "All",
+    "news": "News",
+    "tips": "Tips & Guides",
+    "read_more": "Read More",
+    "published": "Published"
+  },
+  "installation": {
+    "title": "Installation Guide",
+    "subtitle": "Professional installation made simple"
+  },
+  "partners": {
+    "title": "Partners",
+    "subtitle": "Join our network of authorized dealers and designers",
+    "become_partner": "Become a Partner",
+    "form_company": "Company Name",
+    "form_country": "Country",
+    "form_message": "Tell us about your interest"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Get in touch with our team",
+    "form_name": "Your Name",
+    "form_email": "Email",
+    "form_phone": "Phone",
+    "form_message": "Message",
+    "submit": "Send Message",
+    "success": "Message sent! We'll get back to you shortly.",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "whatsapp": "Chat on WhatsApp",
+    "social": "Follow Us"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "made_with": "Made with passion in Yerevan"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "prev": "Previous",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "page": "Page",
+    "of": "of"
+  }
+}

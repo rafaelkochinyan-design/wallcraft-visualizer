@@ -16,6 +16,7 @@
  * └──────────────┴──────────────────────────────────────────┘
  */
 
+import { useEffect } from 'react'
 import { useVisualizerStore } from '../store/visualizer'
 import { useTenant } from '../hooks/useTenant'
 import { useUrlState } from '../hooks/useUrlState'
@@ -28,6 +29,11 @@ import PriceCalculator    from '../components/ui/PriceCalculator'
 export default function VisualizerPage() {
   const { loading, error } = useTenant()
   useUrlState()
+
+  useEffect(() => {
+    document.body.classList.add('visualizer-mode')
+    return () => document.body.classList.remove('visualizer-mode')
+  }, [])
 
   if (loading || error) {
     return <LoadingScreen error={error} onRetry={() => window.location.reload()} />

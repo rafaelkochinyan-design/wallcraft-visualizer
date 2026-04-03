@@ -43,6 +43,34 @@ router.get('/panels', async (req, res, next) => {
   }
 })
 
+// GET /api/panels/:id — single panel with category
+router.get('/panels/:id', async (req, res, next) => {
+  try {
+    const panel = await prisma.panel.findFirst({
+      where: { id: req.params.id, tenant_id: req.tenant.id, active: true },
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        texture_url: true,
+        thumb_url: true,
+        model_url: true,
+        width_mm: true,
+        height_mm: true,
+        depth_mm: true,
+        weight_kg: true,
+        price: true,
+        sort_order: true,
+        category: { select: { id: true, name: true } },
+      },
+    })
+    if (!panel) return fail(res, 404, 'Panel not found')
+    ok(res, panel)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // GET /api/accessories — active accessories grouped by type
 router.get('/accessories', async (req, res, next) => {
   try {

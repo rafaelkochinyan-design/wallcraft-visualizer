@@ -1,4 +1,7 @@
 {
+  "redirects": [
+    { "source": "/", "has": [{ "type": "query", "key": "p0" }], "destination": "/visualizer?p0=:p0", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
