@@ -250,9 +250,6 @@ export default function HeroCarousel({ slides, fallback }: Props) {
                 <Link className="hc-cta" to={slide.ctaUrl || '/products'}>
                   {slide.ctaLabel || t('home.hero_cta')} <span>→</span>
                 </Link>
-                <Link className="hc-cta-ghost" to="/visualizer">
-                  ✦ {t('nav.try3d')}
-                </Link>
               </div>
             </div>
           </div>
