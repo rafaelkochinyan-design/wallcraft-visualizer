@@ -124,8 +124,14 @@ const styles = `
   }
 `
 
-interface Cta { label: string; href: string }
-interface Stat { value: string; label: string }
+interface Cta {
+  label: string
+  href: string
+}
+interface Stat {
+  value: string
+  label: string
+}
 
 interface Props {
   variant?: 'default' | 'image' | 'split' | 'minimal'
@@ -158,17 +164,26 @@ export default function PageHero({
     <div className={`ph-inner${centered || variant === 'default' ? ' centered' : ''}`}>
       {label && <div className="ph-label">{label}</div>}
 
-      {titleHtml
-        ? <h1 className="ph-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-        : <h1 className="ph-title">{title}</h1>
-      }
+      {titleHtml ? (
+        <h1 className="ph-title" dangerouslySetInnerHTML={{ __html: titleHtml }} />
+      ) : (
+        <h1 className="ph-title">{title}</h1>
+      )}
 
       {subtitle && <p className="ph-subtitle">{subtitle}</p>}
 
       {(primaryCta || ghostCta) && (
         <div className="ph-ctas">
-          {primaryCta && <a className="ph-btn-primary" href={primaryCta.href}>{primaryCta.label} <span>→</span></a>}
-          {ghostCta && <a className="ph-btn-ghost" href={ghostCta.href}>{ghostCta.label}</a>}
+          {primaryCta && (
+            <a className="ph-btn-primary" href={primaryCta.href}>
+              {primaryCta.label} <span>→</span>
+            </a>
+          )}
+          {ghostCta && (
+            <a className="ph-btn-ghost" href={ghostCta.href}>
+              {ghostCta.label}
+            </a>
+          )}
         </div>
       )}
 
@@ -204,7 +219,7 @@ export default function PageHero({
       {variant === 'minimal' && (
         <section className={`ph-root ph-minimal ${className}`}>{inner}</section>
       )}
-      {(variant === 'default') && (
+      {variant === 'default' && (
         <section className={`ph-root ph-default ${className}`}>{inner}</section>
       )}
     </>

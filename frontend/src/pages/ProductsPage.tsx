@@ -13,16 +13,17 @@ export default function ProductsPage() {
 
   const categories = [
     { id: 'all', name: t('products.all') },
-    ...Array.from(new Map(
-      availablePanels
-        .filter(p => p.category)
-        .map(p => [p.category!.id, p.category!])
-    ).values())
+    ...Array.from(
+      new Map(
+        availablePanels.filter((p) => p.category).map((p) => [p.category!.id, p.category!])
+      ).values()
+    ),
   ]
 
-  const filtered = activeCategory === 'all'
-    ? availablePanels
-    : availablePanels.filter(p => p.category?.id === activeCategory)
+  const filtered =
+    activeCategory === 'all'
+      ? availablePanels
+      : availablePanels.filter((p) => p.category?.id === activeCategory)
 
   return (
     <div>
@@ -31,7 +32,7 @@ export default function ProductsPage() {
         <p className="pub-section-subtitle">{t('products.subtitle')}</p>
 
         <div className="pub-filter-chips">
-          {categories.map(cat => (
+          {categories.map((cat) => (
             <button
               key={cat.id}
               className={`pub-filter-chip${activeCategory === cat.id ? ' active' : ''}`}
@@ -56,14 +57,16 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="pub-product-grid">
-            {filtered.map(panel => (
+            {filtered.map((panel) => (
               <Link key={panel.id} to={`/products/${panel.id}`} className="pub-product-card">
                 <div className="pub-product-card__img">
                   <img
                     src={panel.thumb_url || panel.texture_url || ''}
                     alt={panel.name}
                     loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
+                    onError={(e) => {
+                      ;(e.target as HTMLImageElement).style.opacity = '0'
+                    }}
                   />
                   <span className="pub-product-card__3d-badge">✦ 3D</span>
                 </div>
@@ -71,11 +74,15 @@ export default function ProductsPage() {
                   <div className="pub-product-card__name">{panel.name}</div>
                   {panel.sku && <div className="pub-product-card__sku">SKU: {panel.sku}</div>}
                   <div className="pub-product-card__footer">
-                    {panel.price ? <span className="pub-product-card__price">{panel.price} ֏</span> : <span />}
+                    {panel.price ? (
+                      <span className="pub-product-card__price">{panel.price} ֏</span>
+                    ) : (
+                      <span />
+                    )}
                     <Link
                       to={`/visualizer?p0=${panel.sku || panel.id}`}
                       className="pub-product-card__try"
-                      onClick={e => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {t('products.try_in_3d')}
                     </Link>

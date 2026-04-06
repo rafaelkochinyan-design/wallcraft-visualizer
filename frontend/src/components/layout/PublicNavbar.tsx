@@ -5,9 +5,9 @@ import { useVisualizerStore } from '../../store/visualizer'
 import { useThemeStore } from '../../store/theme'
 
 const LANGS = [
-  { code: 'ru', label: 'RU' },
   { code: 'en', label: 'EN' },
   { code: 'am', label: 'AM' },
+  { code: 'ru', label: 'RU' },
 ]
 
 export default function PublicNavbar() {
@@ -24,7 +24,9 @@ export default function PublicNavbar() {
   }, [])
 
   // Close drawer on route change
-  useEffect(() => { setOpen(false) }, [])
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const changeLang = (code: string) => {
     i18n.changeLanguage(code)
@@ -60,9 +62,7 @@ export default function PublicNavbar() {
             <li key={to}>
               <NavLink
                 to={to}
-                className={({ isActive }) =>
-                  `pub-navbar__link${isActive ? ' active' : ''}`
-                }
+                className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}
               >
                 {label}
               </NavLink>
@@ -86,11 +86,7 @@ export default function PublicNavbar() {
           </div>
 
           {/* Dark mode toggle */}
-          <button
-            className="pub-navbar__theme-btn"
-            onClick={toggle}
-            aria-label="Toggle theme"
-          >
+          <button className="pub-navbar__theme-btn" onClick={toggle} aria-label="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
 
@@ -102,7 +98,7 @@ export default function PublicNavbar() {
           {/* Mobile burger */}
           <button
             className={`pub-navbar__burger${open ? ' open' : ''}`}
-            onClick={() => setOpen(o => !o)}
+            onClick={() => setOpen((o) => !o)}
             aria-label="Menu"
           >
             <span />
@@ -118,9 +114,7 @@ export default function PublicNavbar() {
           <NavLink
             key={to}
             to={to}
-            className={({ isActive }) =>
-              `pub-navbar__link${isActive ? ' active' : ''}`
-            }
+            className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}
             onClick={() => setOpen(false)}
           >
             {label}

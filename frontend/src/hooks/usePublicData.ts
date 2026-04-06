@@ -39,7 +39,9 @@ export function usePublicData<T>(
   useEffect(() => {
     mountedRef.current = true
     fetchData()
-    return () => { mountedRef.current = false }
+    return () => {
+      mountedRef.current = false
+    }
   }, [endpoint, JSON.stringify(params)])
 
   return { data, loading, error, refetch: fetchData }

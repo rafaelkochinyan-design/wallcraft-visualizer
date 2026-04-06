@@ -19,8 +19,8 @@ export default function AdminLoginPage() {
       tokenStore.set(res.data.data.accessToken)
       navigate('/admin/panels')
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } })
-        ?.response?.data?.error?.message
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
+        ?.data?.error?.message
       setError(msg || 'Неверный email или пароль')
     } finally {
       setLoading(false)

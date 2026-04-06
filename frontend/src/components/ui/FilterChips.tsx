@@ -76,16 +76,25 @@ interface Props {
   className?: string
 }
 
-export default function FilterChips({ options, value, onChange, dark = false, className = '' }: Props) {
+export default function FilterChips({
+  options,
+  value,
+  onChange,
+  dark = false,
+  className = '',
+}: Props) {
   const listRef = useRef<HTMLDivElement>(null)
 
   return (
     <>
       <style>{styles}</style>
       <div className={`fc-root${dark ? ' dark' : ''} ${className}`}>
-        <div className="fc-scroll-wrap" style={{ '--fc-fade-end': dark ? '#0a0a0f' : '#fff' } as React.CSSProperties}>
+        <div
+          className="fc-scroll-wrap"
+          style={{ '--fc-fade-end': dark ? '#0a0a0f' : '#fff' } as React.CSSProperties}
+        >
           <div ref={listRef} className="fc-list">
-            {options.map(opt => (
+            {options.map((opt) => (
               <button
                 key={opt.key}
                 className={`fc-chip${value === opt.key ? ' fc-chip-active' : ''}`}

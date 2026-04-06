@@ -10,9 +10,7 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <div className="public-layout">
       <PublicNavbar />
-      <main className="public-main">
-        {children}
-      </main>
+      <main className="public-main">{children}</main>
       <PublicFooter />
     </div>
   )

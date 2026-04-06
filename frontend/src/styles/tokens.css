@@ -7,90 +7,89 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
 :root {
-
   /* ──────────────────────────────────────────────────────
      UI SURFACE COLORS — светлый UI (sidebar, toolbar)
      Тёплые off-white тона, как бумага или гипс
   ────────────────────────────────────────────────────── */
-  --ui-bg:           #faf8f5;   /* фон sidebar, toolbar — тёплый белый   */
-  --ui-surface:      #f3f0eb;   /* карточки, инпуты                      */
-  --ui-elevated:     #ece8e1;   /* hover states, raised elements         */
-  --ui-border:       #ddd8d0;   /* границы, dividers                     */
-  --ui-border-muted: #e8e4dc;   /* тихие границы                         */
+  --ui-bg: #faf8f5; /* фон sidebar, toolbar — тёплый белый   */
+  --ui-surface: #f3f0eb; /* карточки, инпуты                      */
+  --ui-elevated: #ece8e1; /* hover states, raised elements         */
+  --ui-border: #ddd8d0; /* границы, dividers                     */
+  --ui-border-muted: #e8e4dc; /* тихие границы                         */
 
   /* ──────────────────────────────────────────────────────
      TEXT COLORS — на светлом фоне (#faf8f5)
   ────────────────────────────────────────────────────── */
-  --text-primary:    #1a1714;   /* основной текст — почти чёрный тёплый  */
-  --text-secondary:  #5a5550;   /* вторичный                             */
-  --text-muted:      #8a8480;   /* placeholder, labels                   */
-  --text-disabled:   #b8b4b0;   /* disabled                              */
+  --text-primary: #1a1714; /* основной текст — почти чёрный тёплый  */
+  --text-secondary: #5a5550; /* вторичный                             */
+  --text-muted: #8a8480; /* placeholder, labels                   */
+  --text-disabled: #b8b4b0; /* disabled                              */
 
   /* ──────────────────────────────────────────────────────
      ADMIN / LIGHT MODE — те же значения, совместимость
   ────────────────────────────────────────────────────── */
-  --light-bg:        #faf8f5;
-  --light-surface:   #f3f0eb;
-  --light-border:    #ddd8d0;
-  --light-text:      #1a1714;
-  --light-text-sec:  #5a5550;
+  --light-bg: #faf8f5;
+  --light-surface: #f3f0eb;
+  --light-border: #ddd8d0;
+  --light-text: #1a1714;
+  --light-text-sec: #5a5550;
 
   /* ──────────────────────────────────────────────────────
      ACCENT — тёплый терракотово-медный
   ────────────────────────────────────────────────────── */
-  --accent:          #c4622d;
-  --accent-hover:    #d4713c;
-  --accent-soft:     rgba(196, 98, 45, 0.12);
-  --accent-border:   rgba(196, 98, 45, 0.30);
+  --accent: #c4622d;
+  --accent-hover: #d4713c;
+  --accent-soft: rgba(196, 98, 45, 0.12);
+  --accent-border: rgba(196, 98, 45, 0.3);
 
   /* Семантические */
-  --accent-blue:     #3b6fb5;
-  --accent-green:    #2e7d52;
-  --accent-red:      #c0392b;
-  --accent-yellow:   #a07820;
+  --accent-blue: #3b6fb5;
+  --accent-green: #2e7d52;
+  --accent-red: #c0392b;
+  --accent-yellow: #a07820;
 
-  --accent-blue-soft:  rgba(59, 111, 181, 0.12);
+  --accent-blue-soft: rgba(59, 111, 181, 0.12);
   --accent-green-soft: rgba(46, 125, 82, 0.12);
-  --accent-red-soft:   rgba(192, 57, 43, 0.12);
+  --accent-red-soft: rgba(192, 57, 43, 0.12);
 
   /* ──────────────────────────────────────────────────────
      WALL COLOR PRESETS
   ────────────────────────────────────────────────────── */
-  --wall-white:      #f8f5f0;
-  --wall-cream:      #ede8de;
-  --wall-sand:       #d8d0c0;
-  --wall-warm-gray:  #b8b2a8;
-  --wall-dark:       #3c3830;
-  --wall-charcoal:   #1e1c18;
+  --wall-white: #f8f5f0;
+  --wall-cream: #ede8de;
+  --wall-sand: #d8d0c0;
+  --wall-warm-gray: #b8b2a8;
+  --wall-dark: #3c3830;
+  --wall-charcoal: #1e1c18;
 
   /* ──────────────────────────────────────────────────────
      LEGACY COMPATIBILITY
   ────────────────────────────────────────────────────── */
-  --c-black:        #1a1714;
-  --c-white:        #ffffff;
-  --c-gray-50:      var(--ui-bg);
-  --c-gray-100:     var(--ui-surface);
-  --c-gray-200:     var(--ui-border);
-  --c-gray-300:     #c8c4bc;
-  --c-gray-400:     var(--text-muted);
-  --c-gray-500:     #6b6560;
-  --c-gray-600:     #4a4540;
-  --c-gray-800:     #2e2a25;
-  --c-gray-900:     #1a1714;
+  --c-black: #1a1714;
+  --c-white: #ffffff;
+  --c-gray-50: var(--ui-bg);
+  --c-gray-100: var(--ui-surface);
+  --c-gray-200: var(--ui-border);
+  --c-gray-300: #c8c4bc;
+  --c-gray-400: var(--text-muted);
+  --c-gray-500: #6b6560;
+  --c-gray-600: #4a4540;
+  --c-gray-800: #2e2a25;
+  --c-gray-900: #1a1714;
 
-  --c-accent:       var(--accent);
-  --c-danger:       var(--accent-red);
-  --c-danger-soft:  var(--accent-red-soft);
-  --c-success:      var(--accent-green);
+  --c-accent: var(--accent);
+  --c-danger: var(--accent-red);
+  --c-danger-soft: var(--accent-red-soft);
+  --c-success: var(--accent-green);
   --c-success-soft: var(--accent-green-soft);
 
   /* Glass */
-  --glass-dark:         rgba(250, 248, 245, 0.95);
-  --glass-dark-border:  rgba(26, 23, 20, 0.10);
-  --glass-light:        rgba(250, 248, 245, 0.97);
+  --glass-dark: rgba(250, 248, 245, 0.95);
+  --glass-dark-border: rgba(26, 23, 20, 0.1);
+  --glass-light: rgba(250, 248, 245, 0.97);
   --glass-light-border: rgba(26, 23, 20, 0.08);
-  --glass-blur:         blur(20px);
-  --glass-shadow:       0 8px 40px rgba(0, 0, 0, 0.12);
+  --glass-blur: blur(20px);
+  --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
 
   /* ──────────────────────────────────────────────────────
      TYPOGRAPHY
@@ -98,28 +97,28 @@
   --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
   --text-2xs: 10px;
-  --text-xs:  12px;
-  --text-sm:  14px;
-  --text-md:  16px;
-  --text-lg:  18px;
-  --text-xl:  22px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
   --text-2xl: 28px;
   --text-3xl: 36px;
 
-  --weight-normal:   400;
-  --weight-medium:   500;
+  --weight-normal: 400;
+  --weight-medium: 500;
   --weight-semibold: 600;
-  --weight-bold:     700;
+  --weight-bold: 700;
 
   /* ──────────────────────────────────────────────────────
      SHAPE
   ────────────────────────────────────────────────────── */
-  --r-xs:   6px;
-  --r-sm:   10px;
-  --r-md:   14px;
-  --r-lg:   20px;
-  --r-xl:   28px;
-  --r-2xl:  36px;
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-2xl: 36px;
   --r-full: 9999px;
 
   /* ──────────────────────────────────────────────────────
@@ -134,16 +133,16 @@
   --sp-7: 28px;
   --sp-8: 32px;
 
-  --h-input:   52px;
-  --h-btn-sm:  40px;
-  --h-btn-md:  52px;
-  --h-btn-lg:  60px;
+  --h-input: 52px;
+  --h-btn-sm: 40px;
+  --h-btn-md: 52px;
+  --h-btn-lg: 60px;
 
   /* ──────────────────────────────────────────────────────
      ANIMATION
   ────────────────────────────────────────────────────── */
-  --ease:     cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in:  cubic-bezier(0.4, 0, 1, 1);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --dur-fast: 120ms;
   --dur-base: 220ms;
@@ -154,5 +153,5 @@
   ────────────────────────────────────────────────────── */
   --z-tooltip: 10;
   --z-overlay: 20;
-  --z-top:     30;
+  --z-top: 30;
 }

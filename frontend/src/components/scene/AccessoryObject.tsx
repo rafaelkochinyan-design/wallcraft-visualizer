@@ -42,12 +42,15 @@ export default function AccessoryObject({
     return clone
   }, [scene])
 
-  const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation()
-    setDragging(true)
-    setIsDraggingAccessory(true)
-    ;(e.target as Element | null)?.setPointerCapture?.(e.pointerId)
-  }, [setIsDraggingAccessory])
+  const handlePointerDown = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      e.stopPropagation()
+      setDragging(true)
+      setIsDraggingAccessory(true)
+      ;(e.target as Element | null)?.setPointerCapture?.(e.pointerId)
+    },
+    [setIsDraggingAccessory]
+  )
 
   const handlePointerUp = useCallback(() => {
     setDragging(false)
@@ -71,7 +74,17 @@ export default function AccessoryObject({
         moveAccessory(uid, [clampedX, clampedY, 0.025])
       }
     },
-    [dragging, raycaster, pointer, camera, wallWidth, wallHeight, uid, moveAccessory, setIsDraggingAccessory]
+    [
+      dragging,
+      raycaster,
+      pointer,
+      camera,
+      wallWidth,
+      wallHeight,
+      uid,
+      moveAccessory,
+      setIsDraggingAccessory,
+    ]
   )
 
   return (

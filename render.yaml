@@ -30,3 +30,5 @@ services:
         value: skip
       - key: R2_PUBLIC_URL
         value: skip
+      - key: API_PUBLIC_URL
+        value: https://wallcraft-api.onrender.com

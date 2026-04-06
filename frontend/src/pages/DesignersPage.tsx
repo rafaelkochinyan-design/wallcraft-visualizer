@@ -17,30 +17,80 @@ export default function DesignersPage() {
         <div className="pub-grid-3">
           {[...Array(6)].map((_, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
-              <div className="pub-skeleton" style={{ width: 120, height: 120, borderRadius: '50%', margin: '0 auto 16px' }} />
-              <div className="pub-skeleton" style={{ height: 18, width: '60%', margin: '0 auto 8px' }} />
-              <div className="pub-skeleton" style={{ height: 14, width: '40%', margin: '0 auto' }} />
+              <div
+                className="pub-skeleton"
+                style={{ width: 120, height: 120, borderRadius: '50%', margin: '0 auto 16px' }}
+              />
+              <div
+                className="pub-skeleton"
+                style={{ height: 18, width: '60%', margin: '0 auto 8px' }}
+              />
+              <div
+                className="pub-skeleton"
+                style={{ height: 14, width: '40%', margin: '0 auto' }}
+              />
             </div>
           ))}
         </div>
       ) : designers && designers.length > 0 ? (
         <div className="pub-grid-3">
-          {designers.map(d => (
-            <Link key={d.id} to={`/designers/${d.slug}`} style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}>
+          {designers.map((d) => (
+            <Link
+              key={d.id}
+              to={`/designers/${d.slug}`}
+              style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}
+            >
               <div style={{ marginBottom: 16 }}>
                 {d.photo_url ? (
-                  <img src={d.photo_url} alt={d.name} style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--ui-border)' }} />
+                  <img
+                    src={d.photo_url}
+                    alt={d.name}
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      border: '3px solid var(--ui-border)',
+                    }}
+                  />
                 ) : (
-                  <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'var(--ui-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: 40 }}>👤</div>
+                  <div
+                    style={{
+                      width: 120,
+                      height: 120,
+                      borderRadius: '50%',
+                      background: 'var(--ui-surface)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto',
+                      fontSize: 40,
+                    }}
+                  >
+                    👤
+                  </div>
                 )}
               </div>
-              <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4, color: 'var(--text-primary)' }}>{d.name}</div>
-              {d.specialty && <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{d.specialty}</div>}
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: 16,
+                  marginBottom: 4,
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {d.name}
+              </div>
+              {d.specialty && (
+                <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{d.specialty}</div>
+              )}
             </Link>
           ))}
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>No designers yet.</div>
+        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+          No designers yet.
+        </div>
       )}
     </div>
   )

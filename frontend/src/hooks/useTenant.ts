@@ -52,7 +52,9 @@ export function useTenant(): UseTenantResult {
     }
 
     load()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [setTenant, setAvailablePanels, setAvailableAccessories, setAvailableAccessoryTypes])
 
   return { loading, error }

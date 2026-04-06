@@ -6,15 +6,20 @@ import { useVisualizerStore } from '../../store/visualizer'
 import MeterGrid from './MeterGrid'
 import type { Panel } from '../../types'
 
-const PANEL_SIZE  = 0.5
+const PANEL_SIZE = 0.5
 const PANEL_DEPTH = 0.019
 const GEO = new THREE.BoxGeometry(PANEL_SIZE, PANEL_SIZE, PANEL_DEPTH)
 
 // ── Simple reliable panel tiling ──
-function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
-  wallWidth:  number
+function PanelTiling({
+  wallWidth,
+  wallHeight,
+  panels,
+  isPreview,
+}: {
+  wallWidth: number
   wallHeight: number
-  panels:     (Panel | null)[]
+  panels: (Panel | null)[]
   isPreview?: boolean
 }) {
   const urlA = panels[0]?.texture_url ?? '/textures/consul_a.jpg'
@@ -48,8 +53,8 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
     })
   }, [urlB])
 
-  const cols        = Math.ceil(wallWidth  / PANEL_SIZE)
-  const rows        = Math.ceil(wallHeight / PANEL_SIZE)
+  const cols = Math.ceil(wallWidth / PANEL_SIZE)
+  const rows = Math.ceil(wallHeight / PANEL_SIZE)
   const hasTwoSlots = !!panels[1]
 
   // Pre-compute positions so we know exact counts before InstancedMesh is created
@@ -59,7 +64,7 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const x = -wallWidth / 2 + PANEL_SIZE / 2 + col * PANEL_SIZE
-        const y =  PANEL_SIZE / 2 + row * PANEL_SIZE
+        const y = PANEL_SIZE / 2 + row * PANEL_SIZE
         if (hasTwoSlots && (row + col) % 2 === 1) {
           posB.push([x, y, 0])
         } else {
@@ -80,7 +85,10 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   useEffect(() => {
     if (!refA.current || !texA) return
     const m = new THREE.Matrix4()
-    posA.forEach((p, i) => { m.setPosition(...p); refA.current!.setMatrixAt(i, m) })
+    posA.forEach((p, i) => {
+      m.setPosition(...p)
+      refA.current!.setMatrixAt(i, m)
+    })
     refA.current.count = countA
     refA.current.instanceMatrix.needsUpdate = true
   }, [posA, countA, texA])
@@ -88,22 +96,39 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
   useEffect(() => {
     if (!refB.current || !texB) return
     const m = new THREE.Matrix4()
-    posB.forEach((p, i) => { m.setPosition(...p); refB.current!.setMatrixAt(i, m) })
+    posB.forEach((p, i) => {
+      m.setPosition(...p)
+      refB.current!.setMatrixAt(i, m)
+    })
     refB.current.count = countB
     refB.current.instanceMatrix.needsUpdate = true
   }, [posB, countB, texB])
 
-  const matA = useMemo(() => new THREE.MeshStandardMaterial({
-    map: texA ?? undefined, color: '#ffffff',
-    roughness: 0.88, metalness: 0,
-    transparent: !!isPreview, opacity: isPreview ? 0.7 : 1,
-  }), [texA, isPreview])
+  const matA = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: texA ?? undefined,
+        color: '#ffffff',
+        roughness: 0.88,
+        metalness: 0,
+        transparent: !!isPreview,
+        opacity: isPreview ? 0.7 : 1,
+      }),
+    [texA, isPreview]
+  )
 
-  const matB = useMemo(() => new THREE.MeshStandardMaterial({
-    map: texB ?? undefined, color: '#ffffff',
-    roughness: 0.88, metalness: 0,
-    transparent: !!isPreview, opacity: isPreview ? 0.7 : 1,
-  }), [texB, isPreview])
+  const matB = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: texB ?? undefined,
+        color: '#ffffff',
+        roughness: 0.88,
+        metalness: 0,
+        transparent: !!isPreview,
+        opacity: isPreview ? 0.7 : 1,
+      }),
+    [texB, isPreview]
+  )
 
   if (!texA) return null
 
@@ -114,14 +139,16 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
         key={`A-${cols}-${rows}-${hasTwoSlots}-${urlA}`}
         ref={refA}
         args={[GEO, matA, countA]}
-        castShadow receiveShadow
+        castShadow
+        receiveShadow
       />
       {hasTwoSlots && texB && (
         <instancedMesh
           key={`B-${cols}-${rows}-${urlB}`}
           ref={refB}
           args={[GEO, matB, countB]}
-          castShadow receiveShadow
+          castShadow
+          receiveShadow
         />
       )}
     </>
@@ -130,14 +157,14 @@ function PanelTiling({ wallWidth, wallHeight, panels, isPreview }: {
 
 // ── Main WallMesh ──────────────────────────────────────────────
 export default function WallMesh() {
-  const {
-    wallWidth, wallHeight, wallColor,
-    selectedPanels, hoverPanelId, availablePanels,
-  } = useVisualizerStore()
+  const { wallWidth, wallHeight, wallColor, selectedPanels, hoverPanelId, availablePanels } =
+    useVisualizerStore()
 
-  const hoverPanel    = hoverPanelId ? (availablePanels.find(p => p.id === hoverPanelId) ?? null) : null
+  const hoverPanel = hoverPanelId
+    ? (availablePanels.find((p) => p.id === hoverPanelId) ?? null)
+    : null
   const displayPanels = hoverPanel ? [hoverPanel, selectedPanels[1]] : selectedPanels
-  const hasPanels     = displayPanels.some(p => p !== null)
+  const hasPanels = displayPanels.some((p) => p !== null)
 
   const { animColor } = useSpring({ animColor: wallColor, config: { tension: 110, friction: 22 } })
 
@@ -183,15 +210,27 @@ export default function WallMesh() {
 }
 
 function WallEdges({ wallWidth, wallHeight }: { wallWidth: number; wallHeight: number }) {
-  const T   = 0.012
-  const D   = PANEL_DEPTH + 0.01
+  const T = 0.012
+  const D = PANEL_DEPTH + 0.01
   const mat = <meshStandardMaterial color="#b8b4ac" roughness={0.7} metalness={0} />
   return (
     <group>
-      <mesh position={[0, -T/2, 0.001]}><boxGeometry args={[wallWidth+T*2, T, D]}/>{mat}</mesh>
-      <mesh position={[0, wallHeight+T/2, 0.001]}><boxGeometry args={[wallWidth+T*2, T, D]}/>{mat}</mesh>
-      <mesh position={[-wallWidth/2-T/2, wallHeight/2, 0.001]}><boxGeometry args={[T, wallHeight, D]}/>{mat}</mesh>
-      <mesh position={[wallWidth/2+T/2, wallHeight/2, 0.001]}><boxGeometry args={[T, wallHeight, D]}/>{mat}</mesh>
+      <mesh position={[0, -T / 2, 0.001]}>
+        <boxGeometry args={[wallWidth + T * 2, T, D]} />
+        {mat}
+      </mesh>
+      <mesh position={[0, wallHeight + T / 2, 0.001]}>
+        <boxGeometry args={[wallWidth + T * 2, T, D]} />
+        {mat}
+      </mesh>
+      <mesh position={[-wallWidth / 2 - T / 2, wallHeight / 2, 0.001]}>
+        <boxGeometry args={[T, wallHeight, D]} />
+        {mat}
+      </mesh>
+      <mesh position={[wallWidth / 2 + T / 2, wallHeight / 2, 0.001]}>
+        <boxGeometry args={[T, wallHeight, D]} />
+        {mat}
+      </mesh>
     </group>
   )
 }

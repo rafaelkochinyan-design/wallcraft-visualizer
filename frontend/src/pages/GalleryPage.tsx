@@ -25,12 +25,12 @@ export default function GalleryPage() {
     spaceType ? { space_type: spaceType } : undefined
   )
 
-  const lbItems: LightboxItem[] = (items || []).map(item => ({
+  const lbItems: LightboxItem[] = (items || []).map((item) => ({
     src: item.image_url,
     caption: item.caption || undefined,
   }))
 
-  const filterOptions = SPACE_TYPES.map(s => ({ key: s.key, label: t(s.label) }))
+  const filterOptions = SPACE_TYPES.map((s) => ({ key: s.key, label: t(s.label) }))
 
   return (
     <div>

@@ -21,7 +21,12 @@ export default function ContactPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      await api.post('/api/inquiry', { name: form.name, phone: form.phone, email: form.email, message: form.message })
+      await api.post('/api/inquiry', {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        message: form.message,
+      })
       toast.success(t('contact.success'))
       setForm({ name: '', email: '', phone: '', message: '' })
     } catch {
@@ -41,19 +46,38 @@ export default function ContactPage() {
         <form className="pub-form" onSubmit={handleSubmit}>
           <div className="pub-form__group">
             <label className="pub-form__label">{t('contact.form_name')} *</label>
-            <input className="pub-form__input" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            <input
+              className="pub-form__input"
+              required
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            />
           </div>
           <div className="pub-form__group">
             <label className="pub-form__label">{t('contact.form_phone')}</label>
-            <input className="pub-form__input" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+            <input
+              className="pub-form__input"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+            />
           </div>
           <div className="pub-form__group">
             <label className="pub-form__label">{t('contact.form_email')}</label>
-            <input className="pub-form__input" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            <input
+              className="pub-form__input"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            />
           </div>
           <div className="pub-form__group">
             <label className="pub-form__label">{t('contact.form_message')}</label>
-            <textarea className="pub-form__textarea" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} />
+            <textarea
+              className="pub-form__textarea"
+              value={form.message}
+              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+            />
           </div>
           <button type="submit" className="pub-form__submit" disabled={loading}>
             {loading ? '...' : t('contact.submit')}
@@ -67,7 +91,9 @@ export default function ContactPage() {
               <div className="pub-contact-info__icon">📞</div>
               <div>
                 <div className="pub-contact-info__label">{t('contact.phone')}</div>
-                <div className="pub-contact-info__value"><a href={`tel:${phone}`}>{phone}</a></div>
+                <div className="pub-contact-info__value">
+                  <a href={`tel:${phone}`}>{phone}</a>
+                </div>
               </div>
             </div>
           )}
@@ -76,7 +102,9 @@ export default function ContactPage() {
               <div className="pub-contact-info__icon">✉️</div>
               <div>
                 <div className="pub-contact-info__label">{t('contact.email')}</div>
-                <div className="pub-contact-info__value"><a href={`mailto:${email}`}>{email}</a></div>
+                <div className="pub-contact-info__value">
+                  <a href={`mailto:${email}`}>{email}</a>
+                </div>
               </div>
             </div>
           )}

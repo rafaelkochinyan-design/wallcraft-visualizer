@@ -19,12 +19,13 @@ export default function BlogPage() {
   const [category, setCategory] = useState('')
   const [page, setPage] = useState(1)
 
-  const { data, loading } = usePublicData<Paginated<BlogPost>>(
-    '/api/blog',
-    { page, limit: 12, ...(category ? { category } : {}) }
-  )
+  const { data, loading } = usePublicData<Paginated<BlogPost>>('/api/blog', {
+    page,
+    limit: 12,
+    ...(category ? { category } : {}),
+  })
 
-  const filterOptions = CATEGORIES.map(c => ({ key: c.key, label: t(c.label) }))
+  const filterOptions = CATEGORIES.map((c) => ({ key: c.key, label: t(c.label) }))
 
   return (
     <div className="pub-section">
@@ -34,7 +35,10 @@ export default function BlogPage() {
       <FilterChips
         options={filterOptions}
         value={category}
-        onChange={key => { setCategory(key); setPage(1) }}
+        onChange={(key) => {
+          setCategory(key)
+          setPage(1)
+        }}
       />
 
       {loading ? (
@@ -53,13 +57,21 @@ export default function BlogPage() {
       ) : data?.items && data.items.length > 0 ? (
         <>
           <div className="pub-grid-3">
-            {data.items.map(post => (
+            {data.items.map((post) => (
               <Link key={post.id} to={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
                 <div className="pub-card">
                   {post.cover_url ? (
-                    <img src={post.cover_url} alt={localize(post.title)} className="pub-card__img" loading="lazy" />
+                    <img
+                      src={post.cover_url}
+                      alt={localize(post.title)}
+                      className="pub-card__img"
+                      loading="lazy"
+                    />
                   ) : (
-                    <div className="pub-card__img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div
+                      className="pub-card__img"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
                       <span style={{ fontSize: 48, color: 'var(--text-muted)' }}>📝</span>
                     </div>
                   )}
@@ -68,7 +80,9 @@ export default function BlogPage() {
                     <div className="pub-card__title">{localize(post.title)}</div>
                     <p className="pub-card__excerpt">{localize(post.excerpt)}</p>
                     <div className="pub-card__meta">
-                      {post.published_at && <span>{new Date(post.published_at).toLocaleDateString()}</span>}
+                      {post.published_at && (
+                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -79,7 +93,9 @@ export default function BlogPage() {
           <Pagination page={page} pages={data.pages} onChange={setPage} />
         </>
       ) : (
-        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>No posts yet.</div>
+        <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
+          No posts yet.
+        </div>
       )}
     </div>
   )

@@ -118,14 +118,18 @@ export default function StoreSettingsPage() {
                 Нет лого
               </div>
             )}
-            <label className={`px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600
-              cursor-pointer hover:bg-gray-50 transition-colors ${uploadingLogo ? 'opacity-50 pointer-events-none' : ''}`}>
+            <label
+              className={`px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600
+              cursor-pointer hover:bg-gray-50 transition-colors ${uploadingLogo ? 'opacity-50 pointer-events-none' : ''}`}
+            >
               {uploadingLogo ? 'Загрузка...' : 'Выбрать файл'}
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
                 className="hidden"
-                onChange={(e) => { if (e.target.files?.[0]) uploadLogo(e.target.files[0]) }}
+                onChange={(e) => {
+                  if (e.target.files?.[0]) uploadLogo(e.target.files[0])
+                }}
               />
             </label>
             {form.logo_url && (
@@ -143,7 +147,8 @@ export default function StoreSettingsPage() {
         <div className="bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500">
           Slug магазина: <span className="font-mono text-gray-700">{settings?.slug}</span>
           <br />
-          Визуализатор: <span className="font-mono text-gray-700">{settings?.slug}.yourdomain.com</span>
+          Визуализатор:{' '}
+          <span className="font-mono text-gray-700">{settings?.slug}.yourdomain.com</span>
         </div>
 
         <button

@@ -3,35 +3,74 @@ import { usePublicData } from '../hooks/usePublicData'
 import { useLocalized } from '../hooks/useLocalized'
 import { PageContent } from '../types'
 
+interface InstallationStep {
+  num: string
+  title: { ru: string; en: string; am: string }
+  text: { ru: string; en: string; am: string }
+}
+
+interface InstallationContent {
+  intro: { ru: string; en: string; am: string }
+  steps: InstallationStep[]
+}
+
 export default function InstallationPage() {
   const { t } = useTranslation()
   const localize = useLocalized()
   const { data: page } = usePublicData<PageContent>('/api/pages/installation')
 
-  const steps = page?.content
-    ? Object.entries(page.content).map(([key, val]) => ({ key, text: localize(val) }))
-    : []
+  const content = page?.content as unknown as InstallationContent | undefined
+  const steps: InstallationStep[] = content?.steps ?? []
 
   return (
     <div className="pub-section" style={{ maxWidth: 800, margin: '0 auto' }}>
       <h1 className="pub-section-title">{t('installation.title')}</h1>
       <p className="pub-section-subtitle">{t('installation.subtitle')}</p>
-      {steps.length > 0 ? (
+
+      {content?.intro && (
+        <p style={{ marginTop: 24, fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+          {localize(content.intro)}
+        </p>
+      )}
+
+      {steps.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 48 }}>
-          {steps.map((step, i) => (
-            <div key={step.key} style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18, flexShrink: 0 }}>
-                {i + 1}
+          {steps.map((step) => (
+            <div key={step.num} style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: 18,
+                  flexShrink: 0,
+                }}
+              >
+                {step.num}
               </div>
-              <div style={{ fontSize: 16, lineHeight: 1.7, color: 'var(--text-secondary)', paddingTop: 10 }}>
-                {step.text}
+              <div style={{ paddingTop: 10 }}>
+                <div
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 16,
+                    color: 'var(--text-primary)',
+                    marginBottom: 4,
+                  }}
+                >
+                  {localize(step.title)}
+                </div>
+                <div style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+                  {localize(step.text)}
+                </div>
               </div>
             </div>
           ))}
-        </div>
-      ) : (
-        <div style={{ marginTop: 48, fontSize: 16, lineHeight: 1.8, color: 'var(--text-secondary)' }}>
-          <p>Installation guide content coming soon. Contact us for installation support.</p>
         </div>
       )}
     </div>

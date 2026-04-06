@@ -4,11 +4,11 @@ import { Toast, useToast, textareaClass } from './adminUtils'
 
 // Known page keys with labels
 const PAGE_KEYS = [
-  { key: 'home',         label: 'Главная страница' },
-  { key: 'about',        label: 'О компании' },
-  { key: 'contact',      label: 'Контакты' },
+  { key: 'home', label: 'Главная страница' },
+  { key: 'about', label: 'О компании' },
+  { key: 'contact', label: 'Контакты' },
   { key: 'installation', label: 'Монтаж' },
-  { key: 'partners',     label: 'Партнёры' },
+  { key: 'partners', label: 'Партнёры' },
 ]
 
 type Lang = 'ru' | 'en' | 'am'
@@ -34,7 +34,9 @@ export default function AdminPagesPage() {
     }
   }
 
-  useEffect(() => { loadPage(pageKey) }, [pageKey])
+  useEffect(() => {
+    loadPage(pageKey)
+  }, [pageKey])
 
   async function handleSave() {
     setSaving(true)
@@ -49,11 +51,12 @@ export default function AdminPagesPage() {
   }
 
   function setField(field: string, val: string) {
-    setContent(c => ({
+    setContent((c) => ({
       ...c,
-      [field]: typeof c[field] === 'object'
-        ? { ...(c[field] as { ru: string; en: string; am: string }), [lang]: val }
-        : val,
+      [field]:
+        typeof c[field] === 'object'
+          ? { ...(c[field] as { ru: string; en: string; am: string }), [lang]: val }
+          : val,
     }))
   }
 
@@ -61,7 +64,7 @@ export default function AdminPagesPage() {
     const name = prompt('Имя поля (например: hero_title, mission_text):')
     if (!name) return
     const isLocale = confirm('Это мультиязычное поле (RU/EN/AM)?')
-    setContent(c => ({
+    setContent((c) => ({
       ...c,
       [name]: isLocale ? { ru: '', en: '', am: '' } : '',
     }))
@@ -69,7 +72,11 @@ export default function AdminPagesPage() {
 
   function removeField(field: string) {
     if (!confirm(`Удалить поле «${field}»?`)) return
-    setContent(c => { const copy = { ...c }; delete copy[field]; return copy })
+    setContent((c) => {
+      const copy = { ...c }
+      delete copy[field]
+      return copy
+    })
   }
 
   const fields = Object.keys(content)
@@ -99,7 +106,7 @@ export default function AdminPagesPage() {
         {/* Sidebar — page keys */}
         <div className="w-48 flex-shrink-0">
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-            {PAGE_KEYS.map(p => (
+            {PAGE_KEYS.map((p) => (
               <button
                 key={p.key}
                 onClick={() => setPageKey(p.key)}
@@ -116,12 +123,14 @@ export default function AdminPagesPage() {
         <div className="flex-1">
           {/* Lang tabs */}
           <div className="flex gap-1 mb-4">
-            {(['ru', 'en', 'am'] as Lang[]).map(l => (
+            {(['ru', 'en', 'am'] as Lang[]).map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l)}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  lang === l ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  lang === l
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                 }`}
               >
                 {l.toUpperCase()}
@@ -140,12 +149,15 @@ export default function AdminPagesPage() {
             <div className="flex flex-col gap-4">
               {fields.length === 0 && (
                 <div className="bg-white rounded-xl border border-dashed border-gray-200 p-12 text-center text-gray-400 text-sm">
-                  Нет полей для этой страницы.<br />
-                  <button onClick={addField} className="mt-3 text-gray-600 underline text-xs">Добавить первое поле</button>
+                  Нет полей для этой страницы.
+                  <br />
+                  <button onClick={addField} className="mt-3 text-gray-600 underline text-xs">
+                    Добавить первое поле
+                  </button>
                 </div>
               )}
 
-              {fields.map(field => {
+              {fields.map((field) => {
                 const val = content[field]
                 const isLocale = typeof val === 'object' && val !== null && 'ru' in val
 
@@ -153,9 +165,13 @@ export default function AdminPagesPage() {
                   <div key={field} className="bg-white rounded-xl border border-gray-100 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <code className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-700">{field}</code>
+                        <code className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded text-gray-700">
+                          {field}
+                        </code>
                         {isLocale && (
-                          <span className="text-xs text-gray-400 bg-blue-50 text-blue-500 px-2 py-0.5 rounded">multilang</span>
+                          <span className="text-xs text-gray-400 bg-blue-50 text-blue-500 px-2 py-0.5 rounded">
+                            multilang
+                          </span>
                         )}
                       </div>
                       <button
@@ -170,14 +186,14 @@ export default function AdminPagesPage() {
                       <textarea
                         className={`${textareaClass} h-24`}
                         value={(val as { ru: string; en: string; am: string })[lang] || ''}
-                        onChange={e => setField(field, e.target.value)}
+                        onChange={(e) => setField(field, e.target.value)}
                         placeholder={`Значение на ${lang.toUpperCase()}...`}
                       />
                     ) : (
                       <textarea
                         className={`${textareaClass} h-16`}
                         value={typeof val === 'string' ? val : ''}
-                        onChange={e => setContent(c => ({ ...c, [field]: e.target.value }))}
+                        onChange={(e) => setContent((c) => ({ ...c, [field]: e.target.value }))}
                         placeholder="Значение..."
                       />
                     )}

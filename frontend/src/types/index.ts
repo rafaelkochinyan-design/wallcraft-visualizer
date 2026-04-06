@@ -71,9 +71,9 @@ export interface Accessory {
 }
 
 export interface PlacedAccessory {
-  uid: string                          // client-side uuid
+  uid: string // client-side uuid
   accessory: Accessory
-  position: [number, number, number]   // world coords in meters [x, y, z]
+  position: [number, number, number] // world coords in meters [x, y, z]
 }
 
 // ── UI State types ─────────────────────────────────────────────
@@ -85,7 +85,7 @@ export type SettingsTab = 'light' | 'position' | 'accessories'
 // We track which of the 2 selected panels is "flipped"
 export interface SelectedPanel {
   panel: Panel
-  flipped: boolean   // if true, texture.rotation = Math.PI
+  flipped: boolean // if true, texture.rotation = Math.PI
 }
 
 // ── Content Types ──────────────────────────────────────────────

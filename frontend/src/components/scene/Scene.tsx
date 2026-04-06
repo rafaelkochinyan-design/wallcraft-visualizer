@@ -7,8 +7,8 @@ import { Suspense, useMemo, Component, ReactNode } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, SoftShadows } from '@react-three/drei'
 import { useVisualizerStore } from '../../store/visualizer'
-import WallMesh        from './WallMesh'
-import SceneLight      from './SceneLight'
+import WallMesh from './WallMesh'
+import SceneLight from './SceneLight'
 import AccessoryObject from './AccessoryObject'
 import RoomEnvironment from './RoomEnvironment'
 import { SaveSceneWirer } from '../ui/Utils'
@@ -16,9 +16,15 @@ import { SaveSceneWirer } from '../ui/Utils'
 // Silently catches any render error — returns null instead of crashing the Canvas
 class SceneErrorBoundary extends Component<{ children: ReactNode }, { error: boolean }> {
   state = { error: false }
-  static getDerivedStateFromError() { return { error: true } }
-  componentDidCatch(e: Error) { console.warn('[SceneErrorBoundary]', e.message) }
-  render() { return this.state.error ? null : this.props.children }
+  static getDerivedStateFromError() {
+    return { error: true }
+  }
+  componentDidCatch(e: Error) {
+    console.warn('[SceneErrorBoundary]', e.message)
+  }
+  render() {
+    return this.state.error ? null : this.props.children
+  }
 }
 
 export default function Scene() {
@@ -27,14 +33,11 @@ export default function Scene() {
   // Камера: стоит напротив стены, чуть выше середины, чуть наискосок
   // Это даёт перспективу — виден пол и потолок
   const camDist = useMemo(() => Math.max(wallWidth, wallHeight) * 1.45, [wallWidth, wallHeight])
-  const camPos  = useMemo(
+  const camPos = useMemo(
     () => [0, wallHeight * 0.48, camDist] as [number, number, number],
     [wallHeight, camDist]
   )
-  const target  = useMemo(
-    () => [0, wallHeight * 0.42, 0] as [number, number, number],
-    [wallHeight]
-  )
+  const target = useMemo(() => [0, wallHeight * 0.42, 0] as [number, number, number], [wallHeight])
 
   return (
     <Canvas
@@ -44,7 +47,7 @@ export default function Scene() {
         antialias: true,
         alpha: false,
         preserveDrawingBuffer: true,
-        toneMapping: 3,        // ACESFilmic
+        toneMapping: 3, // ACESFilmic
         toneMappingExposure: 0.95,
       }}
     >
@@ -67,7 +70,7 @@ export default function Scene() {
         </Suspense>
       </SceneErrorBoundary>
 
-      {placedAccessories.map(a => (
+      {placedAccessories.map((a) => (
         <SceneErrorBoundary key={a.uid}>
           <Suspense fallback={null}>
             <AccessoryObject

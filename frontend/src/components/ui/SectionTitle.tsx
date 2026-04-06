@@ -106,13 +106,25 @@ export default function SectionTitle({
   return (
     <>
       <style>{styles}</style>
-      <div className={['st-root', `st-${align}`, `st-${size}`, `st-rule-${rule}`, dark ? 'dark' : '', className].filter(Boolean).join(' ')}>
+      <div
+        className={[
+          'st-root',
+          `st-${align}`,
+          `st-${size}`,
+          `st-rule-${rule}`,
+          dark ? 'dark' : '',
+          className,
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {overline && <div className="st-overline">{overline}</div>}
 
-        {titleHtml
-          ? <h2 className="st-heading" dangerouslySetInnerHTML={{ __html: titleHtml }} />
-          : <h2 className="st-heading">{title}</h2>
-        }
+        {titleHtml ? (
+          <h2 className="st-heading" dangerouslySetInnerHTML={{ __html: titleHtml }} />
+        ) : (
+          <h2 className="st-heading">{title}</h2>
+        )}
 
         <hr className="st-hr" />
 
@@ -121,7 +133,9 @@ export default function SectionTitle({
         {action && (
           <div className="st-action-wrap">
             <span className="st-action-rule" />
-            <a className="st-action-link" href={action.href}>{action.label} <span>→</span></a>
+            <a className="st-action-link" href={action.href}>
+              {action.label} <span>→</span>
+            </a>
           </div>
         )}
       </div>

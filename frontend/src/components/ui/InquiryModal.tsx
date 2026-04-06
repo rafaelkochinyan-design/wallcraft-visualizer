@@ -16,7 +16,10 @@ export default function InquiryModal({ onClose }: Props) {
   const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const panelNames = selectedPanels.filter((p): p is NonNullable<typeof p> => p !== null).map((p) => p.name).join(', ')
+  const panelNames = selectedPanels
+    .filter((p): p is NonNullable<typeof p> => p !== null)
+    .map((p) => p.name)
+    .join(', ')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -56,9 +59,7 @@ export default function InquiryModal({ onClose }: Props) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/8">
-          <h2 className="text-white text-sm font-semibold tracking-wide">
-            Запрос консультации
-          </h2>
+          <h2 className="text-white text-sm font-semibold tracking-wide">Запрос консультации</h2>
           <button
             onClick={onClose}
             className="text-white/30 hover:text-white/70 text-lg leading-none transition-colors"
@@ -88,9 +89,18 @@ export default function InquiryModal({ onClose }: Props) {
                   className="rounded-lg px-3 py-2 text-xs text-white/40"
                   style={{ background: 'rgba(255,255,255,0.04)' }}
                 >
-                  {panelNames && <div>Панели: <span className="text-white/60">{panelNames}</span></div>}
+                  {panelNames && (
+                    <div>
+                      Панели: <span className="text-white/60">{panelNames}</span>
+                    </div>
+                  )}
                   {wallWidth && wallHeight && (
-                    <div>Стена: <span className="text-white/60">{wallWidth}×{wallHeight} м</span></div>
+                    <div>
+                      Стена:{' '}
+                      <span className="text-white/60">
+                        {wallWidth}×{wallHeight} м
+                      </span>
+                    </div>
                   )}
                 </div>
               )}
@@ -132,7 +142,11 @@ export default function InquiryModal({ onClose }: Props) {
                 type="submit"
                 disabled={loading}
                 className="w-full py-2.5 rounded-lg text-sm font-medium transition-opacity"
-                style={{ background: 'rgba(255,255,255,0.9)', color: '#111', opacity: loading ? 0.5 : 1 }}
+                style={{
+                  background: 'rgba(255,255,255,0.9)',
+                  color: '#111',
+                  opacity: loading ? 0.5 : 1,
+                }}
               >
                 {loading ? 'Отправка...' : 'Отправить заявку'}
               </button>

@@ -1,3 +1,174 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ══════════════════════════════════════════════════════════════
+   Admin Accessibility Overrides
+   Target: .admin-root (set on AdminLayout wrapper)
+   Purpose: larger text, better touch targets, easier readability
+   ══════════════════════════════════════════════════════════════ */
+
+/* Sidebar — wider, bigger nav items */
+.admin-root aside {
+  width: 15rem !important; /* 240px instead of 208px */
+  min-width: 15rem !important;
+  padding: 1.25rem !important;
+}
+
+.admin-root aside h1 {
+  font-size: 1rem !important;
+}
+
+.admin-root aside p.text-xs {
+  font-size: 0.8rem !important;
+}
+
+/* Nav links */
+.admin-root nav a,
+.admin-root nav .block {
+  font-size: 0.9375rem !important; /* 15px */
+  padding: 0.625rem 0.875rem !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Section header labels in sidebar */
+.admin-root .tracking-wider {
+  font-size: 0.75rem !important;
+}
+
+/* Page content padding */
+.admin-root main > div.p-6,
+.admin-root main > div.p-8 {
+  padding: 2rem !important;
+}
+
+/* Page titles */
+.admin-root h2.text-lg {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+}
+
+/* Primary action buttons (+ Add ...) */
+.admin-root button.bg-gray-900,
+.admin-root button.bg-indigo-600,
+.admin-root button.bg-blue-600 {
+  font-size: 0.9375rem !important;
+  padding: 0.625rem 1.25rem !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Table */
+.admin-root table {
+  font-size: 0.9375rem !important; /* 15px body */
+}
+
+.admin-root thead th {
+  font-size: 0.8125rem !important; /* 13px header */
+  padding: 0.875rem 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+}
+
+.admin-root tbody td {
+  padding: 0.875rem 1rem !important;
+  font-size: 0.9375rem !important;
+}
+
+/* Table row hover — more visible */
+.admin-root tbody tr:hover {
+  background: #f8f8f8 !important;
+}
+
+/* Edit / Delete action buttons in rows */
+.admin-root tbody td button {
+  font-size: 0.875rem !important;
+  padding: 0.35rem 0.75rem !important;
+}
+
+/* Modal / form inputs */
+.admin-root input[type='text'],
+.admin-root input[type='email'],
+.admin-root input[type='url'],
+.admin-root input[type='number'],
+.admin-root input[type='password'],
+.admin-root input[type='date'],
+.admin-root select,
+.admin-root textarea {
+  font-size: 0.9375rem !important;
+  padding: 0.625rem 0.75rem !important;
+  min-height: 2.625rem !important;
+}
+
+.admin-root label {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+/* Modal submit buttons */
+.admin-root form button[type='submit'] {
+  font-size: 0.9375rem !important;
+  padding: 0.625rem 1.5rem !important;
+  min-height: 2.75rem !important;
+}
+
+/* Status badge chips */
+.admin-root .text-green-600,
+.admin-root .text-gray-400 {
+  font-size: 0.875rem !important;
+}
+
+/* Filter tabs (Leads page) */
+.admin-root button.px-3.py-1 {
+  font-size: 0.875rem !important;
+  padding: 0.375rem 0.875rem !important;
+}
+
+/* ── Mobile Responsiveness ─────────────────────────────────── */
+
+/* Make tables horizontally scrollable on small screens */
+.admin-root .overflow-hidden {
+  overflow-x: auto !important;
+}
+
+.admin-root table {
+  min-width: 560px; /* prevent table from collapsing to nothing */
+}
+
+/* Page padding tighter on mobile */
+@media (max-width: 1023px) {
+  .admin-root main > div,
+  .admin-root main > .p-6,
+  .admin-root main > .p-8 {
+    padding: 1rem !important;
+  }
+
+  .admin-root h2.text-lg,
+  .admin-root h2 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Top action row — stack on very small screens */
+  .admin-root .flex.items-center.justify-between {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Modals full-width on mobile */
+  .admin-root .fixed.inset-0 > div:last-child,
+  .admin-root .fixed.inset-0 > .bg-white {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Image thumbnails in table — consistent size */
+.admin-root tbody td img {
+  width: 52px !important;
+  height: 40px !important;
+  object-fit: cover;
+  border-radius: 4px;
+}

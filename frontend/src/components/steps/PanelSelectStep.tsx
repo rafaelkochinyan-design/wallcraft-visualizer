@@ -1,2 +1,4 @@
 // No longer used — functionality moved to LeftSidebar
-export default function PanelSelectStep() { return null }
+export default function PanelSelectStep() {
+  return null
+}

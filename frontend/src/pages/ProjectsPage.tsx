@@ -25,13 +25,16 @@ export default function ProjectsPage() {
         </div>
       ) : projects && projects.length > 0 ? (
         <div className="pub-grid-3">
-          {projects.map(p => (
+          {projects.map((p) => (
             <Link key={p.id} to={`/projects/${p.slug}`} style={{ textDecoration: 'none' }}>
               <div className="pub-card">
                 {p.cover_url ? (
                   <img src={p.cover_url} alt={p.title} className="pub-card__img" loading="lazy" />
                 ) : (
-                  <div className="pub-card__img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div
+                    className="pub-card__img"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
                     <span style={{ color: 'var(--text-muted)', fontSize: 40 }}>🏛</span>
                   </div>
                 )}

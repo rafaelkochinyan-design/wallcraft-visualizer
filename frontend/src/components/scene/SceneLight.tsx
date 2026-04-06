@@ -25,9 +25,9 @@ export default function SceneLight() {
 
   // Конвертируем углы в позицию источника света
   const lightPos = useMemo(() => {
-    const azRad  = (lightAngle    * Math.PI) / 180
-    const elRad  = (lightElevation * Math.PI) / 180
-    const dist   = Math.max(wallWidth, wallHeight) * 2.5
+    const azRad = (lightAngle * Math.PI) / 180
+    const elRad = (lightElevation * Math.PI) / 180
+    const dist = Math.max(wallWidth, wallHeight) * 2.5
 
     return new THREE.Vector3(
       dist * Math.cos(elRad) * Math.sin(azRad),
@@ -37,16 +37,13 @@ export default function SceneLight() {
   }, [lightAngle, lightElevation, wallWidth, wallHeight])
 
   // Fill light — с противоположной стороны, слабее
-  const fillPos = useMemo(() => new THREE.Vector3(
-    -lightPos.x * 0.5,
-     lightPos.y * 0.6,
-     lightPos.z * 0.8,
-  ), [lightPos])
+  const fillPos = useMemo(
+    () => new THREE.Vector3(-lightPos.x * 0.5, lightPos.y * 0.6, lightPos.z * 0.8),
+    [lightPos]
+  )
 
   // Target для обоих источников — центр стены
-  const target = useMemo(() =>
-    new THREE.Vector3(0, wallHeight / 2, 0),
-  [wallHeight])
+  const target = useMemo(() => new THREE.Vector3(0, wallHeight / 2, 0), [wallHeight])
 
   useFrame(() => {
     if (mainRef.current) {
@@ -67,8 +64,8 @@ export default function SceneLight() {
       <directionalLight
         ref={mainRef}
         position={lightPos.toArray()}
-        intensity={2.2}       // Сильнее чем раньше (было 1.8)
-        color="#fff8f0"        // Тёплый белый (как дневной свет из окна)
+        intensity={2.2} // Сильнее чем раньше (было 1.8)
+        color="#fff8f0" // Тёплый белый (как дневной свет из окна)
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -86,9 +83,9 @@ export default function SceneLight() {
       <directionalLight
         ref={fillRef}
         position={fillPos.toArray()}
-        intensity={0.55}      // Слабее основного в 4x
-        color="#e8f0ff"        // Чуть холоднее (как отражение от потолка/стены)
-        castShadow={false}    // Без теней — только заполнение
+        intensity={0.55} // Слабее основного в 4x
+        color="#e8f0ff" // Чуть холоднее (как отражение от потолка/стены)
+        castShadow={false} // Без теней — только заполнение
       />
 
       {/* Rim light снизу — лёгкий контровой для объёма */}

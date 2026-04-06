@@ -15,7 +15,12 @@ export default function PartnersPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      await api.post('/api/inquiry', { name: form.name, phone: form.phone, email: form.email, message: `[Partnership] ${form.message}` })
+      await api.post('/api/inquiry', {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        message: `[Partnership] ${form.message}`,
+      })
       toast.success(t('contact.success'))
       setForm({ name: '', phone: '', email: '', message: '' })
     } catch {
@@ -33,7 +38,7 @@ export default function PartnersPage() {
 
         {partners && partners.length > 0 && (
           <div className="pub-partners-strip" style={{ marginTop: 40 }}>
-            {partners.map(p => (
+            {partners.map((p) => (
               <a key={p.id} href={p.website || '#'} target="_blank" rel="noreferrer">
                 <img src={p.logo_url} alt={p.name} style={{ height: 48 }} />
               </a>
@@ -48,19 +53,38 @@ export default function PartnersPage() {
           <form className="pub-form" style={{ marginTop: 32 }} onSubmit={handleSubmit}>
             <div className="pub-form__group">
               <label className="pub-form__label">{t('contact.form_name')} *</label>
-              <input className="pub-form__input" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <input
+                className="pub-form__input"
+                required
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              />
             </div>
             <div className="pub-form__group">
               <label className="pub-form__label">{t('contact.form_phone')}</label>
-              <input className="pub-form__input" type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+              <input
+                className="pub-form__input"
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              />
             </div>
             <div className="pub-form__group">
               <label className="pub-form__label">{t('contact.form_email')}</label>
-              <input className="pub-form__input" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              <input
+                className="pub-form__input"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+              />
             </div>
             <div className="pub-form__group">
               <label className="pub-form__label">{t('contact.form_message')}</label>
-              <textarea className="pub-form__textarea" value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} />
+              <textarea
+                className="pub-form__textarea"
+                value={form.message}
+                onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+              />
             </div>
             <button type="submit" className="pub-form__submit" disabled={loading}>
               {loading ? '...' : t('contact.submit')}

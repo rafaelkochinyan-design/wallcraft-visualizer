@@ -18,7 +18,9 @@ export default function PanelsPage() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+  }, [])
 
   function showToast(msg: string, type: 'ok' | 'err' = 'ok') {
     setToast({ msg, type })
@@ -41,7 +43,10 @@ export default function PanelsPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-medium text-gray-900">Панели</h2>
         <button
-          onClick={() => { setEditing(null); setModalOpen(true) }}
+          onClick={() => {
+            setEditing(null)
+            setModalOpen(true)
+          }}
           className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
         >
           + Добавить панель
@@ -57,17 +62,30 @@ export default function PanelsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Панель</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">SKU</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Размер (мм)</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Цена</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Статус</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Панель
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  SKU
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Размер (мм)
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Цена
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Статус
+                </th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {panels.map((panel) => (
-                <tr key={panel.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <tr
+                  key={panel.id}
+                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img
@@ -79,18 +97,27 @@ export default function PanelsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-500">{panel.sku || '—'}</td>
-                  <td className="px-4 py-3 text-gray-500">{panel.width_mm}×{panel.height_mm}×{panel.depth_mm}</td>
-                  <td className="px-4 py-3 text-gray-500">{panel.price ? `${panel.price} ₽` : '—'}</td>
+                  <td className="px-4 py-3 text-gray-500">
+                    {panel.width_mm}×{panel.height_mm}×{panel.depth_mm}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500">
+                    {panel.price ? `${panel.price} ₽` : '—'}
+                  </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${panel.active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                      ${panel.active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}
+                    >
                       {panel.active ? 'Активна' : 'Скрыта'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 justify-end">
                       <button
-                        onClick={() => { setEditing(panel); setModalOpen(true) }}
+                        onClick={() => {
+                          setEditing(panel)
+                          setModalOpen(true)
+                        }}
                         className="text-gray-400 hover:text-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-100"
                       >
                         Изменить
@@ -119,8 +146,10 @@ export default function PanelsPage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white
-          ${toast.type === 'ok' ? 'bg-gray-900' : 'bg-red-600'}`}>
+        <div
+          className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white
+          ${toast.type === 'ok' ? 'bg-gray-900' : 'bg-red-600'}`}
+        >
           {toast.msg}
         </div>
       )}
@@ -130,7 +159,11 @@ export default function PanelsPage() {
         <PanelModal
           panel={editing}
           onClose={() => setModalOpen(false)}
-          onSaved={() => { setModalOpen(false); load(); showToast('Сохранено') }}
+          onSaved={() => {
+            setModalOpen(false)
+            load()
+            showToast('Сохранено')
+          }}
           onError={(msg) => showToast(msg, 'err')}
         />
       )}
@@ -169,7 +202,8 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const endpoint = type === 'texture' ? '/admin/panels/upload-texture' : '/admin/accessories/upload-thumb'
+      const endpoint =
+        type === 'texture' ? '/admin/panels/upload-texture' : '/admin/accessories/upload-thumb'
       const res = await api.post(endpoint, formData)
       const url = res.data.data.url
       setForm((f) => ({ ...f, [type === 'texture' ? 'texture_url' : 'thumb_url']: url }))
@@ -198,8 +232,8 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
       }
       onSaved()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } })
-        ?.response?.data?.error?.message
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
+        ?.data?.error?.message
       onError(msg || 'Ошибка сохранения')
     } finally {
       setSaving(false)
@@ -272,7 +306,10 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
+          >
             Отмена
           </button>
           <button
@@ -301,7 +338,10 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function FileUpload({
-  url, uploading, accept, onFile,
+  url,
+  uploading,
+  accept,
+  onFile,
 }: {
   url: string
   uploading: boolean
@@ -311,17 +351,25 @@ function FileUpload({
   return (
     <div className="flex items-center gap-3">
       {url && (
-        <img src={url} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0" />
+        <img
+          src={url}
+          alt=""
+          className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+        />
       )}
-      <label className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
+      <label
+        className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
         border-gray-200 text-xs text-gray-400 cursor-pointer hover:border-gray-400 hover:text-gray-600
-        transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+        transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+      >
         {uploading ? 'Загрузка...' : url ? 'Заменить файл' : 'Выбрать файл'}
         <input
           type="file"
           accept={accept}
           className="hidden"
-          onChange={(e) => { if (e.target.files?.[0]) onFile(e.target.files[0]) }}
+          onChange={(e) => {
+            if (e.target.files?.[0]) onFile(e.target.files[0])
+          }}
         />
       </label>
     </div>

@@ -24,7 +24,7 @@ import type { Panel } from '../../types'
 // Размер панели в метрах
 const PANEL_W = 0.5
 const PANEL_H = 0.5
-const PANEL_D = 0.019  // 19мм толщина
+const PANEL_D = 0.019 // 19мм толщина
 
 // PlaneGeometry для фронтальной грани — лучше UV чем BoxGeometry
 // Небольшая детализация (4x4) для корректной интерполяции normal map
@@ -34,15 +34,17 @@ const panelGeoPlane = new THREE.PlaneGeometry(PANEL_W, PANEL_H, 4, 4)
 const panelGeoBox = new THREE.BoxGeometry(PANEL_W, PANEL_H, PANEL_D)
 
 interface PanelTilingProps {
-  wallWidth:    number
-  wallHeight:   number
-  panels:       (Panel | null)[]
-  isPreview?:   boolean   // hover preview — чуть прозрачнее
+  wallWidth: number
+  wallHeight: number
+  panels: (Panel | null)[]
+  isPreview?: boolean // hover preview — чуть прозрачнее
   normalStrength?: number // интенсивность normal map (default 1.5)
 }
 
 export function PanelTiling({
-  wallWidth, wallHeight, panels,
+  wallWidth,
+  wallHeight,
+  panels,
   isPreview = false,
   normalStrength = 1.5,
 }: PanelTilingProps) {
@@ -60,7 +62,11 @@ export function PanelTiling({
 }
 
 function PanelTilingInner({
-  wallWidth, wallHeight, panels, isPreview, normalStrength,
+  wallWidth,
+  wallHeight,
+  panels,
+  isPreview,
+  normalStrength,
 }: PanelTilingProps) {
   const panelA = panels[0]
   const panelB = panels[1]
@@ -71,8 +77,8 @@ function PanelTilingInner({
   // Проверяем наличие normal map (опционально)
   const normalUrlA = urlA.replace('.jpg', '_normal.jpg').replace('.png', '_normal.jpg')
   const normalUrlB = urlB.replace('.jpg', '_normal.jpg').replace('.png', '_normal.jpg')
-  const aoUrlA     = urlA.replace('.jpg', '_ao.jpg').replace('.png', '_ao.jpg')
-  const aoUrlB     = urlB.replace('.jpg', '_ao.jpg').replace('.png', '_ao.jpg')
+  const aoUrlA = urlA.replace('.jpg', '_ao.jpg').replace('.png', '_ao.jpg')
+  const aoUrlB = urlB.replace('.jpg', '_ao.jpg').replace('.png', '_ao.jpg')
 
   return (
     <PanelLayer
@@ -93,25 +99,31 @@ function PanelTilingInner({
 
 /* ── Основной слой тайлинга ───────────────────────────────────── */
 interface LayerProps {
-  wallWidth:      number
-  wallHeight:     number
-  albedoUrlA:     string
-  albedoUrlB:     string
-  normalUrlA:     string
-  normalUrlB:     string
-  aoUrlA:         string
-  aoUrlB:         string
+  wallWidth: number
+  wallHeight: number
+  albedoUrlA: string
+  albedoUrlB: string
+  normalUrlA: string
+  normalUrlB: string
+  aoUrlA: string
+  aoUrlB: string
   hasTwoPatterns: boolean
-  isPreview:      boolean
+  isPreview: boolean
   normalStrength: number
 }
 
 function PanelLayer({
-  wallWidth, wallHeight,
-  albedoUrlA, albedoUrlB,
-  normalUrlA, normalUrlB,
-  aoUrlA, aoUrlB,
-  hasTwoPatterns, isPreview, normalStrength,
+  wallWidth,
+  wallHeight,
+  albedoUrlA,
+  albedoUrlB,
+  normalUrlA,
+  normalUrlB,
+  aoUrlA,
+  aoUrlB,
+  hasTwoPatterns,
+  isPreview,
+  normalStrength,
 }: LayerProps) {
   // Загружаем albedo (обязательно)
   const texA = useTexture(albedoUrlA)
@@ -122,39 +134,63 @@ function PanelLayer({
   const [hasNormalB, setHasNormalB] = useState(false)
   const [normalTexA, setNormalTexA] = useState<THREE.Texture | null>(null)
   const [normalTexB, setNormalTexB] = useState<THREE.Texture | null>(null)
-  const [aoTexA,     setAoTexA]     = useState<THREE.Texture | null>(null)
-  const [aoTexB,     setAoTexB]     = useState<THREE.Texture | null>(null)
+  const [aoTexA, setAoTexA] = useState<THREE.Texture | null>(null)
+  const [aoTexB, setAoTexB] = useState<THREE.Texture | null>(null)
 
   // Lazy load normal maps с fallback
   useEffect(() => {
     const loader = new THREE.TextureLoader()
 
-    loader.load(normalUrlA,
-      (t) => { t.colorSpace = THREE.LinearSRGBColorSpace; setNormalTexA(t); setHasNormalA(true) },
-      undefined, () => { /* normal map не найден — используем без него */ }
+    loader.load(
+      normalUrlA,
+      (t) => {
+        t.colorSpace = THREE.LinearSRGBColorSpace
+        setNormalTexA(t)
+        setHasNormalA(true)
+      },
+      undefined,
+      () => {
+        /* normal map не найден — используем без него */
+      }
     )
-    loader.load(aoUrlA,
-      (t) => { t.colorSpace = THREE.LinearSRGBColorSpace; setAoTexA(t) },
-      undefined, () => {}
+    loader.load(
+      aoUrlA,
+      (t) => {
+        t.colorSpace = THREE.LinearSRGBColorSpace
+        setAoTexA(t)
+      },
+      undefined,
+      () => {}
     )
 
     if (hasTwoPatterns) {
-      loader.load(normalUrlB,
-        (t) => { t.colorSpace = THREE.LinearSRGBColorSpace; setNormalTexB(t); setHasNormalB(true) },
-        undefined, () => {}
+      loader.load(
+        normalUrlB,
+        (t) => {
+          t.colorSpace = THREE.LinearSRGBColorSpace
+          setNormalTexB(t)
+          setHasNormalB(true)
+        },
+        undefined,
+        () => {}
       )
-      loader.load(aoUrlB,
-        (t) => { t.colorSpace = THREE.LinearSRGBColorSpace; setAoTexB(t) },
-        undefined, () => {}
+      loader.load(
+        aoUrlB,
+        (t) => {
+          t.colorSpace = THREE.LinearSRGBColorSpace
+          setAoTexB(t)
+        },
+        undefined,
+        () => {}
       )
     }
   }, [normalUrlA, normalUrlB, aoUrlA, aoUrlB, hasTwoPatterns])
 
   // Настраиваем albedo текстуры
   useEffect(() => {
-    [texA, texB].forEach(t => {
-      t.colorSpace  = THREE.SRGBColorSpace
-      t.wrapS       = t.wrapT = THREE.RepeatWrapping
+    ;[texA, texB].forEach((t) => {
+      t.colorSpace = THREE.SRGBColorSpace
+      t.wrapS = t.wrapT = THREE.RepeatWrapping
       t.repeat.set(1, 1)
       t.needsUpdate = true
     })
@@ -179,8 +215,8 @@ function PanelLayer({
   }, [normalTexB])
 
   // Сетка панелей
-  const cols  = Math.ceil(wallWidth  / PANEL_W)
-  const rows  = Math.ceil(wallHeight / PANEL_H)
+  const cols = Math.ceil(wallWidth / PANEL_W)
+  const rows = Math.ceil(wallHeight / PANEL_H)
   const count = cols * rows
 
   const refA = useRef<THREE.InstancedMesh>(null)
@@ -188,14 +224,14 @@ function PanelLayer({
 
   // Расставляем матрицы
   useEffect(() => {
-    const mx   = new THREE.Matrix4()
+    const mx = new THREE.Matrix4()
     const posA: [number, number, number][] = []
     const posB: [number, number, number][] = []
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
-        const x = -wallWidth  / 2 + PANEL_W / 2 + col * PANEL_W
-        const y =  PANEL_H / 2 + row * PANEL_H
+        const x = -wallWidth / 2 + PANEL_W / 2 + col * PANEL_W
+        const y = PANEL_H / 2 + row * PANEL_H
         // Шахматный паттерн: нечётные (row+col) → вариант Б
         if (hasTwoPatterns && (row + col) % 2 === 1) {
           posB.push([x, y, 0])
@@ -206,12 +242,18 @@ function PanelLayer({
     }
 
     if (refA.current) {
-      posA.forEach((p, i) => { mx.setPosition(...p); refA.current!.setMatrixAt(i, mx) })
+      posA.forEach((p, i) => {
+        mx.setPosition(...p)
+        refA.current!.setMatrixAt(i, mx)
+      })
       refA.current.count = posA.length
       refA.current.instanceMatrix.needsUpdate = true
     }
     if (refB.current && posB.length > 0) {
-      posB.forEach((p, i) => { mx.setPosition(...p); refB.current!.setMatrixAt(i, mx) })
+      posB.forEach((p, i) => {
+        mx.setPosition(...p)
+        refB.current!.setMatrixAt(i, mx)
+      })
       refB.current.count = posB.length
       refB.current.instanceMatrix.needsUpdate = true
     }
@@ -219,48 +261,64 @@ function PanelLayer({
 
   // PBR материал — ГЛАВНОЕ ИЗМЕНЕНИЕ
   // Гипс: очень матовый (roughness ~0.92), не металл, белый/кремовый
-  const matA = useMemo(() => new THREE.MeshStandardMaterial({
-    // ── Albedo ──────────────────────────────────────────
-    map:       texA,
-    color:     '#ffffff',   // НЕ МЕНЯТЬ — цвет в map, не здесь
+  const matA = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        // ── Albedo ──────────────────────────────────────────
+        map: texA,
+        color: '#ffffff', // НЕ МЕНЯТЬ — цвет в map, не здесь
 
-    // ── PBR параметры для гипса ──────────────────────────
-    roughness: 0.92,        // матовый (не глянцевый)
-    metalness: 0,           // не металл
+        // ── PBR параметры для гипса ──────────────────────────
+        roughness: 0.92, // матовый (не глянцевый)
+        metalness: 0, // не металл
 
-    // ── Normal map (если загрузился) ─────────────────────
-    ...(hasNormalA && normalTexA ? {
-      normalMap:   normalTexA,
-      normalScale: new THREE.Vector2(normalStrength, normalStrength),
-    } : {}),
+        // ── Normal map (если загрузился) ─────────────────────
+        ...(hasNormalA && normalTexA
+          ? {
+              normalMap: normalTexA,
+              normalScale: new THREE.Vector2(normalStrength, normalStrength),
+            }
+          : {}),
 
-    // ── AO map (если загрузился) ─────────────────────────
-    ...(aoTexA ? {
-      aoMap:          aoTexA,
-      aoMapIntensity: 0.7,
-    } : {}),
+        // ── AO map (если загрузился) ─────────────────────────
+        ...(aoTexA
+          ? {
+              aoMap: aoTexA,
+              aoMapIntensity: 0.7,
+            }
+          : {}),
 
-    // ── Preview состояние ───────────────────────────────
-    transparent: isPreview,
-    opacity:     isPreview ? 0.72 : 1,
-  }), [texA, normalTexA, aoTexA, hasNormalA, normalStrength, isPreview])
+        // ── Preview состояние ───────────────────────────────
+        transparent: isPreview,
+        opacity: isPreview ? 0.72 : 1,
+      }),
+    [texA, normalTexA, aoTexA, hasNormalA, normalStrength, isPreview]
+  )
 
-  const matB = useMemo(() => new THREE.MeshStandardMaterial({
-    map:       texBRot,
-    color:     '#ffffff',
-    roughness: 0.92,
-    metalness: 0,
-    ...(hasNormalB && normalTexBRot ? {
-      normalMap:   normalTexBRot,
-      normalScale: new THREE.Vector2(normalStrength, normalStrength),
-    } : {}),
-    ...(aoTexB ? {
-      aoMap:          aoTexB,
-      aoMapIntensity: 0.7,
-    } : {}),
-    transparent: isPreview,
-    opacity:     isPreview ? 0.72 : 1,
-  }), [texBRot, normalTexBRot, aoTexB, hasNormalB, normalStrength, isPreview])
+  const matB = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        map: texBRot,
+        color: '#ffffff',
+        roughness: 0.92,
+        metalness: 0,
+        ...(hasNormalB && normalTexBRot
+          ? {
+              normalMap: normalTexBRot,
+              normalScale: new THREE.Vector2(normalStrength, normalStrength),
+            }
+          : {}),
+        ...(aoTexB
+          ? {
+              aoMap: aoTexB,
+              aoMapIntensity: 0.7,
+            }
+          : {}),
+        transparent: isPreview,
+        opacity: isPreview ? 0.72 : 1,
+      }),
+    [texBRot, normalTexBRot, aoTexB, hasNormalB, normalStrength, isPreview]
+  )
 
   // Обновляем материал при изменении normal map (async load)
   useEffect(() => {
@@ -272,20 +330,10 @@ function PanelLayer({
   return (
     <>
       {/* Вариант А (основной паттерн) */}
-      <instancedMesh
-        ref={refA}
-        args={[panelGeoPlane, matA, count]}
-        castShadow
-        receiveShadow
-      />
+      <instancedMesh ref={refA} args={[panelGeoPlane, matA, count]} castShadow receiveShadow />
       {/* Вариант Б (чередующийся паттерн повёрнутый 180°) */}
       {hasTwoPatterns && (
-        <instancedMesh
-          ref={refB}
-          args={[panelGeoPlane, matB, count]}
-          castShadow
-          receiveShadow
-        />
+        <instancedMesh ref={refB} args={[panelGeoPlane, matB, count]} castShadow receiveShadow />
       )}
     </>
   )

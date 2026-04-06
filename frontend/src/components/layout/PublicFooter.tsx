@@ -31,14 +31,15 @@ export default function PublicFooter() {
       <div className="pub-footer__grid">
         {/* Brand */}
         <div>
-          <div className="pub-footer__brand-name">
-            {tenant?.name || 'WallCraft'}
-          </div>
-          <p className="pub-footer__brand-desc">
-            {t('about.subtitle')}
-          </p>
+          <div className="pub-footer__brand-name">{tenant?.name || 'WallCraft'}</div>
+          <p className="pub-footer__brand-desc">{t('about.subtitle')}</p>
           <div className="pub-footer__social">
-            <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+            <a
+              href={`https://wa.me/${whatsappNum}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="WhatsApp"
+            >
               💬
             </a>
             <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
@@ -58,7 +59,9 @@ export default function PublicFooter() {
           <div className="pub-footer__col-title">{t('nav.products')}</div>
           <ul className="pub-footer__links">
             {productLinks.map(({ to, label }) => (
-              <li key={to}><Link to={to}>{label}</Link></li>
+              <li key={to}>
+                <Link to={to}>{label}</Link>
+              </li>
             ))}
             <li>
               <Link to="/visualizer">✦ {t('nav.try3d')}</Link>
@@ -71,7 +74,9 @@ export default function PublicFooter() {
           <div className="pub-footer__col-title">{t('nav.about')}</div>
           <ul className="pub-footer__links">
             {companyLinks.map(({ to, label }) => (
-              <li key={to}><Link to={to}>{label}</Link></li>
+              <li key={to}>
+                <Link to={to}>{label}</Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -80,9 +85,15 @@ export default function PublicFooter() {
         <div>
           <div className="pub-footer__col-title">{t('nav.contact')}</div>
           <ul className="pub-footer__links">
-            <li><a href={`tel:${phone}`}>{phone}</a></li>
-            <li><a href={`mailto:${email}`}>{email}</a></li>
-            <li><span style={{ color: 'rgba(240,236,230,0.5)' }}>{address}</span></li>
+            <li>
+              <a href={`tel:${phone}`}>{phone}</a>
+            </li>
+            <li>
+              <a href={`mailto:${email}`}>{email}</a>
+            </li>
+            <li>
+              <span style={{ color: 'rgba(240,236,230,0.5)' }}>{address}</span>
+            </li>
           </ul>
           <div style={{ marginTop: 20 }}>
             <a
@@ -98,7 +109,9 @@ export default function PublicFooter() {
       </div>
 
       <div className="pub-footer__bottom">
-        <span>© {new Date().getFullYear()} {tenant?.name || 'WallCraft'}. {t('footer.rights')}.</span>
+        <span>
+          © {new Date().getFullYear()} {tenant?.name || 'WallCraft'}. {t('footer.rights')}.
+        </span>
         <span>{t('footer.made_with')}</span>
       </div>
     </footer>

@@ -101,6 +101,31 @@ PlacedAccessory: { uid, accessory: Accessory, position: [x, y, z] }
 
 ---
 
+## Code Quality
+
+### Tools
+- **ESLint 9** (flat config) — `eslint.config.js`
+- **Prettier 3** — `.prettierrc` (singleQuote, 2 spaces, trailingComma es5, printWidth 100)
+
+### Scripts
+```
+npm run lint        # check, fail on any warning
+npm run lint:fix    # auto-fix all fixable issues
+npm run format      # prettier format all src/**/*.{ts,tsx,css,json}
+```
+
+### Rules in effect
+- `@typescript-eslint/no-explicit-any` — **off** (too noisy for R3F/dynamic data)
+- `react/no-unknown-property` — **off** (R3F uses custom JSX props: position, args, etc.)
+- `react-hooks/set-state-in-effect` — **off** (intentional pattern for closing drawers on navigation)
+- `@typescript-eslint/ban-ts-comment` — **off** (legacy scene code uses `@ts-ignore`)
+- Unused vars — **warn** with `^_` prefix pattern to suppress intentionally unused
+
+### Before committing
+Always run `npm run lint:fix && npm run format` — CI will reject if `npm run lint` exits non-zero.
+
+---
+
 ## DO NOT
 - Use Tailwind for new visualizer components (admin pages — ok)
 - Hardcode colors or spacing values

@@ -39,8 +39,11 @@ export function useUrlState() {
     if (p0sku) {
       const tryApply = () => {
         const panels = useVisualizerStore.getState().availablePanels
-        if (panels.length === 0) { setTimeout(tryApply, 300); return }
-        const p = panels.find(x => x.sku === p0sku || x.id === p0sku)
+        if (panels.length === 0) {
+          setTimeout(tryApply, 300)
+          return
+        }
+        const p = panels.find((x) => x.sku === p0sku || x.id === p0sku)
         if (p) store.setPanelInSlot(p, 0)
       }
       setTimeout(tryApply, 200)
@@ -66,6 +69,8 @@ export function useUrlState() {
       window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`)
     }, DEBOUNCE_MS)
 
-    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
   }, [store.wallWidth, store.wallHeight, store.wallColor, store.selectedPanels])
 }

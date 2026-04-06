@@ -16,7 +16,9 @@ export default function ProductCard({ panel }: Props) {
           src={panel.thumb_url || panel.texture_url || ''}
           alt={panel.name}
           loading="lazy"
-          onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
+          onError={(e) => {
+            ;(e.target as HTMLImageElement).style.opacity = '0'
+          }}
         />
         <span className="pub-product-card__3d-badge">✦ 3D</span>
       </div>
@@ -26,11 +28,13 @@ export default function ProductCard({ panel }: Props) {
         <div className="pub-product-card__footer">
           {panel.price ? (
             <span className="pub-product-card__price">{panel.price} ֏</span>
-          ) : <span />}
+          ) : (
+            <span />
+          )}
           <Link
             to={`/visualizer?p0=${panel.sku || panel.id}`}
             className="pub-product-card__try"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {t('products.try_in_3d')}
           </Link>

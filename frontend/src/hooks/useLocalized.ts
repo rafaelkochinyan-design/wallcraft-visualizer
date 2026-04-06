@@ -6,7 +6,8 @@ export function useLocalized() {
 
   return (obj: LocalizedString | null | undefined, fallback = ''): string => {
     if (!obj) return fallback
-    const lang = i18n.language as keyof LocalizedString
-    return obj[lang] || obj.ru || obj.en || fallback
+    // i18n.language may return full locale like "en-US" — take just first 2 chars
+    const lang = i18n.language.slice(0, 2) as keyof LocalizedString
+    return obj[lang] || obj.en || obj.ru || obj.am || fallback
   }
 }

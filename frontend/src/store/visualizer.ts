@@ -22,63 +22,63 @@ interface VisualizerStore {
   setTenant: (t: Tenant) => void
 
   // ── Wall dimensions ──────────────────────────────────────
-  wallWidth:    number
-  wallHeight:   number
-  setWallSize:  (w: number, h: number) => void
+  wallWidth: number
+  wallHeight: number
+  setWallSize: (w: number, h: number) => void
 
   // ── Wall appearance ──────────────────────────────────────
-  wallColor:    string
+  wallColor: string
   setWallColor: (c: string) => void
 
   // ── Panels ───────────────────────────────────────────────
-  availablePanels:    Panel[]
+  availablePanels: Panel[]
   setAvailablePanels: (p: Panel[]) => void
 
   // Два слота: slot 0 = основной паттерн, slot 1 = чередующийся
-  selectedPanels:   (Panel | null)[]   // [slotA, slotB]
-  activeSlot:       0 | 1
-  setActiveSlot:    (s: 0 | 1) => void
-  setPanelInSlot:   (panel: Panel | null, slot: 0 | 1) => void
+  selectedPanels: (Panel | null)[] // [slotA, slotB]
+  activeSlot: 0 | 1
+  setActiveSlot: (s: 0 | 1) => void
+  setPanelInSlot: (panel: Panel | null, slot: 0 | 1) => void
 
   // Hover preview — панель подсвечивается в 3D при наведении в сайдбаре
-  hoverPanelId:     string | null
-  setHoverPanelId:  (id: string | null) => void
+  hoverPanelId: string | null
+  setHoverPanelId: (id: string | null) => void
 
   // ── Accessories ──────────────────────────────────────────
-  availableAccessories:       Accessory[]
-  availableAccessoryTypes:    AccessoryType[]
-  setAvailableAccessories:    (a: Accessory[]) => void
+  availableAccessories: Accessory[]
+  availableAccessoryTypes: AccessoryType[]
+  setAvailableAccessories: (a: Accessory[]) => void
   setAvailableAccessoryTypes: (t: AccessoryType[]) => void
 
   placedAccessories: PlacedAccessory[]
-  placeAccessory:   (a: Accessory) => void
-  moveAccessory:    (uid: string, pos: [number, number, number]) => void
-  removeAccessory:  (uid: string) => void
+  placeAccessory: (a: Accessory) => void
+  moveAccessory: (uid: string, pos: [number, number, number]) => void
+  removeAccessory: (uid: string) => void
 
   // Drag state — disables OrbitControls while dragging accessory
-  isDraggingAccessory:    boolean
+  isDraggingAccessory: boolean
   setIsDraggingAccessory: (v: boolean) => void
 
   // ── Sidebar ──────────────────────────────────────────────
-  sidebarOpen:    boolean
-  sidebarTab:     SidebarTab
+  sidebarOpen: boolean
+  sidebarTab: SidebarTab
   setSidebarOpen: (v: boolean) => void
-  setSidebarTab:  (t: SidebarTab) => void
+  setSidebarTab: (t: SidebarTab) => void
 
   // ── Lighting ─────────────────────────────────────────────
-  lightAngle:        number
-  lightElevation:    number
-  setLightAngle:     (v: number) => void
+  lightAngle: number
+  lightElevation: number
+  setLightAngle: (v: number) => void
   setLightElevation: (v: number) => void
 
   // ── Tooltip (draggable settings panel) ───────────────────
-  tooltipCollapsed:    boolean
-  tooltipPosition:     { x: number; y: number }
+  tooltipCollapsed: boolean
+  tooltipPosition: { x: number; y: number }
   setTooltipCollapsed: (v: boolean) => void
-  setTooltipPosition:  (pos: { x: number; y: number }) => void
+  setTooltipPosition: (pos: { x: number; y: number }) => void
 
   // ── Screenshot ───────────────────────────────────────────
-  pendingSave:    boolean
+  pendingSave: boolean
   setPendingSave: (v: boolean) => void
 
   // ── Reset ────────────────────────────────────────────────
@@ -86,21 +86,21 @@ interface VisualizerStore {
 }
 
 const DEFAULT = {
-  wallWidth:          3.0,
-  wallHeight:         2.7,
-  wallColor:          '#f0ede4',
-  selectedPanels:     [null, null] as (Panel | null)[],
-  activeSlot:         0 as 0 | 1,
-  hoverPanelId:       null as string | null,
-  placedAccessories:  [] as PlacedAccessory[],
+  wallWidth: 3.0,
+  wallHeight: 2.7,
+  wallColor: '#f0ede4',
+  selectedPanels: [null, null] as (Panel | null)[],
+  activeSlot: 0 as 0 | 1,
+  hoverPanelId: null as string | null,
+  placedAccessories: [] as PlacedAccessory[],
   isDraggingAccessory: false,
-  sidebarOpen:        true,
-  sidebarTab:         'panels' as SidebarTab,
-  lightAngle:         45,
-  lightElevation:     60,
-  tooltipCollapsed:   false,
-  tooltipPosition:    { x: 20, y: -1 },
-  pendingSave:        false,
+  sidebarOpen: true,
+  sidebarTab: 'panels' as SidebarTab,
+  lightAngle: 45,
+  lightElevation: 60,
+  tooltipCollapsed: false,
+  tooltipPosition: { x: 20, y: -1 },
+  pendingSave: false,
 }
 
 export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
@@ -111,56 +111,61 @@ export const useVisualizerStore = create<VisualizerStore>((set, get) => ({
   availableAccessories: [],
   availableAccessoryTypes: [],
 
-  setTenant:                  (tenant) => set({ tenant }),
-  setAvailablePanels:         (availablePanels) => set({ availablePanels }),
-  setAvailableAccessories:    (availableAccessories) => set({ availableAccessories }),
+  setTenant: (tenant) => set({ tenant }),
+  setAvailablePanels: (availablePanels) => set({ availablePanels }),
+  setAvailableAccessories: (availableAccessories) => set({ availableAccessories }),
   setAvailableAccessoryTypes: (availableAccessoryTypes) => set({ availableAccessoryTypes }),
 
-  setWallSize:  (wallWidth, wallHeight) => set({ wallWidth, wallHeight }),
+  setWallSize: (wallWidth, wallHeight) => set({ wallWidth, wallHeight }),
   setWallColor: (wallColor) => set({ wallColor }),
 
-  setActiveSlot:   (activeSlot) => set({ activeSlot }),
+  setActiveSlot: (activeSlot) => set({ activeSlot }),
   setHoverPanelId: (hoverPanelId) => set({ hoverPanelId }),
-  setPanelInSlot:  (panel, slot) => set(s => {
-    const next = [...s.selectedPanels] as (Panel | null)[]
-    next[slot] = panel
-    return { selectedPanels: next }
-  }),
+  setPanelInSlot: (panel, slot) =>
+    set((s) => {
+      const next = [...s.selectedPanels] as (Panel | null)[]
+      next[slot] = panel
+      return { selectedPanels: next }
+    }),
 
-  placeAccessory: (accessory) => set(s => ({
-    placedAccessories: [
-      ...s.placedAccessories,
-      {
-        uid: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        accessory,
-        position: [0, s.wallHeight / 2, 0.025] as [number, number, number],
-      },
-    ],
-  })),
-  moveAccessory: (uid, position) => set(s => ({
-    placedAccessories: s.placedAccessories.map(a => a.uid === uid ? { ...a, position } : a),
-  })),
-  removeAccessory: (uid) => set(s => ({
-    placedAccessories: s.placedAccessories.filter(a => a.uid !== uid),
-  })),
+  placeAccessory: (accessory) =>
+    set((s) => ({
+      placedAccessories: [
+        ...s.placedAccessories,
+        {
+          uid: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          accessory,
+          position: [0, s.wallHeight / 2, 0.025] as [number, number, number],
+        },
+      ],
+    })),
+  moveAccessory: (uid, position) =>
+    set((s) => ({
+      placedAccessories: s.placedAccessories.map((a) => (a.uid === uid ? { ...a, position } : a)),
+    })),
+  removeAccessory: (uid) =>
+    set((s) => ({
+      placedAccessories: s.placedAccessories.filter((a) => a.uid !== uid),
+    })),
 
   setIsDraggingAccessory: (isDraggingAccessory) => set({ isDraggingAccessory }),
 
   setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
-  setSidebarTab:  (sidebarTab)  => set({ sidebarTab }),
+  setSidebarTab: (sidebarTab) => set({ sidebarTab }),
 
-  setLightAngle:     (lightAngle)     => set({ lightAngle }),
+  setLightAngle: (lightAngle) => set({ lightAngle }),
   setLightElevation: (lightElevation) => set({ lightElevation }),
 
   setTooltipCollapsed: (tooltipCollapsed) => set({ tooltipCollapsed }),
-  setTooltipPosition:  (tooltipPosition)  => set({ tooltipPosition }),
-  setPendingSave:      (pendingSave)      => set({ pendingSave }),
+  setTooltipPosition: (tooltipPosition) => set({ tooltipPosition }),
+  setPendingSave: (pendingSave) => set({ pendingSave }),
 
-  resetAll: () => set({
-    ...DEFAULT,
-    tenant:                  get().tenant,
-    availablePanels:         get().availablePanels,
-    availableAccessories:    get().availableAccessories,
-    availableAccessoryTypes: get().availableAccessoryTypes,
-  }),
+  resetAll: () =>
+    set({
+      ...DEFAULT,
+      tenant: get().tenant,
+      availablePanels: get().availablePanels,
+      availableAccessories: get().availableAccessories,
+      availableAccessoryTypes: get().availableAccessoryTypes,
+    }),
 }))

@@ -176,34 +176,55 @@ export default function HeroCarousel({ slides, fallback }: Props) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Normalize HeroSlide → internal Slide shape
-  const normalized: Slide[] = slides.length > 0
-    ? slides.map(s => ({
-        image_url: s.image_url,
-        title: s.headline[lang] || s.headline.ru || s.headline.en,
-        desc: s.subheadline ? (s.subheadline[lang] || s.subheadline.ru) : undefined,
-        ctaLabel: s.cta_label ? (s.cta_label[lang] || s.cta_label.ru) : undefined,
-        ctaUrl: s.cta_url || '/products',
-      }))
-    : fallback
-    ? [{ image_url: '', title: fallback.title, desc: fallback.subtitle, tag: fallback.eyebrow, ctaLabel: t('home.hero_cta'), ctaUrl: '/products' }]
-    : []
+  const normalized: Slide[] =
+    slides.length > 0
+      ? slides.map((s) => ({
+          image_url: s.image_url,
+          title: s.headline[lang] || s.headline.ru || s.headline.en,
+          desc: s.subheadline ? s.subheadline[lang] || s.subheadline.ru : undefined,
+          ctaLabel: s.cta_label ? s.cta_label[lang] || s.cta_label.ru : undefined,
+          ctaUrl: s.cta_url || '/products',
+        }))
+      : fallback
+        ? [
+            {
+              image_url: '',
+              title: fallback.title,
+              desc: fallback.subtitle,
+              tag: fallback.eyebrow,
+              ctaLabel: t('home.hero_cta'),
+              ctaUrl: '/products',
+            },
+          ]
+        : []
 
-  const goTo = useCallback((idx: number) => {
-    setPrevIdx(current)
-    setCurrent(idx)
-    setProgressWidth(0)
-    setTimeout(() => setProgressWidth(100), 30)
-  }, [current])
+  const goTo = useCallback(
+    (idx: number) => {
+      setPrevIdx(current)
+      setCurrent(idx)
+      setProgressWidth(0)
+      setTimeout(() => setProgressWidth(100), 30)
+    },
+    [current]
+  )
 
-  const next = useCallback(() => goTo((current + 1) % normalized.length), [current, goTo, normalized.length])
-  const prev = useCallback(() => goTo((current - 1 + normalized.length) % normalized.length), [current, goTo, normalized.length])
+  const next = useCallback(
+    () => goTo((current + 1) % normalized.length),
+    [current, goTo, normalized.length]
+  )
+  const prev = useCallback(
+    () => goTo((current - 1 + normalized.length) % normalized.length),
+    [current, goTo, normalized.length]
+  )
 
   useEffect(() => {
     if (normalized.length < 2) return
     setProgressWidth(0)
     setTimeout(() => setProgressWidth(100), 30)
     timerRef.current = setTimeout(next, 5500)
-    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
   }, [current, next, normalized.length])
 
   if (normalized.length === 0) return null
@@ -213,12 +234,17 @@ export default function HeroCarousel({ slides, fallback }: Props) {
       <style>{styles}</style>
       <div className="hero-carousel">
         {normalized.map((slide, i) => (
-          <div key={i} className={`hc-slide${i === current ? ' active' : ''}${i === prevIdx ? ' prev' : ''}`}>
+          <div
+            key={i}
+            className={`hc-slide${i === current ? ' active' : ''}${i === prevIdx ? ' prev' : ''}`}
+          >
             {slide.image_url && <img className="hc-img" src={slide.image_url} alt={slide.title} />}
             <div className="hc-overlay" />
             <div className="hc-content">
               {slide.tag && <div className="hc-tag">{slide.tag}</div>}
-              <h1 className="hc-title" style={{ whiteSpace: 'pre-line' }}>{slide.title}</h1>
+              <h1 className="hc-title" style={{ whiteSpace: 'pre-line' }}>
+                {slide.title}
+              </h1>
               {slide.desc && <p className="hc-desc">{slide.desc}</p>}
               <div className="hc-ctas">
                 <Link className="hc-cta" to={slide.ctaUrl || '/products'}>
@@ -236,19 +262,31 @@ export default function HeroCarousel({ slides, fallback }: Props) {
           <>
             <div
               className={`hc-progress${progressWidth > 0 ? ' animating' : ''}`}
-              style={{ width: `${progressWidth}%`, transitionDuration: progressWidth === 100 ? '5500ms' : '0ms' }}
+              style={{
+                width: `${progressWidth}%`,
+                transitionDuration: progressWidth === 100 ? '5500ms' : '0ms',
+              }}
             />
             <div className="hc-controls">
-              <button className="hc-btn" onClick={prev} aria-label="Previous slide">↑</button>
-              <button className="hc-btn" onClick={next} aria-label="Next slide">↓</button>
+              <button className="hc-btn" onClick={prev} aria-label="Previous slide">
+                ↑
+              </button>
+              <button className="hc-btn" onClick={next} aria-label="Next slide">
+                ↓
+              </button>
             </div>
             <div className="hc-dots">
               {normalized.map((_, i) => (
-                <button key={i} className={`hc-dot${i === current ? ' active' : ''}`} onClick={() => goTo(i)} />
+                <button
+                  key={i}
+                  className={`hc-dot${i === current ? ' active' : ''}`}
+                  onClick={() => goTo(i)}
+                />
               ))}
             </div>
             <div className="hc-counter">
-              <span>{String(current + 1).padStart(2, '0')}</span> / {String(normalized.length).padStart(2, '0')}
+              <span>{String(current + 1).padStart(2, '0')}</span> /{' '}
+              {String(normalized.length).padStart(2, '0')}
             </div>
           </>
         )}

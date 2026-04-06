@@ -23,7 +23,9 @@ export default function AccessoriesPage() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+  }, [])
 
   function showToast(msg: string, type: 'ok' | 'err' = 'ok') {
     setToast({ msg, type })
@@ -46,7 +48,10 @@ export default function AccessoriesPage() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-medium text-gray-900">Аксессуары</h2>
         <button
-          onClick={() => { setEditing(null); setModalOpen(true) }}
+          onClick={() => {
+            setEditing(null)
+            setModalOpen(true)
+          }}
           className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
         >
           + Добавить аксессуар
@@ -62,34 +67,54 @@ export default function AccessoriesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Аксессуар</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Тип</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Масштаб</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Статус</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Аксессуар
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Тип
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Масштаб
+                </th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Статус
+                </th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
               {accessories.map((acc) => (
-                <tr key={acc.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <tr
+                  key={acc.id}
+                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <img src={acc.thumb_url} alt={acc.name} className="w-10 h-10 rounded-lg object-cover bg-gray-100" />
+                      <img
+                        src={acc.thumb_url}
+                        alt={acc.name}
+                        className="w-10 h-10 rounded-lg object-cover bg-gray-100"
+                      />
                       <span className="font-medium text-gray-900">{acc.name}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-500">{acc.type?.label_ru}</td>
                   <td className="px-4 py-3 text-gray-500">{acc.scale}×</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${acc.active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                      ${acc.active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}
+                    >
                       {acc.active ? 'Активен' : 'Скрыт'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 justify-end">
                       <button
-                        onClick={() => { setEditing(acc); setModalOpen(true) }}
+                        onClick={() => {
+                          setEditing(acc)
+                          setModalOpen(true)
+                        }}
                         className="text-gray-400 hover:text-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-100"
                       >
                         Изменить
@@ -118,8 +143,10 @@ export default function AccessoriesPage() {
 
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white
-          ${toast.type === 'ok' ? 'bg-gray-900' : 'bg-red-600'}`}>
+        <div
+          className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white
+          ${toast.type === 'ok' ? 'bg-gray-900' : 'bg-red-600'}`}
+        >
           {toast.msg}
         </div>
       )}
@@ -130,7 +157,11 @@ export default function AccessoriesPage() {
           accessory={editing}
           types={types}
           onClose={() => setModalOpen(false)}
-          onSaved={() => { setModalOpen(false); load(); showToast('Сохранено') }}
+          onSaved={() => {
+            setModalOpen(false)
+            load()
+            showToast('Сохранено')
+          }}
           onError={(msg) => showToast(msg, 'err')}
         />
       )}
@@ -150,7 +181,7 @@ interface AccessoryModalProps {
 function AccessoryModal({ accessory, types, onClose, onSaved, onError }: AccessoryModalProps) {
   const [form, setForm] = useState({
     name: accessory?.name ?? '',
-    type_id: accessory?.type_id ?? (types[0]?.id ?? ''),
+    type_id: accessory?.type_id ?? types[0]?.id ?? '',
     scale: accessory?.scale?.toString() ?? '1.0',
     model_url: accessory?.model_url ?? '',
     thumb_url: accessory?.thumb_url ?? '',
@@ -221,8 +252,8 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
       }
       onSaved()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } })
-        ?.response?.data?.error?.message
+      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
+        ?.data?.error?.message
       onError(msg || 'Ошибка сохранения')
     } finally {
       setSaving(false)
@@ -253,7 +284,9 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
               className={inputClass}
             >
               {types.map((t) => (
-                <option key={t.id} value={t.id}>{t.label_ru}</option>
+                <option key={t.id} value={t.id}>
+                  {t.label_ru}
+                </option>
               ))}
             </select>
           </Field>
@@ -273,17 +306,27 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
           <Field label="3D модель (.glb) *">
             <div className="flex items-center gap-3">
               {form.model_url && (
-                <span className="text-xs text-green-600 font-medium flex-shrink-0">✓ Загружено</span>
+                <span className="text-xs text-green-600 font-medium flex-shrink-0">
+                  ✓ Загружено
+                </span>
               )}
-              <label className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
+              <label
+                className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
                 border-gray-200 text-xs text-gray-400 cursor-pointer hover:border-gray-400 hover:text-gray-600
-                transition-colors ${uploading === 'model' ? 'opacity-50 pointer-events-none' : ''}`}>
-                {uploading === 'model' ? 'Загрузка...' : form.model_url ? 'Заменить .glb' : 'Выбрать .glb'}
+                transition-colors ${uploading === 'model' ? 'opacity-50 pointer-events-none' : ''}`}
+              >
+                {uploading === 'model'
+                  ? 'Загрузка...'
+                  : form.model_url
+                    ? 'Заменить .glb'
+                    : 'Выбрать .glb'}
                 <input
                   type="file"
                   accept=".glb"
                   className="hidden"
-                  onChange={(e) => { if (e.target.files?.[0]) uploadModel(e.target.files[0]) }}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) uploadModel(e.target.files[0])
+                  }}
                 />
               </label>
             </div>
@@ -292,17 +335,29 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
           <Field label="Миниатюра (JPG/PNG) *">
             <div className="flex items-center gap-3">
               {form.thumb_url && (
-                <img src={form.thumb_url} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0" />
+                <img
+                  src={form.thumb_url}
+                  alt=""
+                  className="w-12 h-12 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                />
               )}
-              <label className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
+              <label
+                className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
                 border-gray-200 text-xs text-gray-400 cursor-pointer hover:border-gray-400 hover:text-gray-600
-                transition-colors ${uploading === 'thumb' ? 'opacity-50 pointer-events-none' : ''}`}>
-                {uploading === 'thumb' ? 'Загрузка...' : form.thumb_url ? 'Заменить файл' : 'Выбрать файл'}
+                transition-colors ${uploading === 'thumb' ? 'opacity-50 pointer-events-none' : ''}`}
+              >
+                {uploading === 'thumb'
+                  ? 'Загрузка...'
+                  : form.thumb_url
+                    ? 'Заменить файл'
+                    : 'Выбрать файл'}
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   className="hidden"
-                  onChange={(e) => { if (e.target.files?.[0]) uploadThumb(e.target.files[0]) }}
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) uploadThumb(e.target.files[0])
+                  }}
                 />
               </label>
             </div>
@@ -320,7 +375,10 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
         </div>
 
         <div className="flex gap-3 mt-6">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
+          >
             Отмена
           </button>
           <button

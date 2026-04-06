@@ -109,10 +109,13 @@ function LightboxPortal({ images, startIndex, onClose }: PortalProps) {
   const [idx, setIdx] = useState(startIndex)
   const [imgLoaded, setImgLoaded] = useState(false)
 
-  const navigate = useCallback((dir: number) => {
-    setImgLoaded(false)
-    setIdx(prev => (prev + dir + images.length) % images.length)
-  }, [images.length])
+  const navigate = useCallback(
+    (dir: number) => {
+      setImgLoaded(false)
+      setIdx((prev) => (prev + dir + images.length) % images.length)
+    },
+    [images.length]
+  )
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -129,7 +132,7 @@ function LightboxPortal({ images, startIndex, onClose }: PortalProps) {
   return createPortal(
     <div className="lb-backdrop" onClick={onClose}>
       <style>{styles}</style>
-      <div className="lb-box" onClick={e => e.stopPropagation()}>
+      <div className="lb-box" onClick={(e) => e.stopPropagation()}>
         <div className="lb-img-wrap">
           <img
             src={img.src}
@@ -147,22 +150,47 @@ function LightboxPortal({ images, startIndex, onClose }: PortalProps) {
 
       {images.length > 1 && (
         <>
-          <button className="lb-nav lb-prev" onClick={e => { e.stopPropagation(); navigate(-1) }}>←</button>
-          <button className="lb-nav lb-next" onClick={e => { e.stopPropagation(); navigate(1) }}>→</button>
-          <div className="lb-thumbs" onClick={e => e.stopPropagation()}>
+          <button
+            className="lb-nav lb-prev"
+            onClick={(e) => {
+              e.stopPropagation()
+              navigate(-1)
+            }}
+          >
+            ←
+          </button>
+          <button
+            className="lb-nav lb-next"
+            onClick={(e) => {
+              e.stopPropagation()
+              navigate(1)
+            }}
+          >
+            →
+          </button>
+          <div className="lb-thumbs" onClick={(e) => e.stopPropagation()}>
             {images.map((im, i) => (
               <img
-                key={i} src={im.src} alt=""
+                key={i}
+                src={im.src}
+                alt=""
                 className={`lb-thumb${i === idx ? ' active' : ''}`}
-                onClick={() => { setImgLoaded(false); setIdx(i) }}
+                onClick={() => {
+                  setImgLoaded(false)
+                  setIdx(i)
+                }}
               />
             ))}
           </div>
-          <div className="lb-count">{idx + 1} / {images.length}</div>
+          <div className="lb-count">
+            {idx + 1} / {images.length}
+          </div>
         </>
       )}
 
-      <button className="lb-close" onClick={onClose} aria-label="Close">✕</button>
+      <button className="lb-close" onClick={onClose} aria-label="Close">
+        ✕
+      </button>
     </div>,
     document.body
   )

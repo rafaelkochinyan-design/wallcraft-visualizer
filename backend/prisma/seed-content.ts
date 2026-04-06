@@ -39,7 +39,7 @@ const IMG = {
   gal3: U('1556905055-8f358a7a47b2', 900, 700),       // modern living
   gal4: U('1493809842364-78817add7ffb', 900, 700),    // warm interior
   gal5: U('1618220179428-22790b461013', 900, 700),    // minimal space
-  gal6: U('1615873968403-89583b7cb40b', 900, 700),    // dark room
+  gal6: U('1618221344498-0dac25475b5e', 900, 700),    // dark hotel interior
   gal7: U('1600607687939-ce8a6c25118c', 900, 700),    // light interior
   gal8: U('1507089947368-19c1da9775ae', 900, 700),    // office interior
 

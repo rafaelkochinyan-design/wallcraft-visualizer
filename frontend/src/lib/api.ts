@@ -5,15 +5,22 @@ let accessToken: string | null = null
 
 export const tokenStore = {
   get: () => accessToken,
-  set: (token: string) => { accessToken = token },
-  clear: () => { accessToken = null },
+  set: (token: string) => {
+    accessToken = token
+  },
+  clear: () => {
+    accessToken = null
+  },
 }
 
 // ── Resolve tenant slug from URL ──────────────────────────────
 export function getTenantSlug(): string {
   const hostname = window.location.hostname
   // Skip platform domains — use env var fallback
-  const isPlatformDomain = hostname.endsWith('.vercel.app') || hostname.endsWith('.onrender.com') || hostname === 'localhost'
+  const isPlatformDomain =
+    hostname.endsWith('.vercel.app') ||
+    hostname.endsWith('.onrender.com') ||
+    hostname === 'localhost'
   if (!isPlatformDomain) {
     const parts = hostname.split('.')
     if (parts.length >= 3 && parts[0] !== 'www') {

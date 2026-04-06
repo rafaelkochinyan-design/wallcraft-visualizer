@@ -4,7 +4,7 @@ import en from './locales/en.json'
 import ru from './locales/ru.json'
 import am from './locales/am.json'
 
-const savedLang = localStorage.getItem('wc-lang') || 'ru'
+const savedLang = localStorage.getItem('wc-lang') || 'en'
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -13,7 +13,7 @@ i18n.use(initReactI18next).init({
     am: { translation: am },
   },
   lng: savedLang,
-  fallbackLng: 'ru',
+  fallbackLng: 'en',
   interpolation: { escapeValue: false },
 })
 

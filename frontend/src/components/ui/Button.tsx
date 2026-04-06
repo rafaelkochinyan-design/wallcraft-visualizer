@@ -1,19 +1,19 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react'
 
 export type BtnVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
-export type BtnSize    = 'sm' | 'md' | 'lg'
+export type BtnSize = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: BtnVariant
-  size?:    BtnSize
-  full?:    boolean
+  size?: BtnSize
+  full?: boolean
   children: ReactNode
 }
 
 export function Button({
   variant = 'primary',
-  size    = 'md',
-  full    = false,
+  size = 'md',
+  full = false,
   className = '',
   children,
   ...rest
@@ -24,7 +24,13 @@ export function Button({
     size !== 'md' ? `btn-${size}` : '',
     full ? 'btn-full' : '',
     className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
-  return <button className={cls} {...rest}>{children}</button>
+  return (
+    <button className={cls} {...rest}>
+      {children}
+    </button>
+  )
 }

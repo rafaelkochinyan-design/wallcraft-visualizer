@@ -60,8 +60,14 @@ function buildPages(current: number, total: number, siblings = 1): (number | '..
   const right = Math.min(current + siblings, total)
   const showLeft = left > 2
   const showRight = right < total - 1
-  if (!showLeft && showRight) return [...Array.from({ length: 3 + siblings * 2 }, (_, i) => i + 1), '...', total]
-  if (showLeft && !showRight) return [1, '...', ...Array.from({ length: 3 + siblings * 2 }, (_, i) => total - 2 - siblings * 2 + i)]
+  if (!showLeft && showRight)
+    return [...Array.from({ length: 3 + siblings * 2 }, (_, i) => i + 1), '...', total]
+  if (showLeft && !showRight)
+    return [
+      1,
+      '...',
+      ...Array.from({ length: 3 + siblings * 2 }, (_, i) => total - 2 - siblings * 2 + i),
+    ]
   return [1, '...', ...Array.from({ length: right - left + 1 }, (_, i) => left + i), '...', total]
 }
 
@@ -82,18 +88,28 @@ export default function Pagination({ page, pages, onChange, siblings = 1 }: Prop
       <style>{styles}</style>
       <div className="pag-root">
         <div className="pag-wrap">
-          <button className="pag-btn" disabled={page === 1} onClick={() => onChange(page - 1)}>←</button>
+          <button className="pag-btn" disabled={page === 1} onClick={() => onChange(page - 1)}>
+            ←
+          </button>
           {pageList.map((p, i) =>
-            p === '...'
-              ? <span key={`ell-${i}`} className="pag-ellipsis">···</span>
-              : <button
-                  key={p}
-                  className={`pag-btn${page === p ? ' pag-active' : ''}`}
-                  onClick={() => onChange(p as number)}
-                  aria-current={page === p ? 'page' : undefined}
-                >{p}</button>
+            p === '...' ? (
+              <span key={`ell-${i}`} className="pag-ellipsis">
+                ···
+              </span>
+            ) : (
+              <button
+                key={p}
+                className={`pag-btn${page === p ? ' pag-active' : ''}`}
+                onClick={() => onChange(p as number)}
+                aria-current={page === p ? 'page' : undefined}
+              >
+                {p}
+              </button>
+            )
           )}
-          <button className="pag-btn" disabled={page === pages} onClick={() => onChange(page + 1)}>→</button>
+          <button className="pag-btn" disabled={page === pages} onClick={() => onChange(page + 1)}>
+            →
+          </button>
         </div>
       </div>
     </>

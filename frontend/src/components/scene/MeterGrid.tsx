@@ -27,17 +27,9 @@ export default function MeterGrid({ wallWidth, wallHeight }: MeterGridProps) {
   return (
     <lineSegments>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[lines, 3]}
-        />
+        <bufferAttribute attach="attributes-position" args={[lines, 3]} />
       </bufferGeometry>
-      <lineBasicMaterial
-        color="#ffffff"
-        opacity={0.12}
-        transparent
-        depthWrite={false}
-      />
+      <lineBasicMaterial color="#ffffff" opacity={0.12} transparent depthWrite={false} />
     </lineSegments>
   )
 }
