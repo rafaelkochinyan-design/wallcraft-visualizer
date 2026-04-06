@@ -12,12 +12,14 @@ export async function uploadFile(
   const ext = originalName.split('.').pop()?.toLowerCase() || 'bin'
   const filename = `${uuid()}.${ext}`
 
-  // Dev or no R2 configured — save to local filesystem
+  // Dev or no R2 configured — save to backend's own uploads/ dir and serve via Express static
   if (!process.env.R2_ACCOUNT_ID || process.env.R2_ACCOUNT_ID === 'skip') {
-    const dir = join(process.cwd(), '../frontend/public/uploads', folder)
+    const dir = join(process.cwd(), 'uploads', folder)
     mkdirSync(dir, { recursive: true })
     writeFileSync(join(dir, filename), buffer)
-    return `/uploads/${folder}/${filename}`
+    // Return full backend URL so Vercel FE can load it from Render
+    const base = process.env.API_PUBLIC_URL || 'http://localhost:3001'
+    return `${base}/uploads/${folder}/${filename}`
   }
 
   // Production: Cloudflare R2

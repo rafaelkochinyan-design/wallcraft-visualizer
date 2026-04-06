@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import { join } from 'path'
 import cookieParser from 'cookie-parser'
 import { tenantMiddleware } from './middleware/tenant'
 import { errorHandler } from './middleware/errorHandler'
@@ -27,6 +28,9 @@ app.use(express.urlencoded({ extended: true }))
 
 // ── Health check (no tenant required) ────────────────────────
 app.get('/health', (_req, res) => res.json({ ok: true }))
+
+// ── Static uploads (fallback when R2 not configured) ─────────
+app.use('/uploads', express.static(join(process.cwd(), 'uploads')))
 
 // ── Tenant resolution (all routes below require tenant) ────────
 app.use(tenantMiddleware)
