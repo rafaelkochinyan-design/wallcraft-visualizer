@@ -73,6 +73,17 @@ export default function PublicNavbar() {
   return (
     <>
       <nav className={`pub-navbar${scrolled ? ' scrolled' : ''}`}>
+        {/* Mobile burger — before logo */}
+        <button
+          className={`pub-navbar__burger${open ? ' open' : ''}`}
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Menu"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
         {/* Logo */}
         <Link to="/" className="pub-navbar__logo">
           {tenant?.logo_url ? (
@@ -178,16 +189,6 @@ export default function PublicNavbar() {
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
 
-          {/* Mobile burger */}
-          <button
-            className={`pub-navbar__burger${open ? ' open' : ''}`}
-            onClick={() => setOpen((o) => !o)}
-            aria-label="Menu"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
       </nav>
 
