@@ -63,9 +63,6 @@ export default function PublicFooter() {
                 <Link to={to}>{label}</Link>
               </li>
             ))}
-            <li>
-              <Link to="/visualizer">✦ {t('nav.try3d')}</Link>
-            </li>
           </ul>
         </div>
 

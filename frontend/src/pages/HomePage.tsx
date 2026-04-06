@@ -88,17 +88,6 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* ── 3D Visualizer CTA ────────────────────────────── */}
-      <div className="pub-visualizer-cta">
-        <div className="pub-visualizer-cta__inner">
-          <h2 className="pub-visualizer-cta__title">{t('home.visualizer_title')}</h2>
-          <p className="pub-visualizer-cta__subtitle">{t('home.visualizer_subtitle')}</p>
-          <Link to="/visualizer" className="pub-visualizer-cta__btn">
-            ✦ {t('home.visualizer_cta')}
-          </Link>
-        </div>
-      </div>
-
       {/* ── Partner Logos ─────────────────────────────────── */}
       {partners && partners.length > 0 && (
         <section className="pub-section" style={{ textAlign: 'center' }}>

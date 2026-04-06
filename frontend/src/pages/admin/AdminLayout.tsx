@@ -101,9 +101,6 @@ export default function AdminLayout() {
         <NavLink to="/admin/panels" className={navClass}>
           Панели
         </NavLink>
-        <NavLink to="/admin/accessories" className={navClass}>
-          Аксессуары
-        </NavLink>
 
         <p
           className="text-gray-400 uppercase tracking-wider px-3 pt-4 pb-1"
