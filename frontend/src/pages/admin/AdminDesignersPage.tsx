@@ -67,20 +67,20 @@ export default function AdminDesignersPage() {
   }, [])
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить дизайнера?')) return
+    if (!confirm('Delete designer?')) return
     try {
       await api.delete(`/admin/designers/${id}`)
-      showToast('Удалено')
+      showToast('Deleted')
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
   return (
     <PageShell
-      title="Дизайнеры"
-      addLabel="+ Добавить"
+      title="Designers"
+      addLabel="+ Add"
       onAdd={() => {
         setEditing(null)
         setModalOpen(true)
@@ -92,16 +92,16 @@ export default function AdminDesignersPage() {
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Дизайнер
+                Designer
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Специализация
+                Specialty
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
                 Instagram
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статус
+                Status
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -147,7 +147,7 @@ export default function AdminDesignersPage() {
             {items.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
-                  Нет дизайнеров.
+                  No designers.
                 </td>
               </tr>
             )}
@@ -162,7 +162,7 @@ export default function AdminDesignersPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(m) => showToast(m, 'err')}
         />
@@ -211,7 +211,7 @@ function DesignerModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name || !form.slug) {
-      onError('Имя и slug обязательны')
+      onError('Name and slug are required')
       return
     }
     setSaving(true)
@@ -228,10 +228,10 @@ function DesignerModal({
   }
 
   return (
-    <Modal title={item ? 'Редактировать дизайнера' : 'Новый дизайнер'} onClose={onClose} wide>
+    <Modal title={item ? 'Edit designer' : 'New designer'} onClose={onClose} wide>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Имя *">
+          <Field label="Name *">
             <input
               className={inputClass}
               value={form.name}
@@ -247,12 +247,12 @@ function DesignerModal({
           </Field>
         </div>
 
-        <Field label="Фото">
+        <Field label="Photo">
           <FileUpload url={form.photo_url || ''} uploading={uploading} onFile={handlePhoto} />
         </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Специализация">
+          <Field label="Specialty">
             <input
               className={inputClass}
               value={form.specialty || ''}
@@ -268,7 +268,7 @@ function DesignerModal({
               placeholder="@handle"
             />
           </Field>
-          <Field label="Сайт">
+          <Field label="Website">
             <input
               className={inputClass}
               value={form.website || ''}
@@ -276,7 +276,7 @@ function DesignerModal({
               placeholder="https://..."
             />
           </Field>
-          <Field label="Порядок">
+          <Field label="Order">
             <input
               type="number"
               className={inputClass}
@@ -287,13 +287,13 @@ function DesignerModal({
         </div>
 
         <div className="border border-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-500 mb-2">Биография</p>
+          <p className="text-xs text-gray-500 mb-2">Biography</p>
           <LocaleTabs lang={lang} onChange={setLang} />
           <textarea
             className={`${textareaClass} h-28`}
             value={form.bio[lang]}
             onChange={(e) => setForm((f) => ({ ...f, bio: { ...f.bio, [lang]: e.target.value } }))}
-            placeholder={`Биография на ${lang.toUpperCase()}...`}
+            placeholder={`Bio in ${lang.toUpperCase()}...`}
           />
         </div>
 
@@ -304,7 +304,7 @@ function DesignerModal({
             onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
             className="rounded"
           />
-          Активен (показывать на сайте)
+          Active (show on site)
         </label>
         <ModalActions onClose={onClose} saving={saving} />
       </form>

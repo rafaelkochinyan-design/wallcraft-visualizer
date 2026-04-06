@@ -29,12 +29,12 @@ interface GalleryItem {
 
 const SPACE_TYPES = ['living_room', 'bedroom', 'office', 'hotel', 'restaurant', 'bathroom']
 const SPACE_LABELS: Record<string, string> = {
-  living_room: 'Гостиная',
-  bedroom: 'Спальня',
-  office: 'Офис',
-  hotel: 'Отель',
-  restaurant: 'Ресторан',
-  bathroom: 'Ванная',
+  living_room: 'Living room',
+  bedroom: 'Bedroom',
+  office: 'Office',
+  hotel: 'Hotel',
+  restaurant: 'Restaurant',
+  bathroom: 'Bathroom',
 }
 const empty = () => ({
   image_url: '',
@@ -73,13 +73,13 @@ function BulkDropzone({ onUploaded }: { onUploaded: () => void }) {
             tags: [],
           })
         } catch {
-          showToast(`Ошибка при загрузке ${file.name}`, 'err')
+          showToast(`Failed to upload ${file.name}`, 'err')
         }
         done++
         setProgress(Math.round((done / files.length) * 100))
       }
       setUploading(false)
-      showToast(`Загружено ${done} фото`)
+      showToast(`Uploaded ${done} photo(s)`)
       onUploaded()
     },
     [onUploaded, showToast]
@@ -102,7 +102,7 @@ function BulkDropzone({ onUploaded }: { onUploaded: () => void }) {
       <input {...getInputProps()} />
       {uploading ? (
         <div>
-          <div className="text-sm text-gray-600 mb-2">Загрузка... {progress}%</div>
+          <div className="text-sm text-gray-600 mb-2">Uploading... {progress}%</div>
           <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
               className="bg-gray-900 h-1.5 rounded-full transition-all"
@@ -111,11 +111,11 @@ function BulkDropzone({ onUploaded }: { onUploaded: () => void }) {
           </div>
         </div>
       ) : isDragActive ? (
-        <p className="text-sm text-gray-600">Отпустите файлы для загрузки</p>
+        <p className="text-sm text-gray-600">Drop files to upload</p>
       ) : (
         <p className="text-sm text-gray-400">
-          Перетащите несколько фото сюда или{' '}
-          <span className="text-gray-600 underline">выберите файлы</span>
+          Drag photos here or{' '}
+          <span className="text-gray-600 underline">choose files</span>
         </p>
       )}
     </div>
@@ -143,20 +143,20 @@ export default function AdminGalleryPage() {
   }, [])
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить фото?')) return
+    if (!confirm('Delete photo?')) return
     try {
       await api.delete(`/admin/gallery/${id}`)
-      showToast('Удалено')
+      showToast('Deleted')
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
   return (
     <PageShell
-      title="Галерея"
-      addLabel="+ Добавить фото"
+      title="Gallery"
+      addLabel="+ Add photo"
       onAdd={() => {
         setEditing(null)
         setModalOpen(true)
@@ -169,16 +169,16 @@ export default function AdminGalleryPage() {
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Фото
+                Photo
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Подпись
+                Caption
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Тип пространства
+                Space type
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статус
+                Status
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -214,7 +214,7 @@ export default function AdminGalleryPage() {
             {items.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
-                  Галерея пуста.
+                  Gallery is empty.
                 </td>
               </tr>
             )}
@@ -229,7 +229,7 @@ export default function AdminGalleryPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(m) => showToast(m, 'err')}
         />
@@ -265,7 +265,7 @@ function GalleryModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.image_url) {
-      onError('Загрузите изображение')
+      onError('Please upload an image')
       return
     }
     setSaving(true)
@@ -289,25 +289,25 @@ function GalleryModal({
   }
 
   return (
-    <Modal title={item ? 'Редактировать фото' : 'Добавить фото'} onClose={onClose}>
+    <Modal title={item ? 'Edit photo' : 'Add photo'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Field label="Изображение *">
+        <Field label="Image *">
           <FileUpload url={form.image_url} uploading={uploading} onFile={handleImg} />
         </Field>
-        <Field label="Подпись">
+        <Field label="Caption">
           <input
             className={inputClass}
             value={form.caption || ''}
             onChange={(e) => setForm((f) => ({ ...f, caption: e.target.value }))}
           />
         </Field>
-        <Field label="Тип пространства">
+        <Field label="Space type">
           <select
             className={inputClass}
             value={form.space_type || ''}
             onChange={(e) => setForm((f) => ({ ...f, space_type: e.target.value }))}
           >
-            <option value="">— Не указано —</option>
+            <option value="">— Not specified —</option>
             {SPACE_TYPES.map((t) => (
               <option key={t} value={t}>
                 {SPACE_LABELS[t]}
@@ -315,15 +315,15 @@ function GalleryModal({
             ))}
           </select>
         </Field>
-        <Field label="Теги (через запятую)">
+        <Field label="Tags (comma separated)">
           <input
             className={inputClass}
             value={tagsStr}
             onChange={(e) => setTagsStr(e.target.value)}
-            placeholder="интерьер, гостиная, 3D"
+            placeholder="interior, living room, 3D"
           />
         </Field>
-        <Field label="Порядок">
+        <Field label="Order">
           <input
             type="number"
             className={inputClass}
@@ -338,7 +338,7 @@ function GalleryModal({
             onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
             className="rounded"
           />
-          Активно
+          Active
         </label>
         <ModalActions onClose={onClose} saving={saving} />
       </form>

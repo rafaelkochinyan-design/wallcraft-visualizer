@@ -68,14 +68,14 @@ export default function AdminLayout() {
             Wallcraft Admin
           </h1>
           <p className="text-gray-400 mt-0.5" style={{ fontSize: 12 }}>
-            Управление контентом
+            Content Management
           </p>
         </div>
         {/* Close button — mobile only */}
         <button
           onClick={() => setSidebarOpen(false)}
           className="lg:hidden text-gray-400 hover:text-gray-700 p-1 rounded"
-          aria-label="Закрыть меню"
+          aria-label="Close menu"
         >
           ✕
         </button>
@@ -86,64 +86,64 @@ export default function AdminLayout() {
           className="text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1"
           style={{ fontSize: 11 }}
         >
-          Заявки
+          Leads
         </p>
         <NavLink to="/admin/leads" className={navClass}>
-          Заявки
+          Leads
         </NavLink>
 
         <p
           className="text-gray-400 uppercase tracking-wider px-3 pt-4 pb-1"
           style={{ fontSize: 11 }}
         >
-          Продукты
+          Products
         </p>
         <NavLink to="/admin/panels" className={navClass}>
-          Панели
+          Panels
         </NavLink>
 
         <p
           className="text-gray-400 uppercase tracking-wider px-3 pt-4 pb-1"
           style={{ fontSize: 11 }}
         >
-          Сайт
+          Website
         </p>
         <NavLink to="/admin/hero-slides" className={navClass}>
-          Главная (слайды)
+          Hero Slides
         </NavLink>
         <NavLink to="/admin/projects" className={navClass}>
-          Проекты
+          Projects
         </NavLink>
         <NavLink to="/admin/gallery" className={navClass}>
-          Галерея
+          Gallery
         </NavLink>
         <NavLink to="/admin/blog" className={navClass}>
-          Блог
+          Blog
         </NavLink>
         <NavLink to="/admin/designers" className={navClass}>
-          Дизайнеры
+          Designers
         </NavLink>
         <NavLink to="/admin/dealers" className={navClass}>
-          Дилеры
+          Dealers
         </NavLink>
         <NavLink to="/admin/partners" className={navClass}>
-          Партнёры
+          Partners
         </NavLink>
         <NavLink to="/admin/team" className={navClass}>
-          Команда
+          Team
         </NavLink>
         <NavLink to="/admin/pages" className={navClass}>
-          Страницы (CMS)
+          Pages (CMS)
         </NavLink>
 
         <p
           className="text-gray-400 uppercase tracking-wider px-3 pt-4 pb-1"
           style={{ fontSize: 11 }}
         >
-          Настройки
+          Settings
         </p>
         <NavLink to="/admin/settings" className={navClass}>
-          Настройки магазина
+          Store Settings
         </NavLink>
       </nav>
 
@@ -152,7 +152,7 @@ export default function AdminLayout() {
         className="mt-6 text-gray-400 hover:text-gray-700 transition-colors text-left px-3 py-2 rounded-lg hover:bg-gray-100"
         style={{ fontSize: 14 }}
       >
-        Выйти
+        Log out
       </button>
     </aside>
   )
@@ -189,7 +189,7 @@ export default function AdminLayout() {
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-gray-600 hover:text-gray-900 p-1 rounded-lg hover:bg-gray-100"
-            aria-label="Открыть меню"
+            aria-label="Open menu"
           >
             <svg
               width="22"

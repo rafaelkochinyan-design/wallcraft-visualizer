@@ -4,11 +4,11 @@ import { Toast, useToast, textareaClass } from './adminUtils'
 
 // Known page keys with labels
 const PAGE_KEYS = [
-  { key: 'home', label: 'Главная страница' },
-  { key: 'about', label: 'О компании' },
-  { key: 'contact', label: 'Контакты' },
-  { key: 'installation', label: 'Монтаж' },
-  { key: 'partners', label: 'Партнёры' },
+  { key: 'home', label: 'Home' },
+  { key: 'about', label: 'About' },
+  { key: 'contact', label: 'Contact' },
+  { key: 'installation', label: 'Installation' },
+  { key: 'partners', label: 'Partners' },
 ]
 
 type Lang = 'ru' | 'en' | 'am'
@@ -42,9 +42,9 @@ export default function AdminPagesPage() {
     setSaving(true)
     try {
       await api.put(`/admin/pages/${pageKey}`, { content })
-      showToast('Сохранено')
+      showToast('Saved')
     } catch {
-      showToast('Ошибка сохранения', 'err')
+      showToast('Save failed', 'err')
     } finally {
       setSaving(false)
     }
@@ -61,9 +61,9 @@ export default function AdminPagesPage() {
   }
 
   function addField() {
-    const name = prompt('Имя поля (например: hero_title, mission_text):')
+    const name = prompt('Field name (e.g. hero_title, mission_text):')
     if (!name) return
-    const isLocale = confirm('Это мультиязычное поле (RU/EN/AM)?')
+    const isLocale = confirm('Is this a multilingual field (RU/EN/AM)?')
     setContent((c) => ({
       ...c,
       [name]: isLocale ? { ru: '', en: '', am: '' } : '',
@@ -71,7 +71,7 @@ export default function AdminPagesPage() {
   }
 
   function removeField(field: string) {
-    if (!confirm(`Удалить поле «${field}»?`)) return
+    if (!confirm(`Delete field "${field}"?`)) return
     setContent((c) => {
       const copy = { ...c }
       delete copy[field]
@@ -84,20 +84,20 @@ export default function AdminPagesPage() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-medium text-gray-900">Страницы (CMS)</h2>
+        <h2 className="text-lg font-medium text-gray-900">Pages (CMS)</h2>
         <div className="flex gap-3">
           <button
             onClick={addField}
             className="px-3 py-2 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50"
           >
-            + Поле
+            + Field
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
             className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 disabled:opacity-50"
           >
-            {saving ? 'Сохранение...' : 'Сохранить'}
+            {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function AdminPagesPage() {
               </button>
             ))}
             <span className="ml-auto text-xs text-gray-400 self-center">
-              Страница: <code className="bg-gray-100 px-1 rounded">{pageKey}</code>
+              Page: <code className="bg-gray-100 px-1 rounded">{pageKey}</code>
             </span>
           </div>
 
@@ -149,10 +149,10 @@ export default function AdminPagesPage() {
             <div className="flex flex-col gap-4">
               {fields.length === 0 && (
                 <div className="bg-white rounded-xl border border-dashed border-gray-200 p-12 text-center text-gray-400 text-sm">
-                  Нет полей для этой страницы.
+                  No fields for this page.
                   <br />
                   <button onClick={addField} className="mt-3 text-gray-600 underline text-xs">
-                    Добавить первое поле
+                    Add the first field
                   </button>
                 </div>
               )}
@@ -178,7 +178,7 @@ export default function AdminPagesPage() {
                         onClick={() => removeField(field)}
                         className="text-gray-300 hover:text-red-500 text-xs transition-colors"
                       >
-                        Удалить
+                        Delete
                       </button>
                     </div>
 
@@ -187,14 +187,14 @@ export default function AdminPagesPage() {
                         className={`${textareaClass} h-24`}
                         value={(val as { ru: string; en: string; am: string })[lang] || ''}
                         onChange={(e) => setField(field, e.target.value)}
-                        placeholder={`Значение на ${lang.toUpperCase()}...`}
+                        placeholder={`Value in ${lang.toUpperCase()}...`}
                       />
                     ) : (
                       <textarea
                         className={`${textareaClass} h-16`}
                         value={typeof val === 'string' ? val : ''}
                         onChange={(e) => setContent((c) => ({ ...c, [field]: e.target.value }))}
-                        placeholder="Значение..."
+                        placeholder="Value..."
                       />
                     )}
                   </div>

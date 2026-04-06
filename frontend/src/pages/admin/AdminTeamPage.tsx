@@ -54,20 +54,20 @@ export default function AdminTeamPage() {
   }, [])
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить участника?')) return
+    if (!confirm('Delete member?')) return
     try {
       await api.delete(`/admin/team/${id}`)
-      showToast('Удалено')
+      showToast('Deleted')
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
   return (
     <PageShell
-      title="Команда"
-      addLabel="+ Добавить"
+      title="Team"
+      addLabel="+ Add"
       onAdd={() => {
         setEditing(null)
         setModalOpen(true)
@@ -79,16 +79,16 @@ export default function AdminTeamPage() {
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Сотрудник
+                Member
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Должность (RU)
+                Role (RU)
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Порядок
+                Order
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статус
+                Status
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -131,7 +131,7 @@ export default function AdminTeamPage() {
             {items.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
-                  Нет участников команды.
+                  No team members.
                 </td>
               </tr>
             )}
@@ -146,7 +146,7 @@ export default function AdminTeamPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(m) => showToast(m, 'err')}
         />
@@ -188,7 +188,7 @@ function TeamModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.name || !form.role.ru) {
-      onError('Имя и должность (RU) обязательны')
+      onError('Name and role (RU) are required')
       return
     }
     setSaving(true)
@@ -203,17 +203,17 @@ function TeamModal({
   }
 
   return (
-    <Modal title={item ? 'Редактировать участника' : 'Новый участник'} onClose={onClose} wide>
+    <Modal title={item ? 'Edit member' : 'New member'} onClose={onClose} wide>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Имя *">
+          <Field label="Name *">
             <input
               className={inputClass}
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             />
           </Field>
-          <Field label="Порядок">
+          <Field label="Order">
             <input
               type="number"
               className={inputClass}
@@ -223,25 +223,25 @@ function TeamModal({
           </Field>
         </div>
 
-        <Field label="Фото">
+        <Field label="Photo">
           <FileUpload url={form.photo_url || ''} uploading={uploading} onFile={handlePhoto} />
         </Field>
 
         <div className="border border-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-500 mb-2">Должность и биография</p>
+          <p className="text-xs text-gray-500 mb-2">Role and biography</p>
           <LocaleTabs lang={lang} onChange={setLang} />
           <div className="flex flex-col gap-3">
-            <Field label={`Должность (${lang.toUpperCase()}) *`}>
+            <Field label={`Role (${lang.toUpperCase()}) *`}>
               <input
                 className={inputClass}
                 value={form.role[lang]}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, role: { ...f.role, [lang]: e.target.value } }))
                 }
-                placeholder="Главный дизайнер"
+                placeholder="Head Designer"
               />
             </Field>
-            <Field label={`Биография (${lang.toUpperCase()})`}>
+            <Field label={`Bio (${lang.toUpperCase()})`}>
               <textarea
                 className={`${textareaClass} h-24`}
                 value={form.bio[lang]}
@@ -260,7 +260,7 @@ function TeamModal({
             onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
             className="rounded"
           />
-          Активен (показывать на сайте)
+          Active (show on site)
         </label>
         <ModalActions onClose={onClose} saving={saving} />
       </form>

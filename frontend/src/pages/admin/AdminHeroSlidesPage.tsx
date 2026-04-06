@@ -81,7 +81,7 @@ function SortableRow({
           {...attributes}
           {...listeners}
           className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 select-none"
-          title="Перетащить"
+          title="Drag to reorder"
         >
           ⠿
         </button>
@@ -131,13 +131,13 @@ export default function AdminHeroSlidesPage() {
   }, [])
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить слайд?')) return
+    if (!confirm('Delete slide?')) return
     try {
       await api.delete(`/admin/hero-slides/${id}`)
-      showToast('Удалено')
+      showToast('Deleted')
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
@@ -154,38 +154,38 @@ export default function AdminHeroSlidesPage() {
     try {
       await api.patch('/admin/hero-slides/reorder', body)
     } catch {
-      showToast('Ошибка сохранения порядка', 'err')
+      showToast('Failed to save order', 'err')
       load()
     }
   }
 
   return (
     <PageShell
-      title="Hero-слайды"
-      addLabel="+ Добавить слайд"
+      title="Hero Slides"
+      addLabel="+ Add slide"
       onAdd={() => {
         setEditing(null)
         setModalOpen(true)
       }}
       loading={loading}
     >
-      <p className="text-xs text-gray-400 mb-3">Перетащите строки для изменения порядка слайдов.</p>
+      <p className="text-xs text-gray-400 mb-3">Drag rows to reorder slides.</p>
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="px-3 py-3 w-8" />
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Слайд
+                Slide
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Заголовок (RU)
+                Headline (RU)
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
                 CTA
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статус
+                Status
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -216,7 +216,7 @@ export default function AdminHeroSlidesPage() {
             {items.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm">
-                  Нет слайдов.
+                  No slides.
                 </td>
               </tr>
             )}
@@ -231,7 +231,7 @@ export default function AdminHeroSlidesPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(m) => showToast(m, 'err')}
         />
@@ -275,7 +275,7 @@ function SlideModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.image_url || !form.headline.ru) {
-      onError('Изображение и заголовок (RU) обязательны')
+      onError('Image and headline (RU) are required')
       return
     }
     setSaving(true)
@@ -295,31 +295,31 @@ function SlideModal({
     setForm((f) => ({ ...f, [field]: { ...f[field], [lang]: val } }))
 
   return (
-    <Modal title={item ? 'Редактировать слайд' : 'Новый слайд'} onClose={onClose} wide>
+    <Modal title={item ? 'Edit slide' : 'New slide'} onClose={onClose} wide>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Field label="Изображение *">
+        <Field label="Image *">
           <FileUpload url={form.image_url} uploading={uploading} onFile={handleImg} />
         </Field>
 
         <div className="border border-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-500 mb-2">Локализованный контент</p>
+          <p className="text-xs text-gray-500 mb-2">Localized content</p>
           <LocaleTabs lang={lang} onChange={setLang} />
           <div className="flex flex-col gap-3">
-            <Field label={`Заголовок (${lang.toUpperCase()}) *`}>
+            <Field label={`Headline (${lang.toUpperCase()}) *`}>
               <input
                 className={inputClass}
                 value={form.headline[lang]}
                 onChange={(e) => setLocale('headline', e.target.value)}
               />
             </Field>
-            <Field label={`Подзаголовок (${lang.toUpperCase()})`}>
+            <Field label={`Subheadline (${lang.toUpperCase()})`}>
               <input
                 className={inputClass}
                 value={form.subheadline[lang]}
                 onChange={(e) => setLocale('subheadline', e.target.value)}
               />
             </Field>
-            <Field label={`Текст кнопки (${lang.toUpperCase()})`}>
+            <Field label={`Button text (${lang.toUpperCase()})`}>
               <input
                 className={inputClass}
                 value={form.cta_label[lang]}
@@ -329,7 +329,7 @@ function SlideModal({
           </div>
         </div>
 
-        <Field label="Ссылка кнопки (URL)">
+        <Field label="Button URL">
           <input
             className={inputClass}
             value={form.cta_url || ''}
@@ -338,7 +338,7 @@ function SlideModal({
           />
         </Field>
         <div className="flex gap-4">
-          <Field label="Порядок">
+          <Field label="Order">
             <input
               type="number"
               className={inputClass}
@@ -354,7 +354,7 @@ function SlideModal({
             onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
             className="rounded"
           />
-          Активен
+          Active
         </label>
         <ModalActions onClose={onClose} saving={saving} />
       </form>

@@ -34,7 +34,7 @@ export default function StoreSettingsPage() {
       const res = await api.post('/admin/settings/upload-logo', fd)
       setForm((f) => ({ ...f, logo_url: res.data.data.url }))
     } catch {
-      setToast('Ошибка загрузки логотипа')
+      setToast('Logo upload failed')
     } finally {
       setUploadingLogo(false)
     }
@@ -48,10 +48,10 @@ export default function StoreSettingsPage() {
         primary_color: form.primary_color,
         logo_url: form.logo_url || null,
       })
-      setToast('Настройки сохранены')
+      setToast('Settings saved')
       setTimeout(() => setToast(null), 3000)
     } catch {
-      setToast('Ошибка сохранения')
+      setToast('Save failed')
     } finally {
       setSaving(false)
     }
@@ -67,12 +67,12 @@ export default function StoreSettingsPage() {
 
   return (
     <div className="p-6 max-w-lg">
-      <h2 className="text-lg font-medium text-gray-900 mb-6">Настройки магазина</h2>
+      <h2 className="text-lg font-medium text-gray-900 mb-6">Store Settings</h2>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col gap-5">
         {/* Store name */}
         <div>
-          <label className="block text-xs text-gray-500 mb-1">Название магазина</label>
+          <label className="block text-xs text-gray-500 mb-1">Store name</label>
           <input
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -82,7 +82,7 @@ export default function StoreSettingsPage() {
 
         {/* Primary color */}
         <div>
-          <label className="block text-xs text-gray-500 mb-2">Основной цвет</label>
+          <label className="block text-xs text-gray-500 mb-2">Primary color</label>
           <div className="flex items-center gap-3">
             <input
               type="color"
@@ -105,7 +105,7 @@ export default function StoreSettingsPage() {
 
         {/* Logo */}
         <div>
-          <label className="block text-xs text-gray-500 mb-2">Логотип</label>
+          <label className="block text-xs text-gray-500 mb-2">Logo</label>
           <div className="flex items-center gap-4">
             {form.logo_url ? (
               <img
@@ -115,14 +115,14 @@ export default function StoreSettingsPage() {
               />
             ) : (
               <div className="w-20 h-12 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 text-xs">
-                Нет лого
+                No logo
               </div>
             )}
             <label
               className={`px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600
               cursor-pointer hover:bg-gray-50 transition-colors ${uploadingLogo ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              {uploadingLogo ? 'Загрузка...' : 'Выбрать файл'}
+              {uploadingLogo ? 'Uploading...' : 'Choose file'}
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/svg+xml"
@@ -137,7 +137,7 @@ export default function StoreSettingsPage() {
                 onClick={() => setForm({ ...form, logo_url: '' })}
                 className="text-gray-400 hover:text-red-500 text-xs"
               >
-                Удалить
+                Remove
               </button>
             )}
           </div>
@@ -145,9 +145,9 @@ export default function StoreSettingsPage() {
 
         {/* Slug info */}
         <div className="bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500">
-          Slug магазина: <span className="font-mono text-gray-700">{settings?.slug}</span>
+          Store slug: <span className="font-mono text-gray-700">{settings?.slug}</span>
           <br />
-          Визуализатор:{' '}
+          Domain:{' '}
           <span className="font-mono text-gray-700">{settings?.slug}.yourdomain.com</span>
         </div>
 
@@ -157,7 +157,7 @@ export default function StoreSettingsPage() {
           className="w-full py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium
             hover:bg-gray-800 disabled:opacity-50 transition-colors"
         >
-          {saving ? 'Сохранение...' : 'Сохранить изменения'}
+          {saving ? 'Saving...' : 'Save changes'}
         </button>
       </div>
 

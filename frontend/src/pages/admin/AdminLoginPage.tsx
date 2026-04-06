@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
         ?.data?.error?.message
-      setError(msg || 'Неверный email или пароль')
+      setError(msg || 'Invalid email or password')
     } finally {
       setLoading(false)
     }
@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-80">
-        <h1 className="text-xl font-medium text-gray-900 mb-6">Вход в админку</h1>
+        <h1 className="text-xl font-medium text-gray-900 mb-6">Admin Login</h1>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div>
@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Пароль</label>
+            <label className="block text-xs text-gray-500 mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
             className="w-full py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium
               hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? 'Вход...' : 'Войти'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
       </div>

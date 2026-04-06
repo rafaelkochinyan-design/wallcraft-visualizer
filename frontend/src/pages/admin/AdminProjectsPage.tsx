@@ -67,20 +67,20 @@ export default function AdminProjectsPage() {
   }, [])
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить проект?')) return
+    if (!confirm('Delete project?')) return
     try {
       await api.delete(`/admin/projects/${id}`)
-      showToast('Удалено')
+      showToast('Deleted')
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
   return (
     <PageShell
-      title="Проекты"
-      addLabel="+ Новый проект"
+      title="Projects"
+      addLabel="+ New project"
       onAdd={() => {
         setEditing(null)
         setModalOpen(true)
@@ -92,16 +92,16 @@ export default function AdminProjectsPage() {
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Проект
+                Project
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
                 Slug
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Пространство
+                Space type
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статус
+                Status
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -140,7 +140,7 @@ export default function AdminProjectsPage() {
             {items.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
-                  Нет проектов.
+                  No projects.
                 </td>
               </tr>
             )}
@@ -155,7 +155,7 @@ export default function AdminProjectsPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(m) => showToast(m, 'err')}
         />
@@ -201,7 +201,7 @@ function ProjectModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.title || !form.slug) {
-      onError('Название и slug обязательны')
+      onError('Title and slug are required')
       return
     }
     setSaving(true)
@@ -216,9 +216,9 @@ function ProjectModal({
   }
 
   return (
-    <Modal title={item ? 'Редактировать проект' : 'Новый проект'} onClose={onClose} wide>
+    <Modal title={item ? 'Edit project' : 'New project'} onClose={onClose} wide>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Field label="Название *">
+        <Field label="Title *">
           <input
             className={inputClass}
             value={form.title}
@@ -233,23 +233,23 @@ function ProjectModal({
             placeholder="my-project"
           />
         </Field>
-        <Field label="Описание">
+        <Field label="Description">
           <textarea
             className={`${textareaClass} h-24`}
             value={form.description || ''}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
           />
         </Field>
-        <Field label="Обложка">
+        <Field label="Cover image">
           <FileUpload url={form.cover_url || ''} uploading={uploading} onFile={handleCover} />
         </Field>
-        <Field label="Тип пространства">
+        <Field label="Space type">
           <select
             className={inputClass}
             value={form.space_type || ''}
             onChange={(e) => setForm((f) => ({ ...f, space_type: e.target.value }))}
           >
-            <option value="">— Не указано —</option>
+            <option value="">— Not specified —</option>
             {SPACE_TYPES.map((t) => (
               <option key={t} value={t}>
                 {t}
@@ -258,7 +258,7 @@ function ProjectModal({
           </select>
         </Field>
         <div className="flex gap-4">
-          <Field label="Порядок">
+          <Field label="Order">
             <input
               type="number"
               className={inputClass}
@@ -274,7 +274,7 @@ function ProjectModal({
             onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
             className="rounded"
           />
-          Активен (показывать на сайте)
+          Active (show on site)
         </label>
         <ModalActions onClose={onClose} saving={saving} />
       </form>

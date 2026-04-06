@@ -25,10 +25,10 @@ interface Lead {
 }
 
 const STATUS: Record<string, { label: string; color: string }> = {
-  new: { label: 'Новая', color: 'var(--accent-blue)' },
-  contacted: { label: 'Связались', color: 'var(--accent-yellow)' },
-  sold: { label: 'Продано ✓', color: 'var(--accent-green)' },
-  cancelled: { label: 'Отменена', color: 'var(--light-text-sec)' },
+  new: { label: 'New', color: 'var(--accent-blue)' },
+  contacted: { label: 'Contacted', color: 'var(--accent-yellow)' },
+  sold: { label: 'Sold ✓', color: 'var(--accent-green)' },
+  cancelled: { label: 'Cancelled', color: 'var(--light-text-sec)' },
 }
 
 export default function LeadsPage() {
@@ -41,7 +41,7 @@ export default function LeadsPage() {
       const res = await api.get('/admin/leads')
       setLeads(res.data.data)
     } catch {
-      toast.error('Ошибка загрузки заявок')
+      toast.error('Failed to load leads')
     } finally {
       setLoading(false)
     }
@@ -55,9 +55,9 @@ export default function LeadsPage() {
     try {
       await api.patch(`/admin/leads/${id}`, { status })
       setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: status as any } : l)))
-      toast.success('Статус обновлён')
+      toast.success('Status updated')
     } catch {
-      toast.error('Ошибка обновления')
+      toast.error('Update failed')
     }
   }
 
@@ -69,15 +69,15 @@ export default function LeadsPage() {
     sold: leads.filter((l) => l.status === 'sold').length,
   }
 
-  if (loading) return <div style={{ padding: 32, color: 'var(--light-text-sec)' }}>Загрузка...</div>
+  if (loading) return <div style={{ padding: 32, color: 'var(--light-text-sec)' }}>Loading...</div>
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 960 }}>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--light-text)', marginBottom: 6 }}>
-        Заявки
+        Leads
       </h1>
       <p style={{ fontSize: 14, color: 'var(--light-text-sec)', marginBottom: 24 }}>
-        {stats.total} всего · {stats.new} новых · {stats.sold} продано
+        {stats.total} total · {stats.new} new · {stats.sold} sold
       </p>
 
       {/* Stats */}
@@ -85,10 +85,10 @@ export default function LeadsPage() {
         style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginBottom: 24 }}
       >
         {[
-          { label: 'Всего', value: stats.total, color: 'var(--light-text)' },
-          { label: 'Новых', value: stats.new, color: 'var(--accent-blue)' },
-          { label: 'В работе', value: stats.contacted, color: 'var(--accent-yellow)' },
-          { label: 'Продано', value: stats.sold, color: 'var(--accent-green)' },
+          { label: 'Total', value: stats.total, color: 'var(--light-text)' },
+          { label: 'New', value: stats.new, color: 'var(--accent-blue)' },
+          { label: 'In progress', value: stats.contacted, color: 'var(--accent-yellow)' },
+          { label: 'Sold', value: stats.sold, color: 'var(--accent-green)' },
         ].map((s) => (
           <div
             key={s.label}
@@ -125,14 +125,14 @@ export default function LeadsPage() {
               transition: 'all 0.12s',
             }}
           >
-            {f === 'all' ? 'Все' : (STATUS[f]?.label ?? f)}
+            {f === 'all' ? 'All' : (STATUS[f]?.label ?? f)}
           </button>
         ))}
       </div>
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px 0', color: '#9a9890' }}>Нет заявок</div>
+        <div style={{ textAlign: 'center', padding: '40px 0', color: '#9a9890' }}>No leads</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {filtered.map((lead) => (
@@ -216,7 +216,7 @@ function LeadCard({
               {statusLabel}
             </span>
             <span style={{ fontSize: 10, color: '#9a9890' }}>
-              {new Date(lead.created_at).toLocaleDateString('ru-RU', {
+              {new Date(lead.created_at).toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'short',
                 hour: '2-digit',
@@ -239,13 +239,13 @@ function LeadCard({
             </a>
             {wc.panels.length > 0 && (
               <span style={{ fontSize: 12, color: 'var(--light-text-sec)' }}>
-                Панели: {wc.panels.map((p) => p.name).join(' + ')}
+                Panels: {wc.panels.map((p) => p.name).join(' + ')}
               </span>
             )}
             {wc.total_panels && (
               <span style={{ fontSize: 12, color: 'var(--light-text-sec)' }}>
-                {wc.total_panels} шт
-                {wc.total_cost ? ` · ${wc.total_cost.toLocaleString('ru-RU')} ₽` : ''}
+                {wc.total_panels} pcs
+                {wc.total_cost ? ` · ${wc.total_cost.toLocaleString('en-US')} AMD` : ''}
               </span>
             )}
           </div>
@@ -282,7 +282,7 @@ function LeadCard({
                 textDecoration: 'none',
               }}
             >
-              🔗 Дизайн
+              🔗 Design
             </a>
           )}
           {lead.status === 'new' && (
@@ -300,7 +300,7 @@ function LeadCard({
                 fontFamily: 'inherit',
               }}
             >
-              Позвонил
+              Called
             </button>
           )}
           {lead.status === 'contacted' && (
@@ -318,7 +318,7 @@ function LeadCard({
                 fontFamily: 'inherit',
               }}
             >
-              Продано ✓
+              Sold ✓
             </button>
           )}
           {lead.status !== 'cancelled' && lead.status !== 'sold' && (

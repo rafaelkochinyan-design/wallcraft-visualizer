@@ -66,13 +66,13 @@ export default function AdminBlogPage() {
   }, [])
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить статью?')) return
+    if (!confirm('Delete post?')) return
     try {
       await api.delete(`/admin/blog/${id}`)
-      showToast('Удалено')
+      showToast('Deleted')
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
@@ -81,14 +81,14 @@ export default function AdminBlogPage() {
       await api.patch(`/admin/blog/${id}/publish`)
       load()
     } catch {
-      showToast('Ошибка', 'err')
+      showToast('Error', 'err')
     }
   }
 
   return (
     <PageShell
-      title="Блог"
-      addLabel="+ Новая статья"
+      title="Blog"
+      addLabel="+ New post"
       onAdd={() => {
         setEditing(null)
         setModalOpen(true)
@@ -100,16 +100,16 @@ export default function AdminBlogPage() {
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статья
+                Post
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Категория
+                Category
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Дата
+                Date
               </th>
               <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">
-                Статус
+                Status
               </th>
               <th className="px-4 py-3" />
             </tr>
@@ -136,7 +136,7 @@ export default function AdminBlogPage() {
                 </td>
                 <td className="px-4 py-3 text-gray-500 text-xs">{item.category || '—'}</td>
                 <td className="px-4 py-3 text-gray-500 text-xs">
-                  {item.published_at ? new Date(item.published_at).toLocaleDateString('ru') : '—'}
+                  {item.published_at ? new Date(item.published_at).toLocaleDateString('en-GB') : '—'}
                 </td>
                 <td className="px-4 py-3">
                   <button
@@ -144,7 +144,7 @@ export default function AdminBlogPage() {
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors
                       ${item.published ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                   >
-                    {item.published ? 'Опубликована' : 'Черновик'}
+                    {item.published ? 'Published' : 'Draft'}
                   </button>
                 </td>
                 <td className="px-4 py-3">
@@ -161,7 +161,7 @@ export default function AdminBlogPage() {
             {items.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
-                  Нет статей.
+                  No posts.
                 </td>
               </tr>
             )}
@@ -176,7 +176,7 @@ export default function AdminBlogPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(m) => showToast(m, 'err')}
         />
@@ -229,7 +229,7 @@ function BlogModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.slug || !form.title.ru) {
-      onError('Slug и заголовок (RU) обязательны')
+      onError('Slug and title (RU) are required')
       return
     }
     setSaving(true)
@@ -254,31 +254,31 @@ function BlogModal({
     setForm((f) => ({ ...f, [field]: { ...f[field], [lang]: val } }))
 
   return (
-    <Modal title={item ? 'Редактировать статью' : 'Новая статья'} onClose={onClose} wide>
+    <Modal title={item ? 'Edit post' : 'New post'} onClose={onClose} wide>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Field label="Обложка">
+        <Field label="Cover image">
           <FileUpload url={form.cover_url || ''} uploading={uploading} onFile={handleCover} />
         </Field>
 
         <div className="border border-gray-100 rounded-xl p-4">
-          <p className="text-xs text-gray-500 mb-2">Контент</p>
+          <p className="text-xs text-gray-500 mb-2">Content</p>
           <LocaleTabs lang={lang} onChange={setLang} />
           <div className="flex flex-col gap-3">
-            <Field label={`Заголовок (${lang.toUpperCase()}) *`}>
+            <Field label={`Title (${lang.toUpperCase()}) *`}>
               <input
                 className={inputClass}
                 value={form.title[lang]}
                 onChange={(e) => handleTitleChange(e.target.value)}
               />
             </Field>
-            <Field label={`Краткое описание (${lang.toUpperCase()})`}>
+            <Field label={`Excerpt (${lang.toUpperCase()})`}>
               <textarea
                 className={`${textareaClass} h-16`}
                 value={form.excerpt[lang]}
                 onChange={(e) => setLocale('excerpt', e.target.value)}
               />
             </Field>
-            <Field label={`Текст статьи (${lang.toUpperCase()})`}>
+            <Field label={`Body (${lang.toUpperCase()})`}>
               <textarea
                 className={`${textareaClass} h-40`}
                 value={form.body[lang]}
@@ -296,7 +296,7 @@ function BlogModal({
               onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
             />
           </Field>
-          <Field label="Категория">
+          <Field label="Category">
             <input
               className={inputClass}
               value={form.category || ''}
@@ -305,7 +305,7 @@ function BlogModal({
             />
           </Field>
         </div>
-        <Field label="Теги (через запятую)">
+        <Field label="Tags (comma separated)">
           <input
             className={inputClass}
             value={tagsStr}
@@ -319,7 +319,7 @@ function BlogModal({
             onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
             className="rounded"
           />
-          Опубликовать сразу
+          Publish now
         </label>
         <ModalActions onClose={onClose} saving={saving} />
       </form>

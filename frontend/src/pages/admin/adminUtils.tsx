@@ -45,7 +45,7 @@ export function FileUpload({
         border-gray-200 text-xs text-gray-400 cursor-pointer hover:border-gray-400 hover:text-gray-600
         transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
       >
-        {uploading ? 'Загрузка...' : url ? 'Заменить' : 'Выбрать файл'}
+        {uploading ? 'Uploading...' : url ? 'Replace' : 'Choose file'}
         <input
           type="file"
           accept={accept || 'image/jpeg,image/png,image/webp'}
@@ -67,7 +67,7 @@ export async function uploadImage(
 ): Promise<string | null> {
   const allowed = ['image/jpeg', 'image/png', 'image/webp']
   if (!allowed.includes(file.type)) {
-    onError('Только JPG, PNG или WebP')
+    onError('Only JPG, PNG or WebP allowed')
     return null
   }
   try {
@@ -76,7 +76,7 @@ export async function uploadImage(
     const res = await api.post(endpoint, fd)
     return res.data.data.url as string
   } catch {
-    onError('Ошибка загрузки файла')
+    onError('File upload failed')
     return null
   }
 }
@@ -148,14 +148,14 @@ export function ModalActions({ onClose, saving }: { onClose: () => void; saving:
         onClick={onClose}
         className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
       >
-        Отмена
+        Cancel
       </button>
       <button
         type="submit"
         disabled={saving}
         className="flex-1 py-2.5 rounded-lg bg-gray-900 text-white text-sm hover:bg-gray-800 disabled:opacity-50"
       >
-        {saving ? 'Сохранение...' : 'Сохранить'}
+        {saving ? 'Saving...' : 'Save'}
       </button>
     </div>
   )
@@ -179,8 +179,8 @@ export function useToast(): [null, (msg: string, type?: 'ok' | 'err') => void] {
 // ── Status badge ───────────────────────────────────────────────
 export function StatusBadge({
   active,
-  labelOn = 'Активен',
-  labelOff = 'Скрыт',
+  labelOn = 'Active',
+  labelOff = 'Hidden',
 }: {
   active: boolean
   labelOn?: string
@@ -204,13 +204,13 @@ export function TableActions({ onEdit, onDelete }: { onEdit: () => void; onDelet
         onClick={onEdit}
         className="text-gray-400 hover:text-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-100"
       >
-        Изменить
+        Edit
       </button>
       <button
         onClick={onDelete}
         className="text-gray-400 hover:text-red-600 text-xs px-2 py-1 rounded hover:bg-red-50"
       >
-        Удалить
+        Delete
       </button>
     </div>
   )
@@ -259,6 +259,6 @@ export const emptyLocale = () => ({ ru: '', en: '', am: '' })
 export function apiErr(err: unknown): string {
   return (
     (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
-      ?.message || 'Ошибка сохранения'
+      ?.message || 'Save failed'
   )
 }

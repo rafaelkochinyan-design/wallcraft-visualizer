@@ -33,20 +33,20 @@ export default function AccessoriesPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Удалить аксессуар?')) return
+    if (!confirm('Delete accessory?')) return
     try {
       await api.delete(`/admin/accessories/${id}`)
-      showToast('Аксессуар удалён')
+      showToast('Accessory deleted')
       load()
     } catch {
-      showToast('Ошибка при удалении', 'err')
+      showToast('Delete failed', 'err')
     }
   }
 
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-medium text-gray-900">Аксессуары</h2>
+        <h2 className="text-lg font-medium text-gray-900">Accessories</h2>
         <button
           onClick={() => {
             setEditing(null)
@@ -54,7 +54,7 @@ export default function AccessoriesPage() {
           }}
           className="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-gray-800 transition-colors"
         >
-          + Добавить аксессуар
+          + Add accessory
         </button>
       </div>
 
@@ -68,16 +68,16 @@ export default function AccessoriesPage() {
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Аксессуар
+                  Accessory
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Тип
+                  Type
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Масштаб
+                  Scale
                 </th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Статус
+                  Status
                 </th>
                 <th className="px-4 py-3" />
               </tr>
@@ -105,7 +105,7 @@ export default function AccessoriesPage() {
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                       ${acc.active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}
                     >
-                      {acc.active ? 'Активен' : 'Скрыт'}
+                      {acc.active ? 'Active' : 'Hidden'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -117,13 +117,13 @@ export default function AccessoriesPage() {
                         }}
                         className="text-gray-400 hover:text-gray-700 text-xs px-2 py-1 rounded hover:bg-gray-100"
                       >
-                        Изменить
+                        Edit
                       </button>
                       <button
                         onClick={() => handleDelete(acc.id)}
                         className="text-gray-400 hover:text-red-600 text-xs px-2 py-1 rounded hover:bg-red-50"
                       >
-                        Удалить
+                        Delete
                       </button>
                     </div>
                   </td>
@@ -132,7 +132,7 @@ export default function AccessoriesPage() {
               {accessories.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
-                    Нет аксессуаров. Добавьте первый.
+                    No accessories. Add the first one.
                   </td>
                 </tr>
               )}
@@ -160,7 +160,7 @@ export default function AccessoriesPage() {
           onSaved={() => {
             setModalOpen(false)
             load()
-            showToast('Сохранено')
+            showToast('Saved')
           }}
           onError={(msg) => showToast(msg, 'err')}
         />
@@ -193,11 +193,11 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
   async function uploadModel(file: File) {
     const ext = file.name.split('.').pop()?.toLowerCase()
     if (ext !== 'glb') {
-      onError('Только .glb файлы')
+      onError('Only .glb files are allowed')
       return
     }
     if (file.size > 20 * 1024 * 1024) {
-      onError('Файл слишком большой. Макс 20МБ.')
+      onError('File is too large. Max 20 MB.')
       return
     }
     setUploading('model')
@@ -207,7 +207,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
       const res = await api.post('/admin/accessories/upload-model', formData)
       setForm((f) => ({ ...f, model_url: res.data.data.url }))
     } catch {
-      onError('Ошибка загрузки модели')
+      onError('Failed to upload model')
     } finally {
       setUploading(null)
     }
@@ -216,7 +216,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
   async function uploadThumb(file: File) {
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowed.includes(file.type)) {
-      onError('Только JPG, PNG или WebP')
+      onError('Only JPG, PNG or WebP are allowed')
       return
     }
     setUploading('thumb')
@@ -226,7 +226,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
       const res = await api.post('/admin/accessories/upload-thumb', formData)
       setForm((f) => ({ ...f, thumb_url: res.data.data.url }))
     } catch {
-      onError('Ошибка загрузки миниатюры')
+      onError('Failed to upload thumbnail')
     } finally {
       setUploading(null)
     }
@@ -234,12 +234,12 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
 
   async function handleSave() {
     if (!form.name || !form.type_id || !form.model_url || !form.thumb_url) {
-      onError('Заполните все обязательные поля')
+      onError('Please fill in all required fields')
       return
     }
     const scaleVal = parseFloat(form.scale)
     if (isNaN(scaleVal) || scaleVal < 0.1 || scaleVal > 10) {
-      onError('Масштаб должен быть от 0.1 до 10')
+      onError('Scale must be between 0.1 and 10')
       return
     }
     setSaving(true)
@@ -254,7 +254,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
         ?.data?.error?.message
-      onError(msg || 'Ошибка сохранения')
+      onError(msg || 'Failed to save')
     } finally {
       setSaving(false)
     }
@@ -264,20 +264,20 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <h3 className="text-base font-medium text-gray-900 mb-5">
-          {accessory ? 'Редактировать аксессуар' : 'Новый аксессуар'}
+          {accessory ? 'Edit accessory' : 'New accessory'}
         </h3>
 
         <div className="flex flex-col gap-4">
-          <Field label="Название *">
+          <Field label="Name *">
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className={inputClass}
-              placeholder="Розетка Schneider"
+              placeholder="Schneider socket"
             />
           </Field>
 
-          <Field label="Тип *">
+          <Field label="Type *">
             <select
               value={form.type_id}
               onChange={(e) => setForm({ ...form, type_id: e.target.value })}
@@ -291,7 +291,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
             </select>
           </Field>
 
-          <Field label="Масштаб (0.1 – 10)">
+          <Field label="Scale (0.1 – 10)">
             <input
               type="number"
               step="0.1"
@@ -303,11 +303,11 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
             />
           </Field>
 
-          <Field label="3D модель (.glb) *">
+          <Field label="3D model (.glb) *">
             <div className="flex items-center gap-3">
               {form.model_url && (
                 <span className="text-xs text-green-600 font-medium flex-shrink-0">
-                  ✓ Загружено
+                  ✓ Uploaded
                 </span>
               )}
               <label
@@ -316,10 +316,10 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
                 transition-colors ${uploading === 'model' ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 {uploading === 'model'
-                  ? 'Загрузка...'
+                  ? 'Uploading...'
                   : form.model_url
-                    ? 'Заменить .glb'
-                    : 'Выбрать .glb'}
+                    ? 'Replace .glb'
+                    : 'Choose .glb'}
                 <input
                   type="file"
                   accept=".glb"
@@ -332,7 +332,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
             </div>
           </Field>
 
-          <Field label="Миниатюра (JPG/PNG) *">
+          <Field label="Thumbnail (JPG/PNG) *">
             <div className="flex items-center gap-3">
               {form.thumb_url && (
                 <img
@@ -347,10 +347,10 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
                 transition-colors ${uploading === 'thumb' ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 {uploading === 'thumb'
-                  ? 'Загрузка...'
+                  ? 'Uploading...'
                   : form.thumb_url
-                    ? 'Заменить файл'
-                    : 'Выбрать файл'}
+                    ? 'Replace file'
+                    : 'Choose file'}
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
@@ -370,7 +370,7 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
               className="rounded"
             />
-            Активен (показывать в визуализаторе)
+            Active (show in visualizer)
           </label>
         </div>
 
@@ -379,14 +379,14 @@ function AccessoryModal({ accessory, types, onClose, onSaved, onError }: Accesso
             onClick={onClose}
             className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
           >
-            Отмена
+            Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving || uploading !== null}
             className="flex-1 py-2.5 rounded-lg bg-gray-900 text-white text-sm hover:bg-gray-800 disabled:opacity-50"
           >
-            {saving ? 'Сохранение...' : 'Сохранить'}
+            {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>
