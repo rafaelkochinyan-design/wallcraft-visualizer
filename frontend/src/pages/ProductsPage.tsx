@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../store/visualizer'
 import { useTenant } from '../hooks/useTenant'
@@ -9,7 +9,14 @@ export default function ProductsPage() {
   const { t } = useTranslation()
   const { availablePanels } = useVisualizerStore()
   const { loading } = useTenant()
-  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [searchParams] = useSearchParams()
+  const [activeCategory, setActiveCategory] = useState<string>(() => searchParams.get('category') || 'all')
+
+  // Sync with URL param changes (e.g. clicking category from navbar)
+  useEffect(() => {
+    const cat = searchParams.get('category')
+    if (cat) setActiveCategory(cat)
+  }, [searchParams])
 
   const categories = [
     { id: 'all', name: t('products.all') },

@@ -24,10 +24,23 @@
     "all": "Все",
     "try_in_3d": "Смотреть в 3D",
     "sku": "Артикул",
-    "dimensions": "Размеры",
+    "dimensions": "Размер панели",
     "weight": "Вес",
     "price": "Цена",
-    "related": "Похожие продукты"
+    "price_per_m2": "AMD (1 м²)",
+    "area": "Площадь",
+    "item_area": "1 шт.",
+    "depth_relief": "Глубина рельефа",
+    "material": "Материал",
+    "download_3d": "Скачать 3D модель",
+    "download_catalog": "Скачать каталог",
+    "related": "Похожие продукты",
+    "see_more": "Смотреть ещё"
+  },
+  "nav_info": {
+    "installation": "Установка",
+    "collaboration": "Сотрудничество",
+    "wallcraft_walls": "Стены Wallcraft"
   },
   "projects": {
     "title": "Проекты",

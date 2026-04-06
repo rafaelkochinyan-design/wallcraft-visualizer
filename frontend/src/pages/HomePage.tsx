@@ -58,8 +58,11 @@ export default function HomePage() {
                 {t('products.subtitle')}
               </p>
             </div>
-            <Link to="/products" className="pub-view-all">
-              {t('home.view_all')} →
+            <Link
+              to={catId === 'uncategorized' ? '/products' : `/products?category=${catId}`}
+              className="pub-view-all"
+            >
+              {t('products.see_more')} →
             </Link>
           </div>
           <div className="pub-product-grid">

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../../store/visualizer'
 import { useThemeStore } from '../../store/theme'
+import api from '../../lib/api'
+import { PanelCategory } from '../../types'
 
 const LANGS = [
   { code: 'en', label: 'EN' },
@@ -12,10 +14,16 @@ const LANGS = [
 
 export default function PublicNavbar() {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const { tenant } = useVisualizerStore()
   const { theme, toggle } = useThemeStore()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [productsOpen, setProductsOpen] = useState(false)
+  const [infoOpen, setInfoOpen] = useState(false)
+  const [categories, setCategories] = useState<PanelCategory[]>([])
+  const productsRef = useRef<HTMLLIElement>(null)
+  const infoRef = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -23,9 +31,32 @@ export default function PublicNavbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close drawer on route change
   useEffect(() => {
     setOpen(false)
+    setProductsOpen(false)
+    setInfoOpen(false)
+  }, [navigate])
+
+  // Fetch panel categories for dropdown
+  useEffect(() => {
+    api
+      .get('/api/panel-categories')
+      .then((r) => setCategories(r.data.data || []))
+      .catch(() => {})
+  }, [])
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (productsRef.current && !productsRef.current.contains(e.target as Node)) {
+        setProductsOpen(false)
+      }
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setInfoOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
   const changeLang = (code: string) => {
@@ -33,15 +64,10 @@ export default function PublicNavbar() {
     localStorage.setItem('wc-lang', code)
   }
 
-  const navLinks = [
-    { to: '/products', label: t('nav.products') },
-    { to: '/projects', label: t('nav.projects') },
-    { to: '/gallery', label: t('nav.gallery') },
-    { to: '/designers', label: t('nav.designers') },
-    { to: '/dealers', label: t('nav.dealers') },
-    { to: '/blog', label: t('nav.blog') },
-    { to: '/about', label: t('nav.about') },
-    { to: '/contact', label: t('nav.contact') },
+  const infoLinks = [
+    { to: '/installation', label: t('nav_info.installation') },
+    { to: '/partners', label: t('nav_info.collaboration') },
+    { to: '/gallery', label: t('nav_info.wallcraft_walls') },
   ]
 
   return (
@@ -58,16 +84,78 @@ export default function PublicNavbar() {
 
         {/* Center links */}
         <ul className="pub-navbar__links">
-          {navLinks.map(({ to, label }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}
-              >
-                {label}
-              </NavLink>
-            </li>
-          ))}
+          {/* Products dropdown */}
+          <li ref={productsRef} style={{ position: 'relative' }}>
+            <button
+              className={`pub-navbar__link pub-navbar__dropdown-trigger${productsOpen ? ' active' : ''}`}
+              onClick={() => { setProductsOpen((o) => !o); setInfoOpen(false) }}
+            >
+              {t('nav.products')} <span style={{ fontSize: 10, marginLeft: 3 }}>▾</span>
+            </button>
+            {productsOpen && (
+              <div className="pub-navbar__dropdown">
+                <Link
+                  to="/products"
+                  className="pub-navbar__dropdown-item"
+                  onClick={() => setProductsOpen(false)}
+                >
+                  {t('products.all')}
+                </Link>
+                {categories.map((cat) => (
+                  <Link
+                    key={cat.id}
+                    to={`/products?category=${cat.id}`}
+                    className="pub-navbar__dropdown-item"
+                    onClick={() => setProductsOpen(false)}
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </li>
+
+          <li>
+            <NavLink to="/projects" className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}>
+              {t('nav.projects')}
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/gallery" className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}>
+              {t('nav.gallery')}
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/about" className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}>
+              {t('nav.about')}
+            </NavLink>
+          </li>
+
+          {/* Information dropdown */}
+          <li ref={infoRef} style={{ position: 'relative' }}>
+            <button
+              className={`pub-navbar__link pub-navbar__dropdown-trigger${infoOpen ? ' active' : ''}`}
+              onClick={() => { setInfoOpen((o) => !o); setProductsOpen(false) }}
+            >
+              Information <span style={{ fontSize: 10, marginLeft: 3 }}>▾</span>
+            </button>
+            {infoOpen && (
+              <div className="pub-navbar__dropdown">
+                {infoLinks.map(({ to, label }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className="pub-navbar__dropdown-item"
+                    onClick={() => setInfoOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </li>
         </ul>
 
         {/* Right controls */}
@@ -77,7 +165,7 @@ export default function PublicNavbar() {
             {LANGS.map(({ code, label }) => (
               <button
                 key={code}
-                className={`pub-navbar__lang-btn${i18n.language === code ? ' active' : ''}`}
+                className={`pub-navbar__lang-btn${i18n.language.slice(0, 2) === code ? ' active' : ''}`}
                 onClick={() => changeLang(code)}
               >
                 {label}
@@ -89,11 +177,6 @@ export default function PublicNavbar() {
           <button className="pub-navbar__theme-btn" onClick={toggle} aria-label="Toggle theme">
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
-
-          {/* 3D CTA */}
-          <Link to="/visualizer" className="pub-navbar__cta">
-            ✦ {t('nav.try3d')}
-          </Link>
 
           {/* Mobile burger */}
           <button
@@ -110,21 +193,60 @@ export default function PublicNavbar() {
 
       {/* Mobile drawer */}
       <div className={`pub-navbar__drawer${open ? ' open' : ''}`}>
-        {navLinks.map(({ to, label }) => (
+        {/* Products section */}
+        <div style={{ borderBottom: '1px solid var(--ui-border)', paddingBottom: 8, marginBottom: 8 }}>
           <NavLink
-            key={to}
-            to={to}
+            to="/products"
             className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}
             onClick={() => setOpen(false)}
           >
-            {label}
+            {t('nav.products')}
           </NavLink>
-        ))}
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/products?category=${cat.id}`}
+              className="pub-navbar__link"
+              style={{ paddingLeft: 24, fontSize: 13, opacity: 0.8 }}
+              onClick={() => setOpen(false)}
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+
+        <NavLink to="/projects" className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`} onClick={() => setOpen(false)}>
+          {t('nav.projects')}
+        </NavLink>
+        <NavLink to="/gallery" className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`} onClick={() => setOpen(false)}>
+          {t('nav.gallery')}
+        </NavLink>
+        <NavLink to="/about" className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`} onClick={() => setOpen(false)}>
+          {t('nav.about')}
+        </NavLink>
+
+        {/* Information section */}
+        <div style={{ borderTop: '1px solid var(--ui-border)', paddingTop: 8, marginTop: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', padding: '4px 0 8px' }}>
+            Information
+          </div>
+          {infoLinks.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className="pub-navbar__link"
+              onClick={() => setOpen(false)}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
         <div className="pub-navbar__drawer-footer">
           {LANGS.map(({ code, label }) => (
             <button
               key={code}
-              className={`pub-navbar__lang-btn${i18n.language === code ? ' active' : ''}`}
+              className={`pub-navbar__lang-btn${i18n.language.slice(0, 2) === code ? ' active' : ''}`}
               onClick={() => changeLang(code)}
             >
               {label}
@@ -133,9 +255,6 @@ export default function PublicNavbar() {
           <button className="pub-navbar__theme-btn" onClick={toggle}>
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
-          <Link to="/visualizer" className="pub-navbar__cta" onClick={() => setOpen(false)}>
-            ✦ {t('nav.try3d')}
-          </Link>
         </div>
       </div>
     </>

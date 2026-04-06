@@ -15,6 +15,19 @@ router.get('/tenant', async (req, res, next) => {
   }
 })
 
+// GET /api/panel-categories — active panel categories for navbar dropdown
+router.get('/panel-categories', async (req, res, next) => {
+  try {
+    const cats = await prisma.panelCategory.findMany({
+      where: { tenant_id: req.tenant.id },
+      orderBy: { sort_order: 'asc' },
+    })
+    ok(res, cats)
+  } catch (err) {
+    next(err)
+  }
+})
+
 // GET /api/panels — active panels for this tenant
 router.get('/panels', async (req, res, next) => {
   try {
@@ -32,6 +45,7 @@ router.get('/panels', async (req, res, next) => {
         depth_mm: true,
         weight_kg: true,
         price: true,
+        images: true,
         sort_order: true,
         category: { select: { id: true, name: true } },
       },
@@ -43,7 +57,7 @@ router.get('/panels', async (req, res, next) => {
   }
 })
 
-// GET /api/panels/:id — single panel with category
+// GET /api/panels/:id — single panel with full details
 router.get('/panels/:id', async (req, res, next) => {
   try {
     const panel = await prisma.panel.findFirst({
@@ -60,6 +74,11 @@ router.get('/panels/:id', async (req, res, next) => {
         depth_mm: true,
         weight_kg: true,
         price: true,
+        images: true,
+        description: true,
+        material: true,
+        depth_relief_mm: true,
+        catalog_url: true,
         sort_order: true,
         category: { select: { id: true, name: true } },
       },

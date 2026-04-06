@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+public
+e2e
+test-results
+coverage
+*.config.js
+*.config.ts
+vite.config.ts
+tailwind.config.js
+postcss.config.js

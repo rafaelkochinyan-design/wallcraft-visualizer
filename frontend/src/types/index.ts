@@ -46,6 +46,11 @@ export interface Panel {
   depth_mm: number
   weight_kg: number | null
   price: number | null
+  images: { url: string }[]
+  description: string | null
+  material: string | null
+  depth_relief_mm: number | null
+  catalog_url: string | null
   active: boolean
   sort_order: number
   category: PanelCategory | null

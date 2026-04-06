@@ -79,18 +79,23 @@ model Panel {
   category_id  String?
   name         String
   sku          String?
-  texture_url  String?
-  thumb_url    String
-  model_url    String?
-  width_mm     Int      @default(500)
-  height_mm    Int      @default(500)
-  depth_mm     Int      @default(19)
-  weight_kg    Float?
-  price        Float?
-  active       Boolean  @default(true)
-  sort_order   Int      @default(0)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  texture_url     String?
+  thumb_url       String
+  model_url       String?
+  width_mm        Int      @default(500)
+  height_mm       Int      @default(500)
+  depth_mm        Int      @default(19)
+  weight_kg       Float?
+  price           Float?
+  images          Json     @default("[]")
+  description     String?
+  material        String?
+  depth_relief_mm Int?
+  catalog_url     String?
+  active          Boolean  @default(true)
+  sort_order      Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
   tenant   Tenant         @relation(fields: [tenant_id], references: [id])
   category PanelCategory? @relation(fields: [category_id], references: [id])

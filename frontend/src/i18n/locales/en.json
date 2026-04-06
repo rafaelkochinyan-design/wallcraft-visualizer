@@ -24,10 +24,23 @@
     "all": "All",
     "try_in_3d": "Try in 3D",
     "sku": "SKU",
-    "dimensions": "Dimensions",
+    "dimensions": "Size of a panel",
     "weight": "Weight",
     "price": "Price",
-    "related": "Related Products"
+    "price_per_m2": "AMD (1 m²)",
+    "area": "Area",
+    "item_area": "1 item",
+    "depth_relief": "Depth of relief",
+    "material": "Material",
+    "download_3d": "Download 3D Model",
+    "download_catalog": "Download Catalog",
+    "related": "Related Products",
+    "see_more": "See more"
+  },
+  "nav_info": {
+    "installation": "Installation",
+    "collaboration": "Collaboration",
+    "wallcraft_walls": "See Wallcraft Walls"
   },
   "projects": {
     "title": "Projects",

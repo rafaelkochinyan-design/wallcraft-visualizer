@@ -24,10 +24,23 @@
     "all": "Բոլոր",
     "try_in_3d": "Տեսնել 3D-ով",
     "sku": "Հոդ.",
-    "dimensions": "Չափեր",
+    "dimensions": "Վահանակի չափը",
     "weight": "Քաշ",
     "price": "Գին",
-    "related": "Նմանատիպ ապրանքներ"
+    "price_per_m2": "AMD (1 մ²)",
+    "area": "Մակերես",
+    "item_area": "1 հատ",
+    "depth_relief": "Ռելիեֆի խորությունը",
+    "material": "Նյութ",
+    "download_3d": "Ներբեռնել 3D մոդել",
+    "download_catalog": "Ներբեռնել կատալոգ",
+    "related": "Նմանատիպ ապրանքներ",
+    "see_more": "Տեսնել ավելին"
+  },
+  "nav_info": {
+    "installation": "Տեղադրում",
+    "collaboration": "Համագործակցություն",
+    "wallcraft_walls": "Wallcraft-ի պատեր"
   },
   "projects": {
     "title": "Նախագծեր",

@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+public
+*.min.js
+*.min.css
+e2e
+test-results
+coverage

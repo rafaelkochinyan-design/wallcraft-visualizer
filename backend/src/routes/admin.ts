@@ -92,6 +92,36 @@ router.get('/auth/me', authMiddleware, async (req, res, next) => {
 // All routes below require auth
 router.use(authMiddleware)
 
+// Accept full URLs (https://...) or relative paths (/uploads/...) or data URIs
+const urlOrPath = z.string().min(1).refine(
+  (v) => v.startsWith('/') || v.startsWith('http') || v.startsWith('data:'),
+  { message: 'Must be a URL, relative path, or data URI' }
+)
+
+// ── PANEL CATEGORIES ─────────────────────────────────────────
+
+router.get('/panel-categories', async (req, res, next) => {
+  try {
+    const cats = await prisma.panelCategory.findMany({
+      where: { tenant_id: req.tenant.id },
+      orderBy: { sort_order: 'asc' },
+    })
+    ok(res, cats)
+  } catch (err) { next(err) }
+})
+
+router.post('/panel-categories', async (req, res, next) => {
+  try {
+    const schema = z.object({ name: z.string().min(1).max(100), sort_order: z.coerce.number().int().default(0) })
+    const parsed = schema.safeParse(req.body)
+    if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+    const cat = await prisma.panelCategory.create({
+      data: { ...parsed.data, tenant_id: req.tenant.id },
+    })
+    ok(res, cat, 201)
+  } catch (err) { next(err) }
+})
+
 // ── PANELS ────────────────────────────────────────────────────
 
 router.get('/panels', async (req, res, next) => {
@@ -107,13 +137,18 @@ router.get('/panels', async (req, res, next) => {
 const panelSchema = z.object({
   name: z.string().min(1).max(100),
   sku: z.string().max(50).optional(),
-  texture_url: z.string().url(),
-  thumb_url: z.string().url(),
+  texture_url: urlOrPath.optional().nullable(),
+  thumb_url: urlOrPath,
   width_mm: z.coerce.number().int().positive().default(500),
   height_mm: z.coerce.number().int().positive().default(500),
   depth_mm: z.coerce.number().int().positive().default(19),
   weight_kg: z.coerce.number().positive().optional(),
   price: z.coerce.number().positive().optional(),
+  images: z.array(z.object({ url: z.string() })).optional().default([]),
+  description: z.string().optional(),
+  material: z.string().optional(),
+  depth_relief_mm: z.coerce.number().int().positive().optional(),
+  catalog_url: z.string().optional(),
   active: z.coerce.boolean().default(true),
   sort_order: z.coerce.number().int().default(0),
   category_id: z.string().optional(),
@@ -171,6 +206,27 @@ router.post('/panels/upload-texture', upload.single('file'), async (req, res, ne
   } catch (err) { next(err) }
 })
 
+router.post('/panels/upload-image', upload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) return fail(res, 400, 'No file uploaded')
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type. Use JPG, PNG, or WebP.')
+    if (req.file.size > 10 * 1024 * 1024) return fail(res, 400, 'File too large. Max 10MB.')
+    const url = await uploadFile(req.file.buffer, 'panel-images', req.file.originalname, req.file.mimetype)
+    ok(res, { url })
+  } catch (err) { next(err) }
+})
+
+router.post('/panels/upload-catalog', upload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) return fail(res, 400, 'No file uploaded')
+    if (req.file.mimetype !== 'application/pdf') return fail(res, 400, 'Only PDF files allowed.')
+    if (req.file.size > 20 * 1024 * 1024) return fail(res, 400, 'File too large. Max 20MB.')
+    const url = await uploadFile(req.file.buffer, 'catalogs', req.file.originalname, 'application/pdf')
+    ok(res, { url })
+  } catch (err) { next(err) }
+})
+
 // ── ACCESSORIES ───────────────────────────────────────────────
 
 router.get('/accessories', async (req, res, next) => {
@@ -183,12 +239,6 @@ router.get('/accessories', async (req, res, next) => {
     ok(res, accessories)
   } catch (err) { next(err) }
 })
-
-// Accept full URLs (https://...) or relative paths (/uploads/...) or data URIs
-const urlOrPath = z.string().min(1).refine(
-  (v) => v.startsWith('/') || v.startsWith('http') || v.startsWith('data:'),
-  { message: 'Must be a URL, relative path, or data URI' }
-)
 
 const accessorySchema = z.object({
   type_id: z.string().min(1),
