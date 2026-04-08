@@ -15,6 +15,7 @@ import {
   uploadImage,
   apiErr,
 } from './adminUtils'
+import { genSlug } from '../../utils/slug'
 
 interface Project {
   id: string
@@ -37,15 +38,14 @@ const SPACE_TYPES = [
   'bathroom',
   'corridor',
 ]
-
-function genSlug(title: string) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9а-яё\s]/gi, '')
-    .replace(/\s+/g, '-')
-    .replace(/[а-яё]/gi, '')
-    .replace(/-+/g, '-')
-    .slice(0, 60)
+const SPACE_LABELS: Record<string, string> = {
+  living_room: 'Living room',
+  bedroom: 'Bedroom',
+  office: 'Office',
+  hotel: 'Hotel',
+  restaurant: 'Restaurant',
+  bathroom: 'Bathroom',
+  corridor: 'Corridor',
 }
 
 export default function AdminProjectsPage() {
@@ -122,7 +122,7 @@ export default function AdminProjectsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-gray-400 text-xs font-mono">{item.slug}</td>
-                <td className="px-4 py-3 text-gray-500 text-xs">{item.space_type || '—'}</td>
+                <td className="px-4 py-3 text-gray-500 text-xs">{SPACE_LABELS[item.space_type || ''] || item.space_type || '—'}</td>
                 <td className="px-4 py-3">
                   <StatusBadge active={item.active} />
                 </td>
@@ -252,7 +252,7 @@ function ProjectModal({
             <option value="">— Not specified —</option>
             {SPACE_TYPES.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {SPACE_LABELS[t] || t}
               </option>
             ))}
           </select>

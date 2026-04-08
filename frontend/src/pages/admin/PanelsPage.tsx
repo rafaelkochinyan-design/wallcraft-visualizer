@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import { Panel, PanelCategory } from '../../types'
+import { apiErr } from './adminUtils'
 
 export default function PanelsPage() {
   const [panels, setPanels] = useState<Panel[]>([])
@@ -235,9 +236,7 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
       }
       onSaved()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
-        ?.data?.error?.message
-      onError(msg || 'Save error')
+      onError(apiErr(err) || 'Save error')
     } finally {
       setSaving(false)
     }

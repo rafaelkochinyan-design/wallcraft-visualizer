@@ -684,18 +684,17 @@
   background: var(--ui-surface);
   border-radius: 16px;
   overflow: hidden;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
   cursor: pointer;
   text-decoration: none;
   display: block;
   color: inherit;
+  will-change: transform;
+  box-shadow: 0 2px 12px rgba(26, 23, 20, 0.06);
+  transition: box-shadow 0.25s ease;
 }
 
 .pub-product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(26, 23, 20, 0.12);
+  box-shadow: 0 20px 56px rgba(26, 23, 20, 0.14);
 }
 
 .pub-product-card__img {
@@ -1486,5 +1485,170 @@
   }
   .pub-dealer-card {
     flex-direction: column;
+  }
+}
+
+/* ── Product Detail Page ─────────────────────────────────────── */
+
+/* Desktop: reuse pub-grid-2 layout */
+.pub-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 56px;
+  align-items: start;
+}
+
+.pub-detail-img-wrap {
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--ui-surface);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pub-detail-thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* Description expand/collapse */
+.pub-detail-desc {
+  position: relative;
+  max-height: 5.1em; /* ~3 lines at 1.7 line-height */
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.pub-detail-desc::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2em;
+  background: linear-gradient(transparent, var(--ui-bg));
+  pointer-events: none;
+}
+.pub-detail-desc--expanded {
+  max-height: none;
+  overflow: visible;
+}
+.pub-detail-desc--expanded::after {
+  display: none;
+}
+.pub-detail-desc__toggle {
+  display: none; /* hidden on desktop */
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+}
+
+/* Sticky CTA — hidden on desktop */
+.pub-detail-sticky-cta {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .pub-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* Edge-to-edge image */
+  .pub-detail-img-wrap {
+    margin: 0 -16px;
+    border-radius: 0;
+    aspect-ratio: 1;
+  }
+
+  /* Horizontal scroll thumbnail strip */
+  .pub-detail-thumbs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-top: 12px;
+  }
+  .pub-detail-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pub-detail-info {
+    padding-top: 24px;
+  }
+
+  /* Description: truncated with Read more */
+  .pub-detail-desc {
+    max-height: 5.1em;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .pub-detail-desc--expanded {
+    max-height: none;
+    overflow: visible;
+  }
+  .pub-detail-desc__toggle {
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  /* Hide desktop download buttons on mobile */
+  .pub-detail-actions {
+    display: none !important;
+  }
+
+  /* Show sticky CTA bar */
+  .pub-detail-sticky-cta {
+    display: flex;
+    gap: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: var(--ui-bg);
+    border-top: 1px solid var(--ui-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .pub-detail-sticky-cta__btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pub-detail-sticky-cta__btn--primary {
+    background: var(--text-primary);
+    color: var(--ui-bg);
+  }
+  .pub-detail-sticky-cta__btn--secondary {
+    background: var(--ui-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--ui-border);
+  }
+
+  /* Add bottom padding so sticky bar doesn't cover last content */
+  .pub-detail-page-wrap {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
 }

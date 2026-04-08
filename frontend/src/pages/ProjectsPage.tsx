@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { usePublicData } from '../hooks/usePublicData'
 import { Project } from '../types'
+import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 export default function ProjectsPage() {
   const { t } = useTranslation()
@@ -9,8 +11,11 @@ export default function ProjectsPage() {
 
   return (
     <div className="pub-section">
-      <h1 className="pub-section-title">{t('projects.title')}</h1>
-      <p className="pub-section-subtitle">{t('projects.subtitle')}</p>
+      <PageMeta title="Projects" description="Browse our completed interior design projects featuring WallCraft panels." url="/projects" />
+      <FadeIn>
+        <h1 className="pub-section-title">{t('projects.title')}</h1>
+        <p className="pub-section-subtitle">{t('projects.subtitle')}</p>
+      </FadeIn>
       {loading ? (
         <div className="pub-grid-3">
           {[...Array(6)].map((_, i) => (
@@ -24,7 +29,7 @@ export default function ProjectsPage() {
           ))}
         </div>
       ) : projects && projects.length > 0 ? (
-        <div className="pub-grid-3">
+        <StaggerChildren className="pub-grid-3" baseDelay={0.08}>
           {projects.map((p) => (
             <Link key={p.id} to={`/projects/${p.slug}`} style={{ textDecoration: 'none' }}>
               <div className="pub-card">
@@ -46,7 +51,7 @@ export default function ProjectsPage() {
               </div>
             </Link>
           ))}
-        </div>
+        </StaggerChildren>
       ) : (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
           No projects yet.

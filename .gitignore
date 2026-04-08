@@ -29,3 +29,10 @@ frontend/public/uploads/logos/
 
 # TypeScript build info
 *.tsbuildinfo
+
+# Playwright test artifacts
+test-results/
+playwright-report/
+
+# Prisma compiled output
+prisma/dist/

@@ -112,7 +112,7 @@ export default function AdminHeroSlidesPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<HeroSlide | null>(null)
 
-  const [_toast, showToast] = useToast()
+  const [toast, showToast] = useToast()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -223,7 +223,7 @@ export default function AdminHeroSlidesPage() {
           </tbody>
         </table>
       </div>
-      <Toast toast={null} />
+      <Toast toast={toast} />
       {modalOpen && (
         <SlideModal
           item={editing}
@@ -255,6 +255,7 @@ function SlideModal({
   const [lang, setLang] = useLocaleLang()
   const [form, setForm] = useState({
     image_url: item?.image_url ?? '',
+    video_url: item?.video_url ?? '',
     headline: item?.headline ?? emptyLocale(),
     subheadline: item?.subheadline ?? emptyLocale(),
     cta_label: item?.cta_label ?? emptyLocale(),
@@ -299,6 +300,14 @@ function SlideModal({
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Field label="Image *">
           <FileUpload url={form.image_url} uploading={uploading} onFile={handleImg} />
+        </Field>
+        <Field label="Video URL (optional, overrides image)">
+          <input
+            className={inputClass}
+            value={form.video_url}
+            onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
+            placeholder="https://..."
+          />
         </Field>
 
         <div className="border border-gray-100 rounded-xl p-4">

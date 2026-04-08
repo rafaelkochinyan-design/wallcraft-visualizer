@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import api from '../../lib/api'
 
 interface Settings {
@@ -7,21 +8,49 @@ interface Settings {
   name: string
   logo_url: string | null
   primary_color: string
+  phone: string | null
+  email: string | null
+  address: string | null
+  instagram_url: string | null
+  facebook_url: string | null
+  tiktok_url: string | null
+  whatsapp: string | null
 }
 
 export default function StoreSettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null)
-  const [form, setForm] = useState({ name: '', primary_color: '#1a1a1a', logo_url: '' })
+  const [form, setForm] = useState({
+    name: '',
+    primary_color: '#1a1a1a',
+    logo_url: '',
+    phone: '',
+    email: '',
+    address: '',
+    whatsapp: '',
+    instagram_url: '',
+    facebook_url: '',
+    tiktok_url: '',
+  })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
 
   useEffect(() => {
     api.get('/admin/settings').then((res) => {
       const data = res.data.data as Settings
       setSettings(data)
-      setForm({ name: data.name, primary_color: data.primary_color, logo_url: data.logo_url ?? '' })
+      setForm({
+        name: data.name,
+        primary_color: data.primary_color,
+        logo_url: data.logo_url ?? '',
+        phone: data.phone ?? '',
+        email: data.email ?? '',
+        address: data.address ?? '',
+        whatsapp: data.whatsapp ?? '',
+        instagram_url: data.instagram_url ?? '',
+        facebook_url: data.facebook_url ?? '',
+        tiktok_url: data.tiktok_url ?? '',
+      })
       setLoading(false)
     })
   }, [])
@@ -34,7 +63,7 @@ export default function StoreSettingsPage() {
       const res = await api.post('/admin/settings/upload-logo', fd)
       setForm((f) => ({ ...f, logo_url: res.data.data.url }))
     } catch {
-      setToast('Logo upload failed')
+      toast.error('Logo upload failed')
     } finally {
       setUploadingLogo(false)
     }
@@ -47,11 +76,17 @@ export default function StoreSettingsPage() {
         name: form.name,
         primary_color: form.primary_color,
         logo_url: form.logo_url || null,
+        phone: form.phone || null,
+        email: form.email || null,
+        address: form.address || null,
+        whatsapp: form.whatsapp || null,
+        instagram_url: form.instagram_url || null,
+        facebook_url: form.facebook_url || null,
+        tiktok_url: form.tiktok_url || null,
       })
-      setToast('Settings saved')
-      setTimeout(() => setToast(null), 3000)
+      toast.success('Settings saved')
     } catch {
-      setToast('Save failed')
+      toast.error('Save failed')
     } finally {
       setSaving(false)
     }
@@ -65,20 +100,27 @@ export default function StoreSettingsPage() {
     )
   }
 
+  const field = (label: string, key: keyof typeof form, opts?: { type?: string; placeholder?: string; helper?: string }) => (
+    <div>
+      <label className="block text-xs text-gray-500 mb-1">{label}</label>
+      <input
+        type={opts?.type ?? 'text'}
+        value={form[key] as string}
+        onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+        className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+        placeholder={opts?.placeholder}
+      />
+      {opts?.helper && <p className="text-xs text-gray-400 mt-1">{opts.helper}</p>}
+    </div>
+  )
+
   return (
     <div className="p-6 max-w-lg">
       <h2 className="text-lg font-medium text-gray-900 mb-6">Store Settings</h2>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col gap-5">
         {/* Store name */}
-        <div>
-          <label className="block text-xs text-gray-500 mb-1">Store name</label>
-          <input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
-          />
-        </div>
+        {field('Store name', 'name')}
 
         {/* Primary color */}
         <div>
@@ -143,6 +185,30 @@ export default function StoreSettingsPage() {
           </div>
         </div>
 
+        {/* Contact information */}
+        <div className="pt-2 border-t border-gray-100">
+          <p className="text-xs font-medium text-gray-700 mb-3">Contact information</p>
+          <div className="flex flex-col gap-4">
+            {field('Phone', 'phone', { placeholder: '+374 93 97 97 70' })}
+            {field('Email', 'email', { type: 'email', placeholder: 'info@wallcraft.am' })}
+            {field('Address', 'address', { placeholder: 'Yerevan, Armenia' })}
+            {field('WhatsApp number', 'whatsapp', {
+              placeholder: '+374 93 97 97 70',
+              helper: 'Used for WhatsApp button — numbers only',
+            })}
+          </div>
+        </div>
+
+        {/* Social media links */}
+        <div className="pt-2 border-t border-gray-100">
+          <p className="text-xs font-medium text-gray-700 mb-3">Social media links</p>
+          <div className="flex flex-col gap-4">
+            {field('Instagram URL', 'instagram_url', { placeholder: 'https://instagram.com/wallcraft.am' })}
+            {field('Facebook URL', 'facebook_url', { placeholder: 'https://facebook.com/wallcraft.am' })}
+            {field('TikTok URL', 'tiktok_url', { placeholder: 'https://tiktok.com/@wallcraft.am' })}
+          </div>
+        </div>
+
         {/* Slug info */}
         <div className="bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500">
           Store slug: <span className="font-mono text-gray-700">{settings?.slug}</span>
@@ -160,12 +226,6 @@ export default function StoreSettingsPage() {
           {saving ? 'Saving...' : 'Save changes'}
         </button>
       </div>
-
-      {toast && (
-        <div className="fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg bg-gray-900 text-white text-sm">
-          {toast}
-        </div>
-      )}
     </div>
   )
 }

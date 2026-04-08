@@ -4,6 +4,8 @@ import { toast } from 'sonner'
 import api from '../lib/api'
 import { useVisualizerStore } from '../store/visualizer'
 import { useTenant } from '../hooks/useTenant'
+import FadeIn from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 export default function ContactPage() {
   const { t } = useTranslation()
@@ -38,9 +40,12 @@ export default function ContactPage() {
 
   return (
     <div className="pub-section">
-      <h1 className="pub-section-title">{t('contact.title')}</h1>
-      <p className="pub-section-subtitle">{t('contact.subtitle')}</p>
-
+      <PageMeta title="Contact" description="Get in touch with WallCraft — we'd love to hear from you." url="/contact" />
+      <FadeIn>
+        <h1 className="pub-section-title">{t('contact.title')}</h1>
+        <p className="pub-section-subtitle">{t('contact.subtitle')}</p>
+      </FadeIn>
+      <FadeIn delay={0.1}>
       <div className="pub-grid-2" style={{ alignItems: 'start', gap: 64, marginTop: 48 }}>
         {/* Form */}
         <form className="pub-form" onSubmit={handleSubmit}>
@@ -130,6 +135,7 @@ export default function ContactPage() {
           )}
         </div>
       </div>
+      </FadeIn>
     </div>
   )
 }

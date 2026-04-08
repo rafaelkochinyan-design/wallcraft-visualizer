@@ -8,7 +8,8 @@
     "blog": "Blog",
     "about": "About",
     "contact": "Contact",
-    "try3d": "Try in 3D"
+    "try3d": "Try in 3D",
+    "information": "Information"
   },
   "home": {
     "hero_cta": "Explore Collection",
@@ -133,6 +134,8 @@
     "filter": "Filter",
     "sort": "Sort",
     "page": "Page",
-    "of": "of"
+    "of": "of",
+    "read_more": "Read more",
+    "show_less": "Show less"
   }
 }

@@ -51,7 +51,7 @@ function BulkDropzone({ onUploaded }: { onUploaded: () => void }) {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  const [_toast, showToast] = useToast()
+  const [toast, showToast] = useToast()
 
   const onDrop = useCallback(
     async (files: File[]) => {
@@ -129,7 +129,7 @@ export default function AdminGalleryPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<GalleryItem | null>(null)
 
-  const [_toast, showToast] = useToast()
+  const [toast, showToast] = useToast()
 
   async function load() {
     try {
@@ -221,7 +221,7 @@ export default function AdminGalleryPage() {
           </tbody>
         </table>
       </div>
-      <Toast toast={null} />
+      <Toast toast={toast} />
       {modalOpen && (
         <GalleryModal
           item={editing}

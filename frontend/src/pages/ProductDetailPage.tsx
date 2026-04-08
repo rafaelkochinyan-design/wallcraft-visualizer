@@ -10,6 +10,7 @@ export default function ProductDetailPage() {
   const [panel, setPanel] = useState<Panel | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeImg, setActiveImg] = useState(0)
+  const [descExpanded, setDescExpanded] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -51,7 +52,7 @@ export default function ProductDetailPage() {
   const nextImage = () => setActiveImg((i) => (i + 1) % galleryImages.length)
 
   return (
-    <div className="pub-section">
+    <div className="pub-section pub-detail-page-wrap">
       <Link
         to="/products"
         style={{
@@ -65,22 +66,11 @@ export default function ProductDetailPage() {
         ← {t('common.back')}
       </Link>
 
-      <div className="pub-grid-2" style={{ alignItems: 'start', gap: 56 }}>
+      <div className="pub-detail-grid">
         {/* ── Gallery ─────────────────────────────────────── */}
         <div>
           {/* Main image */}
-          <div
-            style={{
-              borderRadius: 20,
-              overflow: 'hidden',
-              background: 'var(--ui-surface)',
-              aspectRatio: '1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-            }}
-          >
+          <div className="pub-detail-img-wrap">
             {mainImage ? (
               <img
                 src={mainImage}
@@ -144,14 +134,7 @@ export default function ProductDetailPage() {
 
           {/* Thumbnail strip */}
           {galleryImages.length > 1 && (
-            <div
-              style={{
-                display: 'flex',
-                gap: 8,
-                marginTop: 12,
-                flexWrap: 'wrap',
-              }}
-            >
+            <div className="pub-detail-thumbs">
               {galleryImages.map((url, idx) => (
                 <button
                   key={idx}
@@ -180,7 +163,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* ── Info ────────────────────────────────────────── */}
-        <div>
+        <div className="pub-detail-info">
           {panel.category?.name && (
             <div
               style={{
@@ -273,20 +256,28 @@ export default function ProductDetailPage() {
 
           {/* Description */}
           {panel.description && (
-            <p
-              style={{
-                fontSize: 15,
-                color: 'var(--text-secondary)',
-                lineHeight: 1.7,
-                marginBottom: 28,
-              }}
-            >
-              {panel.description}
-            </p>
+            <div className={`pub-detail-desc${descExpanded ? ' pub-detail-desc--expanded' : ''}`}>
+              <p
+                style={{
+                  fontSize: 15,
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.7,
+                  marginBottom: 8,
+                }}
+              >
+                {panel.description}
+              </p>
+              <button
+                className="pub-detail-desc__toggle"
+                onClick={() => setDescExpanded((v) => !v)}
+              >
+                {descExpanded ? t('common.show_less') : t('common.read_more')}
+              </button>
+            </div>
           )}
 
-          {/* Download buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* Download buttons — desktop */}
+          <div className="pub-detail-actions" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {panel.model_url && (
               <a
                 href={panel.model_url}
@@ -337,6 +328,32 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Sticky CTA bar (mobile only) ─────────────────── */}
+      {(panel.model_url || panel.catalog_url) && (
+        <div className="pub-detail-sticky-cta">
+          {panel.model_url && (
+            <a
+              href={panel.model_url}
+              download
+              className="pub-detail-sticky-cta__btn pub-detail-sticky-cta__btn--primary"
+            >
+              ↓ {t('products.download_3d')}
+            </a>
+          )}
+          {panel.catalog_url && (
+            <a
+              href={panel.catalog_url}
+              download
+              target="_blank"
+              rel="noreferrer"
+              className="pub-detail-sticky-cta__btn pub-detail-sticky-cta__btn--secondary"
+            >
+              ↓ {t('products.download_catalog')}
+            </a>
+          )}
+        </div>
+      )}
     </div>
   )
 }

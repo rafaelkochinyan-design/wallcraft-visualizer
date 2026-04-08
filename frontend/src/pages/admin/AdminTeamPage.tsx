@@ -18,19 +18,14 @@ import {
   useLocaleLang,
   emptyLocale,
 } from './adminUtils'
-
-interface LocaleStr {
-  ru: string
-  en: string
-  am: string
-}
+import type { LocalizedString } from '../../types'
 
 interface TeamMember {
   id: string
   name: string
-  role: LocaleStr
+  role: LocalizedString
   photo_url: string | null
-  bio: LocaleStr | null
+  bio: LocalizedString | null
   sort_order: number
   active: boolean
 }

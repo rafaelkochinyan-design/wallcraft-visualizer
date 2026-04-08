@@ -6,6 +6,8 @@ import { usePublicData } from '../hooks/usePublicData'
 import { HeroSlide, Partner, Panel } from '../types'
 import HeroCarousel from '../components/ui/HeroCarousel'
 import ProductCard from '../components/ui/ProductCard'
+import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 export default function HomePage() {
   const { t, i18n } = useTranslation()
@@ -45,91 +47,109 @@ export default function HomePage() {
 
   return (
     <div>
+      <PageMeta
+        title="WallCraft"
+        description="Handcrafted 3D gypsum wall panels for your interior. Visualize your space in real time."
+        url="/"
+      />
+
       {/* ── Hero Carousel ────────────────────────────────────── */}
-      <HeroCarousel slides={slides || []} fallback={heroFallback} />
+      {slides === null ? (
+        <div style={{ height: '100vh', minHeight: 560, background: '#0a0a0f' }} />
+      ) : (
+        <HeroCarousel slides={slides} fallback={heroFallback} />
+      )}
 
       {/* ── Product Category Sections ─────────────────────── */}
       {Object.entries(panelsByCategory).map(([catId, { name, panels }]) => (
         <section key={catId} className="pub-section">
-          <div className="pub-section-header">
-            <div>
-              <h2 className="pub-section-title">{name}</h2>
-              <p className="pub-section-subtitle" style={{ margin: 0 }}>
-                {t('products.subtitle')}
-              </p>
+          <FadeIn>
+            <div className="pub-section-header">
+              <div>
+                <h2 className="pub-section-title">{name}</h2>
+                <p className="pub-section-subtitle" style={{ margin: 0 }}>
+                  {t('products.subtitle')}
+                </p>
+              </div>
+              <Link
+                to={catId === 'uncategorized' ? '/products' : `/products?category=${catId}`}
+                className="pub-view-all"
+              >
+                {t('products.see_more')} →
+              </Link>
             </div>
-            <Link
-              to={catId === 'uncategorized' ? '/products' : `/products?category=${catId}`}
-              className="pub-view-all"
-            >
-              {t('products.see_more')} →
-            </Link>
-          </div>
-          <div className="pub-product-grid">
+          </FadeIn>
+          <StaggerChildren className="pub-product-grid" baseDelay={0.1}>
             {panels.map((panel) => (
               <ProductCard key={panel.id} panel={panel} />
             ))}
-          </div>
+          </StaggerChildren>
         </section>
       ))}
 
       {/* Fallback when no panels loaded */}
       {!tenantLoading && availablePanels.length === 0 && (
-        <section className="pub-section" style={{ textAlign: 'center', padding: '80px 32px' }}>
-          <h2 className="pub-section-title">{t('products.title')}</h2>
-          <p className="pub-section-subtitle">{t('products.subtitle')}</p>
-          <Link
-            to="/products"
-            className="pub-hero__cta"
-            style={{ display: 'inline-flex', marginTop: 24 }}
-          >
-            {t('home.view_all')}
-          </Link>
-        </section>
+        <FadeIn>
+          <section className="pub-section" style={{ textAlign: 'center', padding: '80px 32px' }}>
+            <h2 className="pub-section-title">{t('products.title')}</h2>
+            <p className="pub-section-subtitle">{t('products.subtitle')}</p>
+            <Link
+              to="/products"
+              className="pub-hero__cta"
+              style={{ display: 'inline-flex', marginTop: 24 }}
+            >
+              {t('home.view_all')}
+            </Link>
+          </section>
+        </FadeIn>
       )}
 
       {/* ── Partner Logos ─────────────────────────────────── */}
       {partners && partners.length > 0 && (
-        <section className="pub-section" style={{ textAlign: 'center' }}>
-          <p className="pub-section-subtitle" style={{ marginBottom: 24 }}>
-            {t('home.partners_title')}
-          </p>
-          <div className="pub-partners-strip" style={{ justifyContent: 'center' }}>
-            {partners.map((p) => (
-              <a key={p.id} href={p.website || '#'} target="_blank" rel="noreferrer">
-                <img src={p.logo_url} alt={p.name} />
-              </a>
-            ))}
-          </div>
-        </section>
+        <FadeIn>
+          <section className="pub-section" style={{ textAlign: 'center' }}>
+            <p className="pub-section-subtitle" style={{ marginBottom: 24 }}>
+              {t('home.partners_title')}
+            </p>
+            <div className="pub-partners-strip" style={{ justifyContent: 'center' }}>
+              {partners.map((p) => (
+                <a key={p.id} href={p.website || '#'} target="_blank" rel="noreferrer">
+                  <img src={p.logo_url} alt={p.name} />
+                </a>
+              ))}
+            </div>
+          </section>
+        </FadeIn>
       )}
 
       {/* ── Contact CTA ───────────────────────────────────── */}
-      <section
-        style={{ background: 'var(--ui-surface)', padding: '64px 32px', textAlign: 'center' }}
-      >
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <h2 className="pub-section-title">{t('contact.title')}</h2>
-          <p className="pub-section-subtitle">{t('contact.subtitle')}</p>
-          <Link
-            to="/contact"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '13px 28px',
-              background: 'var(--accent)',
-              color: '#fff',
-              borderRadius: 12,
-              fontWeight: 600,
-              fontSize: 15,
-              textDecoration: 'none',
-            }}
-          >
-            {t('nav.contact')} →
-          </Link>
-        </div>
-      </section>
+      <FadeIn>
+        <section
+          style={{ background: 'var(--ui-surface)', padding: '64px 32px', textAlign: 'center' }}
+        >
+          <div style={{ maxWidth: 600, margin: '0 auto' }}>
+            <h2 className="pub-section-title">{t('contact.title')}</h2>
+            <p className="pub-section-subtitle">{t('contact.subtitle')}</p>
+            <Link
+              to="/contact"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '13px 28px',
+                background: 'var(--accent)',
+                color: '#fff',
+                borderRadius: 12,
+                fontWeight: 600,
+                fontSize: 15,
+                textDecoration: 'none',
+              }}
+            >
+              {t('nav.contact')} →
+            </Link>
+          </div>
+        </section>
+      </FadeIn>
     </div>
   )
 }

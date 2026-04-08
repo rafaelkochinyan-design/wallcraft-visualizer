@@ -17,34 +17,21 @@ import {
   useLocaleLang,
   emptyLocale,
 } from './adminUtils'
-
-interface LocaleStr {
-  ru: string
-  en: string
-  am: string
-}
+import { genSlug } from '../../utils/slug'
+import type { LocalizedString } from '../../types'
 
 interface BlogPost {
   id: string
   slug: string
-  title: LocaleStr
-  excerpt: LocaleStr
-  body: LocaleStr
+  title: LocalizedString
+  excerpt: LocalizedString
+  body: LocalizedString
   cover_url: string | null
   category: string | null
   tags: string[]
   published: boolean
   published_at: string | null
   created_at: string
-}
-
-function genSlug(title: string) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 80)
 }
 
 export default function AdminBlogPage() {

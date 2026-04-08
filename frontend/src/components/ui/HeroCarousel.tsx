@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useLocalized } from '../../hooks/useLocalized'
 import { HeroSlide } from '../../types'
 
 const styles = `
@@ -167,8 +168,8 @@ interface Props {
 }
 
 export default function HeroCarousel({ slides, fallback }: Props) {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.language as 'en' | 'ru' | 'am'
+  const { t } = useTranslation()
+  const localized = useLocalized()
 
   const [current, setCurrent] = useState(0)
   const [prevIdx, setPrevIdx] = useState<number | null>(null)
@@ -180,9 +181,9 @@ export default function HeroCarousel({ slides, fallback }: Props) {
     slides.length > 0
       ? slides.map((s) => ({
           image_url: s.image_url,
-          title: s.headline[lang] || s.headline.ru || s.headline.en,
-          desc: s.subheadline ? s.subheadline[lang] || s.subheadline.ru : undefined,
-          ctaLabel: s.cta_label ? s.cta_label[lang] || s.cta_label.ru : undefined,
+          title: localized(s.headline),
+          desc: s.subheadline ? localized(s.subheadline) : undefined,
+          ctaLabel: s.cta_label ? localized(s.cta_label) : undefined,
           ctaUrl: s.cta_url || '/products',
         }))
       : fallback

@@ -4,6 +4,8 @@ import { usePublicData } from '../hooks/usePublicData'
 import { GalleryItem } from '../types'
 import FilterChips from '../components/ui/FilterChips'
 import Lightbox, { LightboxItem } from '../components/ui/Lightbox'
+import FadeIn from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 const SPACE_TYPES = [
   { key: '', label: 'gallery.filter_all' },
@@ -34,11 +36,13 @@ export default function GalleryPage() {
 
   return (
     <div>
+      <PageMeta title="Gallery" description="Explore real interiors featuring WallCraft 3D gypsum panels." url="/gallery" />
       <section className="pub-section">
-        <h1 className="pub-section-title">{t('gallery.title')}</h1>
-        <p className="pub-section-subtitle">{t('gallery.subtitle')}</p>
-
-        <FilterChips options={filterOptions} value={spaceType} onChange={setSpaceType} />
+        <FadeIn>
+          <h1 className="pub-section-title">{t('gallery.title')}</h1>
+          <p className="pub-section-subtitle">{t('gallery.subtitle')}</p>
+          <FilterChips options={filterOptions} value={spaceType} onChange={setSpaceType} />
+        </FadeIn>
 
         {loading ? (
           <div className="pub-masonry">

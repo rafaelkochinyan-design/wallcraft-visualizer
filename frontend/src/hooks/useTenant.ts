@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import api from '../lib/api'
 import { useVisualizerStore } from '../store/visualizer'
-import type { Tenant, Panel, Accessory, AccessoryType } from '../types'
+import type { Tenant, Panel } from '../types'
 
 interface UseTenantResult {
   loading: boolean
@@ -13,27 +13,22 @@ export function useTenant(): UseTenantResult {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const { setTenant, setAvailablePanels, setAvailableAccessories, setAvailableAccessoryTypes } =
-    useVisualizerStore()
+  const { setTenant, setAvailablePanels } = useVisualizerStore()
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
       try {
-        const [tenantRes, panelsRes, accessoriesRes, typesRes] = await Promise.all([
+        const [tenantRes, panelsRes] = await Promise.all([
           api.get<{ data: Tenant }>('/api/tenant'),
           api.get<{ data: Panel[] }>('/api/panels'),
-          api.get<{ data: Accessory[] }>('/api/accessories'),
-          api.get<{ data: AccessoryType[] }>('/api/accessory-types'),
         ])
 
         if (cancelled) return
 
         setTenant(tenantRes.data.data)
         setAvailablePanels(panelsRes.data.data)
-        setAvailableAccessories(accessoriesRes.data.data)
-        setAvailableAccessoryTypes(typesRes.data.data)
 
         // Apply tenant primary color to CSS variable for theming
         document.documentElement.style.setProperty(
@@ -55,7 +50,7 @@ export function useTenant(): UseTenantResult {
     return () => {
       cancelled = true
     }
-  }, [setTenant, setAvailablePanels, setAvailableAccessories, setAvailableAccessoryTypes])
+  }, [setTenant, setAvailablePanels])
 
   return { loading, error }
 }

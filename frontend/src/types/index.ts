@@ -26,6 +26,9 @@ export interface Tenant {
   phone: string | null
   address: string | null
   domain: string | null
+  instagram_url: string | null
+  facebook_url: string | null
+  tiktok_url: string | null
 }
 
 export interface PanelCategory {

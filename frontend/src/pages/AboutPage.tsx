@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { usePublicData } from '../hooks/usePublicData'
 import { useLocalized } from '../hooks/useLocalized'
 import { TeamMember, PageContent } from '../types'
+import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 export default function AboutPage() {
   const { t } = useTranslation()
@@ -49,9 +51,11 @@ export default function AboutPage() {
 
   return (
     <div>
+      <PageMeta title="About" description="Learn about WallCraft — our story, values, and team." url="/about" />
       <div className="pub-section">
-        <h1 className="pub-section-title">{t('about.title')}</h1>
-        <p className="pub-section-subtitle">{t('about.subtitle')}</p>
+        <FadeIn>
+          <h1 className="pub-section-title">{t('about.title')}</h1>
+          <p className="pub-section-subtitle">{t('about.subtitle')}</p>
         {page?.content?.story && (
           <p
             style={{
@@ -65,13 +69,16 @@ export default function AboutPage() {
             {localize(page.content.story)}
           </p>
         )}
+        </FadeIn>
       </div>
 
       {/* Values */}
       <div style={{ background: 'var(--ui-surface)', padding: '80px 32px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <h2 className="pub-section-title">{t('about.values_title')}</h2>
-          <div className="pub-grid-3" style={{ marginTop: 40 }}>
+          <FadeIn>
+            <h2 className="pub-section-title">{t('about.values_title')}</h2>
+          </FadeIn>
+          <StaggerChildren className="pub-grid-3" style={{ marginTop: 40 }} baseDelay={0.1}>
             {values.map((v, i) => (
               <div key={i} style={{ background: 'var(--ui-bg)', borderRadius: 16, padding: 28 }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>{v.icon}</div>
@@ -81,15 +88,17 @@ export default function AboutPage() {
                 </p>
               </div>
             ))}
-          </div>
+          </StaggerChildren>
         </div>
       </div>
 
       {/* Team */}
       {team && team.length > 0 && (
         <div className="pub-section">
-          <h2 className="pub-section-title">{t('about.team_title')}</h2>
-          <div className="pub-grid-4" style={{ marginTop: 32 }}>
+          <FadeIn>
+            <h2 className="pub-section-title">{t('about.team_title')}</h2>
+          </FadeIn>
+          <StaggerChildren className="pub-grid-4" style={{ marginTop: 32 }} baseDelay={0.1}>
             {team.map((m) => (
               <div key={m.id} style={{ textAlign: 'center' }}>
                 {m.photo_url ? (
@@ -125,7 +134,7 @@ export default function AboutPage() {
                 <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{localize(m.role)}</div>
               </div>
             ))}
-          </div>
+          </StaggerChildren>
         </div>
       )}
     </div>

@@ -150,7 +150,7 @@ export default function PublicNavbar() {
               className={`pub-navbar__link pub-navbar__dropdown-trigger${infoOpen ? ' active' : ''}`}
               onClick={() => { setInfoOpen((o) => !o); setProductsOpen(false) }}
             >
-              Information <span style={{ fontSize: 10, marginLeft: 3 }}>▾</span>
+              {t('nav.information')} <span style={{ fontSize: 10, marginLeft: 3 }}>▾</span>
             </button>
             {infoOpen && (
               <div className="pub-navbar__dropdown">
@@ -229,7 +229,7 @@ export default function PublicNavbar() {
         {/* Information section */}
         <div style={{ borderTop: '1px solid var(--ui-border)', paddingTop: 8, marginTop: 8 }}>
           <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', padding: '4px 0 8px' }}>
-            Information
+            {t('nav.information')}
           </div>
           {infoLinks.map(({ to, label }) => (
             <Link

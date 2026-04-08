@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { usePublicData } from '../hooks/usePublicData'
 import { useLocalized } from '../hooks/useLocalized'
 import { Designer } from '../types'
+import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 export default function DesignersPage() {
   const { t } = useTranslation()
@@ -11,8 +13,11 @@ export default function DesignersPage() {
 
   return (
     <div className="pub-section">
-      <h1 className="pub-section-title">{t('designers.title')}</h1>
-      <p className="pub-section-subtitle">{t('designers.subtitle')}</p>
+      <PageMeta title="Designers" description="Meet the designers behind WallCraft's beautiful interiors." url="/designers" />
+      <FadeIn>
+        <h1 className="pub-section-title">{t('designers.title')}</h1>
+        <p className="pub-section-subtitle">{t('designers.subtitle')}</p>
+      </FadeIn>
       {loading ? (
         <div className="pub-grid-3">
           {[...Array(6)].map((_, i) => (
@@ -33,7 +38,7 @@ export default function DesignersPage() {
           ))}
         </div>
       ) : designers && designers.length > 0 ? (
-        <div className="pub-grid-3">
+        <StaggerChildren className="pub-grid-3" baseDelay={0.08}>
           {designers.map((d) => (
             <Link
               key={d.id}
@@ -86,7 +91,7 @@ export default function DesignersPage() {
               )}
             </Link>
           ))}
-        </div>
+        </StaggerChildren>
       ) : (
         <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
           No designers yet.

@@ -18,34 +18,21 @@ import {
   useLocaleLang,
   emptyLocale,
 } from './adminUtils'
-
-interface LocaleStr {
-  ru: string
-  en: string
-  am: string
-}
+import { genSlug } from '../../utils/slug'
+import type { LocalizedString } from '../../types'
 
 interface Designer {
   id: string
   name: string
   slug: string
   photo_url: string | null
-  bio: LocaleStr | null
+  bio: LocalizedString | null
   specialty: string | null
   portfolio: string[]
   instagram: string | null
   website: string | null
   active: boolean
   sort_order: number
-}
-
-function genSlug(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .slice(0, 60)
 }
 
 export default function AdminDesignersPage() {
@@ -191,6 +178,7 @@ function DesignerModal({
     specialty: item?.specialty ?? '',
     instagram: item?.instagram ?? '',
     website: item?.website ?? '',
+    portfolio: item?.portfolio ?? [],
     active: item?.active ?? true,
     sort_order: item?.sort_order ?? 0,
   })
@@ -276,6 +264,23 @@ function DesignerModal({
               placeholder="https://..."
             />
           </Field>
+        </div>
+
+        <Field label="Portfolio images (one URL per line)">
+          <textarea
+            className={`${textareaClass} h-24`}
+            value={form.portfolio.join('\n')}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                portfolio: e.target.value.split('\n').filter((u) => u.trim()),
+              }))
+            }
+            placeholder="https://example.com/image1.jpg"
+          />
+        </Field>
+
+        <div className="grid grid-cols-2 gap-4">
           <Field label="Order">
             <input
               type="number"

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../../lib/api'
-import { tokenStore } from '../../lib/api'
+import api, { tokenStore } from '../../lib/api'
+import { apiErr } from './adminUtils'
 
 export default function AdminLoginPage() {
   const navigate = useNavigate()
@@ -19,9 +19,7 @@ export default function AdminLoginPage() {
       tokenStore.set(res.data.data.accessToken)
       navigate('/admin/panels')
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: { message?: string } } } })?.response
-        ?.data?.error?.message
-      setError(msg || 'Invalid email or password')
+      setError(apiErr(err) || 'Invalid email or password')
     } finally {
       setLoading(false)
     }

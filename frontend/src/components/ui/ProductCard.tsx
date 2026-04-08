@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { useRef } from 'react'
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { Panel } from '../../types'
 
 interface Props {
@@ -6,8 +8,49 @@ interface Props {
 }
 
 export default function ProductCard({ panel }: Props) {
+  const ref = useRef<HTMLAnchorElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), { stiffness: 300, damping: 30 })
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 300, damping: 30 })
+  const scale = useSpring(1, { stiffness: 300, damping: 30 })
+
+  function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
+    const rect = ref.current?.getBoundingClientRect()
+    if (!rect) return
+    const nx = (e.clientX - rect.left) / rect.width - 0.5
+    const ny = (e.clientY - rect.top) / rect.height - 0.5
+    x.set(nx)
+    y.set(ny)
+  }
+
+  function handleMouseEnter() {
+    scale.set(1.03)
+  }
+
+  function handleMouseLeave() {
+    x.set(0)
+    y.set(0)
+    scale.set(1)
+  }
+
   return (
-    <Link to={`/products/${panel.id}`} className="pub-product-card">
+    <motion.a
+      ref={ref}
+      href={`/products/${panel.id}`}
+      className="pub-product-card"
+      style={{
+        rotateX,
+        rotateY,
+        scale,
+        transformPerspective: 800,
+        transformStyle: 'preserve-3d',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="pub-product-card__img">
         <img
           src={panel.thumb_url || panel.texture_url || ''}
@@ -29,6 +72,6 @@ export default function ProductCard({ panel }: Props) {
           </div>
         ) : null}
       </div>
-    </Link>
+    </motion.a>
   )
 }

@@ -6,6 +6,8 @@ import { useLocalized } from '../hooks/useLocalized'
 import { Paginated, BlogPost } from '../types'
 import FilterChips from '../components/ui/FilterChips'
 import Pagination from '../components/ui/Pagination'
+import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
+import PageMeta from '../components/ui/PageMeta'
 
 const CATEGORIES = [
   { key: '', label: 'blog.all' },
@@ -29,17 +31,19 @@ export default function BlogPage() {
 
   return (
     <div className="pub-section">
-      <h1 className="pub-section-title">{t('blog.title')}</h1>
-      <p className="pub-section-subtitle">{t('blog.subtitle')}</p>
-
-      <FilterChips
-        options={filterOptions}
-        value={category}
-        onChange={(key) => {
-          setCategory(key)
-          setPage(1)
-        }}
-      />
+      <PageMeta title="Blog" description="Tips, news, and inspiration from the WallCraft team." url="/blog" />
+      <FadeIn>
+        <h1 className="pub-section-title">{t('blog.title')}</h1>
+        <p className="pub-section-subtitle">{t('blog.subtitle')}</p>
+        <FilterChips
+          options={filterOptions}
+          value={category}
+          onChange={(key) => {
+            setCategory(key)
+            setPage(1)
+          }}
+        />
+      </FadeIn>
 
       {loading ? (
         <div className="pub-grid-3">
@@ -56,7 +60,7 @@ export default function BlogPage() {
         </div>
       ) : data?.items && data.items.length > 0 ? (
         <>
-          <div className="pub-grid-3">
+          <StaggerChildren className="pub-grid-3" baseDelay={0.08}>
             {data.items.map((post) => (
               <Link key={post.id} to={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
                 <div className="pub-card">
@@ -88,7 +92,7 @@ export default function BlogPage() {
                 </div>
               </Link>
             ))}
-          </div>
+          </StaggerChildren>
 
           <Pagination page={page} pages={data.pages} onChange={setPage} />
         </>

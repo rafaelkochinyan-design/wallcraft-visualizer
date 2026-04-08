@@ -21,6 +21,10 @@ model Tenant {
   email         String?
   phone         String?
   address       String?
+  whatsapp      String?
+  instagram_url String?
+  facebook_url  String?
+  tiktok_url    String?
   active        Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
