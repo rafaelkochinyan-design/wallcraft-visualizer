@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Toaster } from 'sonner'
 
 import PublicLayout from './components/layout/PublicLayout'
-import HomePage from './pages/HomePage'
+import HomePage from './pages/public/HomePage'
 
 // Admin pages (existing)
 import AdminLoginPage from './pages/admin/AdminLoginPage'
@@ -14,20 +14,20 @@ import StoreSettingsPage from './pages/admin/StoreSettingsPage'
 import LeadsPage from './pages/admin/LeadsPage'
 
 // Public pages — lazy loaded for performance
-const ProductsPage = lazy(() => import('./pages/ProductsPage'))
-const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'))
-const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
-const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'))
-const GalleryPage = lazy(() => import('./pages/GalleryPage'))
-const DesignersPage = lazy(() => import('./pages/DesignersPage'))
-const DesignerDetailPage = lazy(() => import('./pages/DesignerDetailPage'))
-const DealersPage = lazy(() => import('./pages/DealersPage'))
-const AboutPage = lazy(() => import('./pages/AboutPage'))
-const BlogPage = lazy(() => import('./pages/BlogPage'))
-const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
-const InstallationPage = lazy(() => import('./pages/InstallationPage'))
-const PartnersPage = lazy(() => import('./pages/PartnersPage'))
-const ContactPage = lazy(() => import('./pages/ContactPage'))
+const ProductsPage = lazy(() => import('./pages/public/ProductsPage'))
+const ProductDetailPage = lazy(() => import('./pages/public/ProductDetailPage'))
+const ProjectsPage = lazy(() => import('./pages/public/ProjectsPage'))
+const ProjectDetailPage = lazy(() => import('./pages/public/ProjectDetailPage'))
+const GalleryPage = lazy(() => import('./pages/public/GalleryPage'))
+const DesignersPage = lazy(() => import('./pages/public/DesignersPage'))
+const DesignerDetailPage = lazy(() => import('./pages/public/DesignerDetailPage'))
+const DealersPage = lazy(() => import('./pages/public/DealersPage'))
+const AboutPage = lazy(() => import('./pages/public/AboutPage'))
+const BlogPage = lazy(() => import('./pages/public/BlogPage'))
+const BlogPostPage = lazy(() => import('./pages/public/BlogPostPage'))
+const InstallationPage = lazy(() => import('./pages/public/InstallationPage'))
+const PartnersPage = lazy(() => import('./pages/public/PartnersPage'))
+const ContactPage = lazy(() => import('./pages/public/ContactPage'))
 
 // New admin pages
 const AdminHeroSlidesPage = lazy(() => import('./pages/admin/AdminHeroSlidesPage'))

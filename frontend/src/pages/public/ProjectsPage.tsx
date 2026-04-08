@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { usePublicData } from '../hooks/usePublicData'
-import { Project } from '../types'
-import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
-import PageMeta from '../components/ui/PageMeta'
+import { usePublicData } from '../../hooks/usePublicData'
+import { Project } from '../../types'
+import FadeIn, { StaggerChildren } from '../../components/ui/FadeIn'
+import PageMeta from '../../components/ui/PageMeta'
 
 export default function ProjectsPage() {
   const { t } = useTranslation()

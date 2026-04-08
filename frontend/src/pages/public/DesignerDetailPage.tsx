@@ -1,8 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { usePublicData } from '../hooks/usePublicData'
-import { useLocalized } from '../hooks/useLocalized'
-import { Designer } from '../types'
+import { usePublicData } from '../../hooks/usePublicData'
+import { useLocalized } from '../../hooks/useLocalized'
+import { Designer } from '../../types'
 
 export default function DesignerDetailPage() {
   const { slug } = useParams<{ slug: string }>()

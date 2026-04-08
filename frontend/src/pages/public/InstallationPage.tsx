@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { usePublicData } from '../hooks/usePublicData'
-import { useLocalized } from '../hooks/useLocalized'
-import { PageContent } from '../types'
-import FadeIn from '../components/ui/FadeIn'
-import PageMeta from '../components/ui/PageMeta'
+import { usePublicData } from '../../hooks/usePublicData'
+import { useLocalized } from '../../hooks/useLocalized'
+import { PageContent } from '../../types'
+import FadeIn from '../../components/ui/FadeIn'
+import PageMeta from '../../components/ui/PageMeta'
 
 interface InstallationStep {
   num: string

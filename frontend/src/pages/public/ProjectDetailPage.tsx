@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { usePublicData } from '../hooks/usePublicData'
-import { Project } from '../types'
+import { usePublicData } from '../../hooks/usePublicData'
+import { Project } from '../../types'
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>()

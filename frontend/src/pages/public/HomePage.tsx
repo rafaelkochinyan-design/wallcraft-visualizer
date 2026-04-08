@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useVisualizerStore } from '../store/visualizer'
-import { useTenant } from '../hooks/useTenant'
-import { usePublicData } from '../hooks/usePublicData'
-import { HeroSlide, Partner, Panel } from '../types'
-import HeroCarousel from '../components/ui/HeroCarousel'
-import ProductCard from '../components/ui/ProductCard'
-import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
-import PageMeta from '../components/ui/PageMeta'
+import { useVisualizerStore } from '../../store/visualizer'
+import { useTenant } from '../../hooks/useTenant'
+import { usePublicData } from '../../hooks/usePublicData'
+import { HeroSlide, Partner, Panel } from '../../types'
+import HeroCarousel from '../../components/ui/HeroCarousel'
+import ProductCard from '../../components/products/ProductCard'
+import FadeIn, { StaggerChildren } from '../../components/ui/FadeIn'
+import PageMeta from '../../components/ui/PageMeta'
 
 export default function HomePage() {
   const { t, i18n } = useTranslation()

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import api from '../lib/api'
-import { Panel } from '../types'
+import api from '../../lib/api'
+import { Panel } from '../../types'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()

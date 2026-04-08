@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import api from '../lib/api'
-import { usePublicData } from '../hooks/usePublicData'
-import { useProductFilters } from '../hooks/useProductFilters'
-import { Panel, PanelCategory } from '../types'
-import ProductCard from '../components/ui/ProductCard'
-import Pagination from '../components/ui/Pagination'
-import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
-import PageMeta from '../components/ui/PageMeta'
+import api from '../../lib/api'
+import { usePublicData } from '../../hooks/usePublicData'
+import { useProductFilters } from '../../hooks/useProductFilters'
+import { Panel, PanelCategory } from '../../types'
+import ProductCard from '../../components/products/ProductCard'
+import Pagination from '../../components/ui/Pagination'
+import FadeIn, { StaggerChildren } from '../../components/ui/FadeIn'
+import PageMeta from '../../components/ui/PageMeta'
 
 interface PanelMeta {
   total: number

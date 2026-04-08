@@ -1,250 +1,245 @@
-# WallCraft Visualizer — Master Context
-# Читай этот файл ПЕРВЫМ перед любым действием в проекте.
+# WallCraft — Claude Code Workflow
+
+> **Read this file at the start of EVERY task before writing any code.**
+> This is the single source of truth for how work gets done in this project.
 
 ---
 
-## Проект в одном предложении
-SaaS 3D визуализатор декоративных настенных панелей.
-Пользователь вводит размеры стены → выбирает панели → видит реалтайм 3D превью → добавляет аксессуары.
-Мультитенантный: каждый магазин получает свой брендированный инстанс.
+## 🏗 Project Architecture
 
-**Первый клиент:** Wallcraft, Ереван — гипсовые панели «Консул» 500×500×19мм.
-**Продакшн:** https://frontend-beige-six-43.vercel.app
+```
+wallcraft/
+├── frontend/                  # React + Vite + TypeScript
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── public/        # Public-facing pages
+│   │   │   └── admin/         # Admin panel pages
+│   │   ├── components/
+│   │   │   ├── ui/            # Reusable UI (FadeIn, FilterChips, Pagination, Lightbox...)
+│   │   │   ├── layout/        # PublicNavbar, PublicFooter, PublicLayout, AdminLayout
+│   │   │   └── products/      # Product-specific components
+│   │   ├── hooks/             # usePublicData, useLocalized, useTenant, useProductFilters...
+│   │   ├── store/             # Zustand: visualizer.ts, theme.ts
+│   │   ├── i18n/              # en.json, ru.json, am.json
+│   │   ├── types/             # index.ts — all shared TypeScript interfaces
+│   │   └── styles/            # CSS variables, pub-* classes, admin.css
+├── backend/                   # Node.js + Express + Prisma + PostgreSQL
+│   ├── src/
+│   │   ├── routes/            # admin.ts, public.ts, auth.ts
+│   │   ├── controllers/       # Business logic
+│   │   ├── middleware/        # auth, error handling
+│   │   └── lib/               # prisma client, helpers
+│   └── prisma/
+│       └── schema.prisma      # Source of truth for DB schema
+└── CLAUDE.md                  # ← You are here
+```
+
+## 🔑 Key Conventions
+
+### Frontend
+- **CSS**: Use existing `pub-*` CSS variables and classes. Never hardcode colors — use `var(--accent)`, `var(--ui-bg)`, `var(--text-primary)` etc.
+- **Translations**: Every user-facing string goes through `t('key')`. Always add keys to ALL 3 files: `en.json`, `ru.json`, `am.json`
+- **Localized DB content**: Use `useLocalized()` hook + `localize(field)` — never access `.ru` / `.en` / `.am` directly in components
+- **Data fetching**: Use `usePublicData<T>(url, params?)` for public pages. Use `api.get/post/put/delete` directly when you need manual control (filters, mutations)
+- **State in URL**: Filter/search/sort state goes in URL params via `useSearchParams` — not `useState`. See `useProductFilters.ts` as reference
+- **Admin pages**: Follow pattern from `adminUtils.tsx` — use `PageShell`, `Modal`, `Field`, `useToast` (sonner), `TableActions`, `StatusBadge`
+- **No form tags in React**: Use `onClick` handlers, not HTML `<form>` submit where possible in admin modals
+
+### Backend
+- **Response shape**: Always `{ data: T }` for single, `{ data: T[], meta?: {...} }` for lists
+- **Error shape**: `{ error: { message: string, code?: string } }`
+- **Auth**: Admin routes require JWT middleware. Public routes are open
+- **Prisma**: Always use `$transaction` when doing count + fetch together
+- **Migrations**: After schema changes always run `npx prisma migrate dev --name <description>`
+
+### TypeScript
+- No `any` types. If unknown, use `unknown` and narrow it
+- All DB models have matching interfaces in `frontend/src/types/index.ts`
+- After adding backend fields, always update the frontend `Tenant`/`Panel`/etc interface
 
 ---
 
-## Стек — НИКОГДА не менять без явного запроса
+## ✅ MANDATORY WORKFLOW — Follow Every Step
 
-| Слой | Технология |
-|------|-----------|
-| Frontend | React 18 + Vite 5 + TypeScript |
-| 3D | React Three Fiber ^8 + @react-three/drei ^9 |
-| State | Zustand ^4 |
-| Styling | **CSS Variables (tokens.css + components.css)** — НЕ Tailwind |
-| Animations | @react-spring/three + @react-spring/web |
-| Gestures | @use-gesture/react |
-| Toasts | sonner |
-| Backend | Node.js + Express ^4 + Prisma ^5 |
-| DB | PostgreSQL 15+ |
-| Auth | JWT (access 15min / refresh 7d) |
-| Storage | Cloudflare R2 (S3-compatible) |
-| Validation | Zod ^3 |
-| Multi-tenancy | Shared schema, tenant_id on EVERY row |
+### PHASE 1 — PLAN (before writing any code)
+```
+1. Read the relevant existing files before touching anything
+2. State the plan in a numbered list:
+   - What files will be created
+   - What files will be modified  
+   - What DB changes are needed (if any)
+   - Any breaking changes or risks
+3. Wait — do not start coding until plan is clear
+```
+
+### PHASE 2 — CODE
+```
+1. Backend changes first (schema → migration → route → controller)
+2. Frontend types second (update interfaces to match new backend)
+3. Frontend logic third (hooks, state)
+4. Frontend UI last (components, pages)
+5. i18n keys — add to ALL 3 locale files as the final step
+```
+
+### PHASE 3 — SELF-REVIEW
+After writing code, review it yourself before finishing:
+```
+□ No hardcoded strings — all go through t()
+□ No hardcoded colors — all use CSS variables
+□ No 'any' types
+□ New Prisma fields added to frontend types/index.ts
+□ All 3 locale files updated (en/ru/am)
+□ No console.log left in code
+□ Error states handled (try/catch, loading states)
+□ Mobile breakpoints considered (max-width: 768px)
+□ No duplicate code — reuse existing components/hooks
+```
+
+### PHASE 4 — LINT & FORMAT
+Run these commands and fix ALL errors before finishing:
+```bash
+# Frontend
+cd frontend
+npx eslint src --ext .ts,.tsx --fix
+npx prettier --write src
+
+# Backend  
+cd backend
+npx eslint src --ext .ts --fix
+npx prettier --write src
+```
+
+### PHASE 5 — TYPE CHECK
+```bash
+cd frontend && npx tsc --noEmit
+cd backend && npx tsc --noEmit
+```
+Fix every TypeScript error. Zero errors required.
+
+### PHASE 6 — TEST (if tests exist)
+```bash
+cd backend && npm test
+```
+
+### PHASE 7 — DEPLOY CHECK
+```bash
+# Build frontend — must succeed with zero errors
+cd frontend && npm run build
+
+# Verify backend starts
+cd backend && npm run build
+```
+
+Only report task as done when ALL phases pass ✅
 
 ---
 
-## КРИТИЧЕСКАЯ ГРАНИЦА — R3F vs DOM
+## 🚫 Never Do These Things
 
-Это главный источник ошибок в проекте. Запомни навсегда:
-
-```
-ВНУТРИ <Canvas>                    СНАРУЖИ <Canvas>
-─────────────────────────────     ─────────────────────────────
-useThree ✅                        useThree ❌ → CRASH
-useFrame ✅                        useFrame ❌ → CRASH
-<mesh>, <group> ✅                 <div>, <button> ❌ → не работает
-THREE.* напрямую ✅                THREE.* ❌ → не нужно
-НЕТ Tailwind, НЕТ CSS классов     CSS классы ✅, Tailwind ✅ (legacy)
-```
-
-**Правило:** данные между Canvas и DOM передаются ТОЛЬКО через Zustand store.
-Никаких props drilling через границу Canvas.
+- Never use `any` type
+- Never hardcode user-facing text (must use `t()`)
+- Never hardcode colors (must use CSS variables)  
+- Never access `.ru`/`.en`/`.am` directly — use `localize()`
+- Never skip updating all 3 locale files
+- Never leave `console.log` in committed code
+- Never modify `pub-*` CSS class names (other components depend on them)
+- Never break the existing `?category=ID` → `?category_id=ID` backward compat
+- Never add frontend Zustand store state for things that belong in URL params
+- Never run migrations without a descriptive name: `--name add_tenant_social_fields`
 
 ---
 
-## Design System
+## 📦 Tech Stack Reference
 
-### Файлы (единственный источник правды)
-```
-frontend/src/styles/tokens.css      ← CSS переменные (цвета, шрифты, отступы)
-frontend/src/styles/components.css  ← классы (.btn, .card, .card-dark, .input и т.д.)
-```
-
-### Ключевые переменные
-```css
---font: 'DM Sans', sans-serif
---c-black: #0a0a0a
---c-white: #ffffff
---glass-dark: rgba(10,10,10,0.84)    /* все тёмные оверлеи */
---glass-light: rgba(255,255,255,0.97) /* карточки на 3D */
---h-btn-md: 52px                      /* минимальная высота кнопки */
---r-full: 9999px                      /* pill/таблетка */
---ease: cubic-bezier(0.16,1,0.3,1)   /* все анимации */
-```
-
-### Переиспользуемые компоненты
-```
-Button.tsx     → <Button variant="primary|secondary|ghost|danger" size="sm|md|lg" full>
-InputField.tsx → <InputField label suffix error value onChange>
-```
-
-### НЕЛЬЗЯ
-- Хардкодить цвета в компонентах — только через CSS variables
-- Создавать новые CSS файлы — только tokens.css и components.css
-- Использовать Tailwind для новых компонентов (legacy admin pages — ок)
+| Layer | Tech |
+|-------|------|
+| Frontend framework | React 18 + Vite + TypeScript |
+| Styling | CSS custom properties (no Tailwind in public pages), Tailwind in admin |
+| State | Zustand (visualizer, theme) + URL params (filters) |
+| i18n | i18next + react-i18next (3 langs: en, ru, am) |
+| Routing | React Router v6 |
+| Backend | Node.js + Express + TypeScript |
+| ORM | Prisma |
+| Database | PostgreSQL |
+| Auth | JWT (access token in memory via tokenStore) |
+| File uploads | Multipart → stored in /uploads |
+| Toasts | Sonner (admin) |
+| Animations | Custom FadeIn/StaggerChildren components |
 
 ---
 
-## Multi-tenancy — ЖЕЛЕЗНОЕ ПРАВИЛО
+## 🗂 Component Quick Reference
 
-**Каждый** запрос к БД на tenant-scoped таблицах ОБЯЗАН содержать `tenant_id`:
-
-```typescript
-// ✅ ПРАВИЛЬНО
-prisma.panel.findMany({ where: { tenant_id: req.tenant.id } })
-
-// ❌ НЕПРАВИЛЬНО — утечка данных между тенантами!
-prisma.panel.findMany()
-```
-
-Tenant-scoped таблицы: `Panel`, `Accessory`, `User`
-Глобальные таблицы: `AccessoryType`, `Tenant` (сами по себе)
-
-**Резолюция тенанта** (порядок приоритетов):
-1. Субдомен: `wallcraft.domain.com` → slug = `wallcraft`
-2. Header: `x-tenant-slug: wallcraft`
-3. Query param (только dev): `?store=wallcraft`
-
----
-
-## API Response shape — всегда
-
-```typescript
-// Success
-res.json({ data: T, error: null })
-
-// Error
-res.json({ data: null, error: { message: string, code?: string } })
-```
-
-Использовать только `ok(res, data)` и `fail(res, status, message)` из `utils/response.ts`.
+| Need | Use |
+|------|-----|
+| Fetch public data | `usePublicData<T>(url, params?)` |
+| Localize DB string | `useLocalized()` → `localize(field)` |
+| Filter state in URL | `useProductFilters()` or same pattern |
+| Admin page wrapper | `<PageShell title addLabel onAdd loading>` |
+| Admin modal | `<Modal title onClose wide?>` + `<ModalActions>` |
+| Admin form field | `<Field label>` |
+| Admin file upload | `<FileUpload url uploading accept onFile>` |
+| Admin toast | `const [, showToast] = useToast()` |
+| Admin locale tabs | `<LocaleTabs lang onChange>` |
+| Filter chips (public) | `<FilterChips options value onChange>` |
+| Pagination (public) | `<Pagination page pages onChange>` |
+| Lightbox | `<Lightbox items index onClose onChange>` |
+| Skeleton loader | `<div className="pub-skeleton" style={{height, width}}>` |
+| Fade animation | `<FadeIn delay? direction?>` |
+| Stagger animation | `<StaggerChildren className baseDelay>` |
 
 ---
 
-## 3D Сцена — координаты
+## 🌐 API Routes Reference
 
+### Public
 ```
-Стена:
-  X: [-wallWidth/2, +wallWidth/2]    (ширина в метрах)
-  Y: [0, wallHeight]                 (высота в метрах, от пола)
-  Z: 0                               (плоскость стены)
-
-Камера старт: [0, wallHeight/2, max(w,h)*1.6]
-OrbitControls target: [0, wallHeight/2, 0]
-
-Панель: 0.5м × 0.5м × 0.019м (500×500×19mm)
-Тайлинг: InstancedMesh ОБЯЗАТЕЛЬНО (не individual meshes)
-Аксессуары: drag через wallPlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0)
-```
-
----
-
-## Zustand Store — ключевые поля
-
-```typescript
-// Стена
-wallWidth, wallHeight: number        // метры
-wallColor: string                    // hex
-
-// UI flow
-step: 'size' | 'panel_select' | 'interactive'
-tooltipMode: null | 'settings'
-settingsTab: 'light' | 'position' | 'accessories'
-tooltipCollapsed: boolean
-tooltipPosition: { x: number, y: number }  // y=-1 = по центру
-
-// 3D
-lightAngle: number      // azimuth 0-360°
-lightElevation: number  // 0-90°
-
-// Screenshot
-pendingSave: boolean    // триггер из UI → Canvas подхватывает
-
-// Данные
-selectedPanels: Panel[]         // max 2
-placedAccessories: PlacedAccessory[]
-availablePanels, availableAccessories, availableAccessoryTypes
+GET  /api/panels              ?q, category_id, sort, min_price, max_price, page, limit
+GET  /api/panels/:id
+GET  /api/panel-categories
+GET  /api/hero-slides
+GET  /api/blog                ?page, limit, category
+GET  /api/blog/:slug
+GET  /api/projects
+GET  /api/projects/:slug
+GET  /api/gallery             ?space_type
+GET  /api/designers
+GET  /api/designers/:slug
+GET  /api/dealers
+GET  /api/partners
+GET  /api/team
+GET  /api/pages/:key
+POST /api/inquiry
 ```
 
----
-
-## Структура проекта
-
+### Admin (JWT required)
 ```
-wallcraft-visualizer/
-├── CLAUDE.md                     ← ты здесь
-├── backend/
-│   ├── CLAUDE.md
-│   ├── prisma/schema.prisma
-│   └── src/
-│       ├── middleware/tenant.ts  ← КРИТИЧНО
-│       ├── routes/public.ts
-│       ├── routes/admin.ts
-│       ├── services/r2.ts
-│       └── utils/response.ts
-└── frontend/
-    ├── CLAUDE.md
-    └── src/
-        ├── styles/
-        │   ├── tokens.css        ← design tokens
-        │   └── components.css    ← component classes
-        ├── components/
-        │   ├── scene/            ← R3F only (Canvas context)
-        │   │   ├── Scene.tsx     ← preserveDrawingBuffer:true
-        │   │   ├── WallMesh.tsx
-        │   │   ├── PanelTiling.tsx
-        │   │   ├── MeterGrid.tsx
-        │   │   ├── SceneLight.tsx
-        │   │   └── AccessoryObject.tsx
-        │   ├── ui/               ← DOM only (outside Canvas)
-        │   │   ├── Button.tsx
-        │   │   ├── InputField.tsx
-        │   │   ├── TooltipWrapper.tsx
-        │   │   ├── Tooltips.tsx
-        │   │   └── Utils.tsx     ← PanelCounter, LoadingScreen, SaveScene
-        │   └── steps/
-        │       ├── WallSizeStep.tsx
-        │       └── PanelSelectStep.tsx
-        ├── store/visualizer.ts
-        ├── hooks/useTenant.ts
-        ├── lib/api.ts
-        ├── types/index.ts
-        └── pages/
-            ├── VisualizerPage.tsx
-            └── admin/
-                ├── AdminLayout.tsx
-                ├── AdminLoginPage.tsx
-                ├── PanelsPage.tsx
-                ├── AccessoriesPage.tsx
-                └── StoreSettingsPage.tsx
+GET/PUT         /admin/settings
+POST            /admin/settings/upload-logo
+GET/POST        /admin/panels
+PUT/DELETE      /admin/panels/:id
+GET/POST        /admin/hero-slides
+PUT/DELETE      /admin/hero-slides/:id
+PATCH           /admin/hero-slides/reorder
+GET/POST        /admin/blog
+PUT/DELETE      /admin/blog/:id
+PATCH           /admin/blog/:id/publish
+GET/POST        /admin/gallery
+PUT/DELETE      /admin/gallery/:id
+GET/POST        /admin/projects
+PUT/DELETE      /admin/projects/:id
+GET/POST        /admin/designers
+PUT/DELETE      /admin/designers/:id
+GET/POST        /admin/dealers
+PUT/DELETE      /admin/dealers/:id
+GET/POST        /admin/partners
+PUT/DELETE      /admin/partners/:id
+GET/POST        /admin/team
+PUT/DELETE      /admin/team/:id
+GET/PUT         /admin/pages/:key
+GET             /admin/leads
+PATCH           /admin/leads/:id
+POST            /admin/auth/login
+POST            /admin/auth/refresh
+GET             /admin/auth/me
 ```
-
----
-
-## Агенты — кто за что отвечает
-
-| Агент | Папка | Задачи |
-|-------|-------|--------|
-| `3d-scene` | `frontend/src/components/scene/` | R3F компоненты, WebGL, тени, тайлинг |
-| `ui` | `frontend/src/components/ui/`, `steps/`, `pages/VisualizerPage.tsx` | DOM компоненты, design system |
-| `backend` | `backend/` | API, Prisma, auth, tenant middleware |
-| `admin` | `frontend/src/pages/admin/` | Admin CRUD UI |
-
-**Slash commands:**
-- `/review-3d` — проверка 3D компонентов
-- `/review-be` — проверка бэкенда + tenant isolation
-- `/review-ui` — проверка UI + design system
-- `/add-panel` — добавить новую панель через API
-- `/fix` — исправить конкретный баг
-
----
-
-## Частые ошибки — ЗАПРЕЩЕНО
-
-1. `useThree()` вне `<Canvas>` — CRASH
-2. `prisma.panel.findMany()` без `tenant_id` — DATA LEAK
-3. Создавать `new THREE.Mesh()` в цикле тайлинга — используй InstancedMesh
-4. `texture.clone()` без `needsUpdate = true` — текстура не обновится
-5. Хардкодить цвета (`color: '#333'`) — используй CSS variables
-6. Импортировать THREE напрямую в UI компонентах — ненужная зависимость
-7. `localStorage` для токенов — только в памяти + httpOnly cookie

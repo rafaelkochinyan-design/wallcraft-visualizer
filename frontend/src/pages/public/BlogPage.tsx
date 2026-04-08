@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { usePublicData } from '../hooks/usePublicData'
-import { useLocalized } from '../hooks/useLocalized'
-import { Paginated, BlogPost } from '../types'
-import FilterChips from '../components/ui/FilterChips'
-import Pagination from '../components/ui/Pagination'
-import FadeIn, { StaggerChildren } from '../components/ui/FadeIn'
-import PageMeta from '../components/ui/PageMeta'
+import { usePublicData } from '../../hooks/usePublicData'
+import { useLocalized } from '../../hooks/useLocalized'
+import { Paginated, BlogPost } from '../../types'
+import FilterChips from '../../components/ui/FilterChips'
+import Pagination from '../../components/ui/Pagination'
+import FadeIn, { StaggerChildren } from '../../components/ui/FadeIn'
+import PageMeta from '../../components/ui/PageMeta'
 
 const CATEGORIES = [
   { key: '', label: 'blog.all' },

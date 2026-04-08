@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import api from '../lib/api'
-import { usePublicData } from '../hooks/usePublicData'
-import { Partner } from '../types'
-import FadeIn from '../components/ui/FadeIn'
-import PageMeta from '../components/ui/PageMeta'
+import api from '../../lib/api'
+import { usePublicData } from '../../hooks/usePublicData'
+import { Partner } from '../../types'
+import FadeIn from '../../components/ui/FadeIn'
+import PageMeta from '../../components/ui/PageMeta'
 
 export default function PartnersPage() {
   const { t } = useTranslation()
