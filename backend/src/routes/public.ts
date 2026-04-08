@@ -28,30 +28,62 @@ router.get('/panel-categories', async (req, res, next) => {
   }
 })
 
-// GET /api/panels — active panels for this tenant
+// GET /api/panels — active panels with search, filter, sort, pagination
 router.get('/panels', async (req, res, next) => {
   try {
-    const panels = await prisma.panel.findMany({
-      where: { tenant_id: req.tenant.id, active: true },
-      select: {
-        id: true,
-        name: true,
-        sku: true,
-        texture_url: true,
-        thumb_url: true,
-        model_url: true,
-        width_mm: true,
-        height_mm: true,
-        depth_mm: true,
-        weight_kg: true,
-        price: true,
-        images: true,
-        sort_order: true,
-        category: { select: { id: true, name: true } },
-      },
-      orderBy: { sort_order: 'asc' },
+    const schema = z.object({
+      q:           z.string().optional(),
+      category_id: z.string().optional(),
+      sort:        z.enum(['newest', 'price_asc', 'price_desc', 'name_asc']).default('newest'),
+      min_price:   z.coerce.number().positive().optional(),
+      max_price:   z.coerce.number().positive().optional(),
+      page:        z.coerce.number().int().min(1).default(1),
+      limit:       z.coerce.number().int().min(1).max(100).default(24),
     })
-    ok(res, panels)
+    const parsed = schema.safeParse(req.query)
+    if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+    const { q, category_id, sort, min_price, max_price, page, limit } = parsed.data
+
+    // Build where clause
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = { tenant_id: req.tenant.id, active: true }
+    if (q) {
+      where.OR = [
+        { name:        { contains: q, mode: 'insensitive' } },
+        { sku:         { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
+      ]
+    }
+    if (category_id) where.category_id = category_id
+    if (min_price !== undefined || max_price !== undefined) {
+      where.price = {}
+      if (min_price !== undefined) where.price.gte = min_price
+      if (max_price !== undefined) where.price.lte = max_price
+    }
+
+    // Build orderBy
+    const orderByMap = {
+      newest:     { created_at: 'desc' },
+      price_asc:  { price: 'asc' },
+      price_desc: { price: 'desc' },
+      name_asc:   { name: 'asc' },
+    } as const
+    const orderBy = orderByMap[sort]
+
+    const select = {
+      id: true, name: true, sku: true,
+      texture_url: true, thumb_url: true, model_url: true,
+      width_mm: true, height_mm: true, depth_mm: true,
+      weight_kg: true, price: true, images: true, sort_order: true,
+      category: { select: { id: true, name: true } },
+    }
+
+    const [total, panels] = await prisma.$transaction([
+      prisma.panel.count({ where }),
+      prisma.panel.findMany({ where, select, orderBy, skip: (page - 1) * limit, take: limit }),
+    ])
+
+    ok(res, { data: panels, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } })
   } catch (err) {
     next(err)
   }

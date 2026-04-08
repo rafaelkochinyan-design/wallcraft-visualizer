@@ -36,7 +36,17 @@
     "download_3d": "Download 3D Model",
     "download_catalog": "Download Catalog",
     "related": "Related Products",
-    "see_more": "See more"
+    "see_more": "See more",
+    "search_placeholder": "Search panels...",
+    "results_count": "results",
+    "no_results": "No panels found",
+    "reset_filters": "Reset filters"
+  },
+  "sort": {
+    "newest": "Newest",
+    "price_asc": "Price: Low → High",
+    "price_desc": "Price: High → Low",
+    "name_asc": "Name A–Z"
   },
   "nav_info": {
     "installation": "Installation",

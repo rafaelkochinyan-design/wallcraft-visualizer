@@ -36,7 +36,17 @@
     "download_3d": "Ներբեռնել 3D մոդել",
     "download_catalog": "Ներբեռնել կատալոգ",
     "related": "Նմանատիպ ապրանքներ",
-    "see_more": "Տեսնել ավելին"
+    "see_more": "Տեսնել ավելին",
+    "search_placeholder": "Փնտրել...",
+    "results_count": "արդյունք",
+    "no_results": "Պանելներ չեն գտնվել",
+    "reset_filters": "Մաքրել ֆիլտրերը"
+  },
+  "sort": {
+    "newest": "Նոր",
+    "price_asc": "Գին: աճման",
+    "price_desc": "Գին: նվազման",
+    "name_asc": "Անուն Ա–Ֆ"
   },
   "nav_info": {
     "installation": "Տեղադրում",

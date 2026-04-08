@@ -36,7 +36,17 @@
     "download_3d": "Скачать 3D модель",
     "download_catalog": "Скачать каталог",
     "related": "Похожие продукты",
-    "see_more": "Смотреть ещё"
+    "see_more": "Смотреть ещё",
+    "search_placeholder": "Поиск панелей...",
+    "results_count": "результатов",
+    "no_results": "Панели не найдены",
+    "reset_filters": "Сбросить фильтры"
+  },
+  "sort": {
+    "newest": "Новые",
+    "price_asc": "Цена: по возрастанию",
+    "price_desc": "Цена: по убыванию",
+    "name_asc": "Название А–Я"
   },
   "nav_info": {
     "installation": "Установка",

@@ -72,7 +72,7 @@ export default function HomePage() {
                 </p>
               </div>
               <Link
-                to={catId === 'uncategorized' ? '/products' : `/products?category=${catId}`}
+                to={catId === 'uncategorized' ? '/products' : `/products?category_id=${catId}`}
                 className="pub-view-all"
               >
                 {t('products.see_more')} →
