@@ -28,7 +28,12 @@ export function useTenant(): UseTenantResult {
         if (cancelled) return
 
         setTenant(tenantRes.data.data)
-        setAvailablePanels(panelsRes.data.data.data)
+        // Handle both response shapes: { data: Panel[] } and { data: { data: Panel[], meta } }
+        const panelsPayload = panelsRes.data.data
+        const panelArray: Panel[] = Array.isArray(panelsPayload)
+          ? panelsPayload
+          : (panelsPayload?.data ?? [])
+        setAvailablePanels(panelArray)
 
         // Apply tenant primary color to CSS variable for theming
         document.documentElement.style.setProperty(

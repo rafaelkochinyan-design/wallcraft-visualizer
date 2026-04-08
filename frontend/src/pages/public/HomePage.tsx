@@ -19,7 +19,7 @@ export default function HomePage() {
   const { data: partners } = usePublicData<Partner[]>('/api/partners')
 
   // Group panels by category (max 4 per category)
-  const panelsByCategory = availablePanels.reduce<
+  const panelsByCategory = (availablePanels ?? []).reduce<
     Record<string, { name: string; panels: Panel[] }>
   >((acc, panel) => {
     const catId = panel.category?.id || 'uncategorized'
@@ -88,7 +88,7 @@ export default function HomePage() {
       ))}
 
       {/* Fallback when no panels loaded */}
-      {!tenantLoading && availablePanels.length === 0 && (
+      {!tenantLoading && (availablePanels?.length ?? 0) === 0 && (
         <FadeIn>
           <section className="pub-section" style={{ textAlign: 'center', padding: '80px 32px' }}>
             <h2 className="pub-section-title">{t('products.title')}</h2>
