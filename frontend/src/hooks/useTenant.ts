@@ -22,13 +22,13 @@ export function useTenant(): UseTenantResult {
       try {
         const [tenantRes, panelsRes] = await Promise.all([
           api.get<{ data: Tenant }>('/api/tenant'),
-          api.get<{ data: Panel[] }>('/api/panels'),
+          api.get<{ data: { data: Panel[] } }>('/api/panels'),
         ])
 
         if (cancelled) return
 
         setTenant(tenantRes.data.data)
-        setAvailablePanels(panelsRes.data.data)
+        setAvailablePanels(panelsRes.data.data.data)
 
         // Apply tenant primary color to CSS variable for theming
         document.documentElement.style.setProperty(
