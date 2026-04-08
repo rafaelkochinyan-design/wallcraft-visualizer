@@ -37,13 +37,20 @@ test.describe('Admin UI', () => {
   })
 })
 
-// ── Visualizer UI Tests ────────────────────────────────────────
-test.describe('Visualizer UI', () => {
+// ── Public Homepage Tests ──────────────────────────────────────
+test.describe('Public Homepage', () => {
   test.use({ ignoreHTTPSErrors: true })
 
-  test('Visualizer loads with wall size step', async ({ page }) => {
+  test('Homepage loads with product sections', async ({ page }) => {
     await page.goto('/')
-    // Canvas should be present
-    await expect(page.locator('canvas')).toBeVisible({ timeout: 5000 })
+    // Section title should be visible (products listed by category or fallback)
+    await expect(page.locator('.pub-section-title').first()).toBeVisible({ timeout: 8000 })
+  })
+
+  test('Products page loads and shows panels', async ({ page }) => {
+    await page.goto('/products')
+    await expect(page.locator('.pub-section-title').first()).toBeVisible({ timeout: 8000 })
+    // Grid or skeleton should render
+    await expect(page.locator('.pub-product-grid, .pub-product-list, .pub-skeleton').first()).toBeVisible({ timeout: 8000 })
   })
 })

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import api from '../../lib/api'
 import { Panel } from '../../types'
+import { Icon } from '../../components/ui/Icon'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -11,6 +12,9 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeImg, setActiveImg] = useState(0)
   const [descExpanded, setDescExpanded] = useState(false)
+  const [stickyVisible, setStickyVisible] = useState(false)
+
+  const priceRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!id) return
@@ -22,6 +26,18 @@ export default function ProductDetailPage() {
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  // Sticky bar: observe price element going out of view
+  useEffect(() => {
+    const el = priceRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setStickyVisible(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [panel])
 
   if (loading)
     return <div style={{ padding: '80px 32px', textAlign: 'center' }}>{t('common.loading')}</div>
@@ -35,8 +51,6 @@ export default function ProductDetailPage() {
     ...(panel.texture_url && panel.texture_url !== panel.thumb_url ? [panel.texture_url] : []),
   ].filter(Boolean)
 
-  const mainImage = galleryImages[activeImg] || null
-
   // Calculate area from dimensions
   const areaM2 =
     panel.width_mm && panel.height_mm
@@ -48,35 +62,95 @@ export default function ProductDetailPage() {
     ? Math.round(panel.price).toLocaleString('ru-RU')
     : null
 
+  const specRows = [
+    {
+      label: t('products.dimensions'),
+      value:
+        panel.width_mm && panel.height_mm && panel.depth_mm
+          ? `${panel.width_mm} × ${panel.height_mm} × ${panel.depth_mm} mm`
+          : null,
+    },
+    {
+      label: t('products.area'),
+      value: areaM2 ? `${t('products.item_area')} – ${areaM2} m²` : null,
+    },
+    {
+      label: t('products.depth_relief'),
+      value: panel.depth_relief_mm ? `${panel.depth_relief_mm} mm` : null,
+    },
+    {
+      label: t('products.material'),
+      value: panel.material || null,
+    },
+    {
+      label: t('products.weight'),
+      value: panel.weight_kg ? `${panel.weight_kg} kg` : null,
+    },
+  ].filter((row) => row.value)
+
   const prevImage = () => setActiveImg((i) => (i - 1 + galleryImages.length) % galleryImages.length)
   const nextImage = () => setActiveImg((i) => (i + 1) % galleryImages.length)
 
   return (
     <div className="pub-section pub-detail-page-wrap">
+      {/* ── Sticky price bar ─────────────────────────────────── */}
+      <div className={`pub-detail-sticky-bar${stickyVisible ? ' visible' : ''}`}>
+        <span className="pub-detail-sticky-bar__name">{panel.name}</span>
+        {priceFormatted && (
+          <span className="pub-detail-sticky-bar__price">
+            {priceFormatted} {t('products.price_per_m2')}
+          </span>
+        )}
+        {(panel.model_url || panel.catalog_url) && (
+          <a
+            href={panel.model_url || panel.catalog_url || '#'}
+            download
+            className="pub-detail-sticky-bar__cta"
+          >
+            ↓ {panel.model_url ? t('products.download_3d') : t('products.download_catalog')}
+          </a>
+        )}
+      </div>
+
+      {/* ── Breadcrumb ───────────────────────────────────────── */}
+      <nav className="pub-breadcrumb" aria-label="breadcrumb">
+        <Link to="/">Home</Link>
+        <span className="pub-breadcrumb__sep">/</span>
+        <Link to="/products">{t('products.title')}</Link>
+        <span className="pub-breadcrumb__sep">/</span>
+        <span className="pub-breadcrumb__current">{panel.name}</span>
+      </nav>
+
       <Link
         to="/products"
         style={{
           color: 'var(--text-secondary)',
           fontSize: 14,
           textDecoration: 'none',
-          display: 'inline-block',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
           marginBottom: 32,
         }}
       >
-        ← {t('common.back')}
+        <Icon name="chevron-left" size={16} />
+        {t('common.back')}
       </Link>
 
       <div className="pub-detail-grid">
         {/* ── Gallery ─────────────────────────────────────── */}
         <div>
-          {/* Main image */}
+          {/* Main image with crossfade */}
           <div className="pub-detail-img-wrap">
-            {mainImage ? (
-              <img
-                src={mainImage}
-                alt={panel.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+            {galleryImages.length > 0 ? (
+              galleryImages.map((url, idx) => (
+                <img
+                  key={url}
+                  src={url}
+                  alt={idx === activeImg ? panel.name : ''}
+                  className={`pub-gallery-img${idx === activeImg ? ' active' : ''}`}
+                />
+              ))
             ) : (
               <span style={{ color: 'var(--text-muted)', fontSize: 64 }}>🏛</span>
             )}
@@ -97,14 +171,15 @@ export default function ProductDetailPage() {
                     background: 'rgba(0,0,0,0.4)',
                     border: 'none',
                     color: '#fff',
-                    fontSize: 18,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    zIndex: 3,
                   }}
+                  aria-label="Previous image"
                 >
-                  ‹
+                  <Icon name="chevron-left" size={18} />
                 </button>
                 <button
                   onClick={nextImage}
@@ -119,14 +194,15 @@ export default function ProductDetailPage() {
                     background: 'rgba(0,0,0,0.4)',
                     border: 'none',
                     color: '#fff',
-                    fontSize: 18,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    zIndex: 3,
                   }}
+                  aria-label="Next image"
                 >
-                  ›
+                  <Icon name="chevron-right" size={18} />
                 </button>
               </>
             )}
@@ -139,6 +215,7 @@ export default function ProductDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setActiveImg(idx)}
+                  className={`pub-detail-thumb-btn${activeImg === idx ? ' active' : ''}`}
                   style={{
                     width: 64,
                     height: 64,
@@ -150,6 +227,7 @@ export default function ProductDetailPage() {
                     flexShrink: 0,
                     background: 'var(--ui-surface)',
                   }}
+                  aria-label={`Image ${idx + 1}`}
                 >
                   <img
                     src={url}
@@ -189,16 +267,17 @@ export default function ProductDetailPage() {
             </p>
           )}
 
-          {/* Price */}
+          {/* Price — observed for sticky bar */}
           {priceFormatted && (
             <div
+              ref={priceRef}
               style={{ fontSize: 28, fontWeight: 700, color: 'var(--accent)', marginBottom: 28 }}
             >
               {priceFormatted} {t('products.price_per_m2')}
             </div>
           )}
 
-          {/* Specs table */}
+          {/* Specs table with row stagger */}
           <div
             style={{
               display: 'flex',
@@ -210,48 +289,26 @@ export default function ProductDetailPage() {
               overflow: 'hidden',
             }}
           >
-            {[
-              {
-                label: t('products.dimensions'),
-                value:
-                  panel.width_mm && panel.height_mm && panel.depth_mm
-                    ? `${panel.width_mm} × ${panel.height_mm} × ${panel.depth_mm} mm`
-                    : null,
-              },
-              {
-                label: t('products.area'),
-                value: areaM2 ? `${t('products.item_area')} – ${areaM2} m²` : null,
-              },
-              {
-                label: t('products.depth_relief'),
-                value: panel.depth_relief_mm ? `${panel.depth_relief_mm} mm` : null,
-              },
-              {
-                label: t('products.material'),
-                value: panel.material || null,
-              },
-              {
-                label: t('products.weight'),
-                value: panel.weight_kg ? `${panel.weight_kg} kg` : null,
-              },
-            ]
-              .filter((row) => row.value)
-              .map((row, i, arr) => (
-                <div
-                  key={row.label}
-                  style={{
+            {specRows.map((row, i) => (
+              <div
+                key={row.label}
+                className="pub-specs-row"
+                style={
+                  {
+                    '--row-index': i,
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '12px 16px',
-                    borderBottom: i < arr.length - 1 ? '1px solid var(--ui-border)' : 'none',
+                    borderBottom: i < specRows.length - 1 ? '1px solid var(--ui-border)' : 'none',
                     fontSize: 14,
-                  }}
-                >
-                  <span style={{ color: 'var(--text-secondary)' }}>{row.label}</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{row.value}</span>
-                </div>
-              ))}
+                  } as React.CSSProperties
+                }
+              >
+                <span style={{ color: 'var(--text-secondary)' }}>{row.label}</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{row.value}</span>
+              </div>
+            ))}
           </div>
 
           {/* Description */}

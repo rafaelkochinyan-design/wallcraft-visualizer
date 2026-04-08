@@ -12,7 +12,7 @@ test.describe('Public API', () => {
     expect(body.error).toBeNull()
     expect(body.data.slug).toBe('wallcraft')
     expect(body.data.name).toBe('Wallcraft')
-    expect(body.data.primary_color).toBe('#1a1a1a')
+    expect(body.data.primary_color).toBe('#c4622d')
   })
 
   test('GET /api/panels returns active panels', async ({ request }) => {
@@ -20,9 +20,11 @@ test.describe('Public API', () => {
     expect(res.status()).toBe(200)
     const body = await res.json()
     expect(body.error).toBeNull()
-    expect(Array.isArray(body.data)).toBe(true)
-    expect(body.data.length).toBeGreaterThanOrEqual(2)
-    const panel = body.data[0]
+    // Response is { data: { data: Panel[], meta: {...} } }
+    const panels = body.data.data
+    expect(Array.isArray(panels)).toBe(true)
+    expect(panels.length).toBeGreaterThanOrEqual(2)
+    const panel = panels[0]
     expect(panel).toHaveProperty('id')
     expect(panel).toHaveProperty('name')
     expect(panel).toHaveProperty('texture_url')
@@ -137,6 +139,6 @@ test.describe('Admin Settings', () => {
     const body = await res.json()
     expect(body.data.slug).toBe('wallcraft')
     expect(body.data.name).toBe('Wallcraft')
-    expect(body.data.primary_color).toBe('#1a1a1a')
+    expect(body.data.primary_color).toBe('#c4622d')
   })
 })

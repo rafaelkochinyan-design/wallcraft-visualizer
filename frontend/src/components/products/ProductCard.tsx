@@ -1,38 +1,41 @@
-import { Link } from 'react-router-dom'
-import { useRef } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { Panel } from '../../types'
 
 interface Props {
   panel: Panel
+  index?: number
 }
 
-export default function ProductCard({ panel }: Props) {
+export default function ProductCard({ panel, index = 0 }: Props) {
   const ref = useRef<HTMLAnchorElement>(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
 
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), { stiffness: 300, damping: 30 })
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 300, damping: 30 })
+  // Mouse position for 3D tilt
+  const tiltX = useMotionValue(0)
+  const tiltY = useMotionValue(0)
+
+  const rotateX = useSpring(useTransform(tiltY, [-0.5, 0.5], [6, -6]), { stiffness: 300, damping: 30 })
+  const rotateY = useSpring(useTransform(tiltX, [-0.5, 0.5], [-6, 6]), { stiffness: 300, damping: 30 })
   const scale = useSpring(1, { stiffness: 300, damping: 30 })
+  const liftY = useSpring(0, { stiffness: 300, damping: 30 })
 
   function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
     const rect = ref.current?.getBoundingClientRect()
     if (!rect) return
-    const nx = (e.clientX - rect.left) / rect.width - 0.5
-    const ny = (e.clientY - rect.top) / rect.height - 0.5
-    x.set(nx)
-    y.set(ny)
+    tiltX.set((e.clientX - rect.left) / rect.width - 0.5)
+    tiltY.set((e.clientY - rect.top) / rect.height - 0.5)
   }
 
   function handleMouseEnter() {
     scale.set(1.03)
+    liftY.set(-4)
   }
 
   function handleMouseLeave() {
-    x.set(0)
-    y.set(0)
+    tiltX.set(0)
+    tiltY.set(0)
     scale.set(1)
+    liftY.set(0)
   }
 
   return (
@@ -40,13 +43,17 @@ export default function ProductCard({ panel }: Props) {
       ref={ref}
       href={`/products/${panel.id}`}
       className="pub-product-card"
-      style={{
-        rotateX,
-        rotateY,
-        scale,
-        transformPerspective: 800,
-        transformStyle: 'preserve-3d',
-      }}
+      style={
+        {
+          rotateX,
+          rotateY,
+          scale,
+          y: liftY,
+          transformPerspective: 800,
+          transformStyle: 'preserve-3d',
+          '--card-index': index,
+        } as unknown as CSSProperties
+      }
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -60,13 +67,28 @@ export default function ProductCard({ panel }: Props) {
             ;(e.target as HTMLImageElement).style.opacity = '0'
           }}
         />
+        <div className="pub-product-card__overlay" />
+        <button
+          className="pub-product-card__quick-view"
+          onClick={(e) => e.preventDefault()}
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          Quick View
+        </button>
       </div>
       <div className="pub-product-card__body">
+        {panel.category?.name && (
+          <div className="pub-product-card__category">{panel.category.name}</div>
+        )}
         <div className="pub-product-card__name">{panel.name}</div>
         {panel.sku && <div className="pub-product-card__sku">SKU: {panel.sku}</div>}
         {panel.price ? (
           <div className="pub-product-card__footer">
-            <span className="pub-product-card__price">
+            <span
+              className="pub-product-card__price"
+              style={{ '--price-delay': index * 50 } as CSSProperties}
+            >
               {Math.round(panel.price).toLocaleString('ru-RU')} AMD
             </span>
           </div>
