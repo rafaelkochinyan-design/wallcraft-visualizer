@@ -120,9 +120,14 @@ export default function ProductsPage() {
       .get(`/api/panels?${params}`)
       .then((res) => {
         if (cancelled) return
-        const body = res.data?.data ?? res.data
-        setPanels(body.data ?? [])
-        setMeta(body.meta ?? { total: 0, page: 1, limit: 24, totalPages: 1 })
+        // Handle both shapes: { data: Panel[] } (flat) and { data: { data: Panel[], meta } } (paginated)
+        const payload = res.data?.data ?? res.data
+        const panelArray: Panel[] = Array.isArray(payload) ? payload : (payload?.data ?? [])
+        const metaData = Array.isArray(payload)
+          ? { total: payload.length, page: 1, limit: payload.length, totalPages: 1 }
+          : (payload?.meta ?? { total: 0, page: 1, limit: 24, totalPages: 1 })
+        setPanels(panelArray)
+        setMeta(metaData)
       })
       .catch(() => {
         if (!cancelled) {
