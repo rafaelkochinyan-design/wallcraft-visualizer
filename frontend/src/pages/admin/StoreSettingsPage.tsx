@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import api from '../../lib/api'
+import { useVisualizerStore } from '../../store/visualizer'
 
 interface Settings {
   id: string
@@ -14,10 +15,12 @@ interface Settings {
   instagram_url: string | null
   facebook_url: string | null
   tiktok_url: string | null
+  pinterest_url: string | null
   whatsapp: string | null
 }
 
 export default function StoreSettingsPage() {
+  const { fetchTenant } = useVisualizerStore()
   const [settings, setSettings] = useState<Settings | null>(null)
   const [form, setForm] = useState({
     name: '',
@@ -30,6 +33,7 @@ export default function StoreSettingsPage() {
     instagram_url: '',
     facebook_url: '',
     tiktok_url: '',
+    pinterest_url: '',
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -50,6 +54,7 @@ export default function StoreSettingsPage() {
         instagram_url: data.instagram_url ?? '',
         facebook_url: data.facebook_url ?? '',
         tiktok_url: data.tiktok_url ?? '',
+        pinterest_url: data.pinterest_url ?? '',
       })
       setLoading(false)
     })
@@ -83,8 +88,10 @@ export default function StoreSettingsPage() {
         instagram_url: form.instagram_url || null,
         facebook_url: form.facebook_url || null,
         tiktok_url: form.tiktok_url || null,
+        pinterest_url: form.pinterest_url || null,
       })
       toast.success('Settings saved')
+      await fetchTenant()
     } catch {
       toast.error('Save failed')
     } finally {
@@ -206,6 +213,7 @@ export default function StoreSettingsPage() {
             {field('Instagram URL', 'instagram_url', { placeholder: 'https://instagram.com/wallcraft.am' })}
             {field('Facebook URL', 'facebook_url', { placeholder: 'https://facebook.com/wallcraft.am' })}
             {field('TikTok URL', 'tiktok_url', { placeholder: 'https://tiktok.com/@wallcraft.am' })}
+            {field('Pinterest URL', 'pinterest_url', { placeholder: 'https://pinterest.com/wallcraft' })}
           </div>
         </div>
 

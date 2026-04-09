@@ -330,8 +330,8 @@ router.get('/inquiries', async (req, res, next) => {
 
 router.get('/settings', async (req, res, next) => {
   try {
-    const { id, slug, name, logo_url, primary_color, domain, email, phone, address, whatsapp, instagram_url, facebook_url, tiktok_url } = req.tenant
-    ok(res, { id, slug, name, logo_url, primary_color, domain, email, phone, address, whatsapp, instagram_url, facebook_url, tiktok_url })
+    const { id, slug, name, logo_url, primary_color, domain, email, phone, address, whatsapp, instagram_url, facebook_url, tiktok_url, pinterest_url } = req.tenant
+    ok(res, { id, slug, name, logo_url, primary_color, domain, email, phone, address, whatsapp, instagram_url, facebook_url, tiktok_url, pinterest_url })
   } catch (err) { next(err) }
 })
 
@@ -348,6 +348,7 @@ router.put('/settings', async (req, res, next) => {
       instagram_url: z.string().url().optional().nullable(),
       facebook_url: z.string().url().optional().nullable(),
       tiktok_url: z.string().url().optional().nullable(),
+      pinterest_url: z.string().url().optional().nullable(),
     })
     const parsed = schema.safeParse(req.body)
     if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
@@ -355,7 +356,7 @@ router.put('/settings', async (req, res, next) => {
     const updated = await prisma.tenant.update({
       where: { id: req.tenant.id },
       data: parsed.data,
-      select: { id: true, slug: true, name: true, logo_url: true, primary_color: true, email: true, phone: true, address: true, whatsapp: true, instagram_url: true, facebook_url: true, tiktok_url: true },
+      select: { id: true, slug: true, name: true, logo_url: true, primary_color: true, email: true, phone: true, address: true, whatsapp: true, instagram_url: true, facebook_url: true, tiktok_url: true, pinterest_url: true },
     })
     ok(res, updated)
   } catch (err) { next(err) }

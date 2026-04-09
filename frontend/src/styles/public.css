@@ -107,10 +107,15 @@
   white-space: nowrap;
 }
 
-.pub-navbar__link:hover,
-.pub-navbar__link.active {
+.pub-navbar__link:hover {
   color: var(--text-primary);
   background: var(--ui-surface);
+}
+.pub-navbar__link.active {
+  color: var(--accent);
+  background: transparent;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 4px;
 }
 
 .pub-navbar__right {
@@ -1499,14 +1504,12 @@
   transition: transform 0.1s;
 }
 
-/* ── Nav / footer link underline animation ───────────────────────── */
-.pub-navbar__link,
-.pub-footer__links a {
+/* ── Footer text link underline animation (text links only) ─────── */
+.pub-footer__links a:not([href^="tel:"]):not([href^="mailto:"]) {
   position: relative;
   overflow: hidden;
 }
-.pub-navbar__link::after,
-.pub-footer__links a::after {
+.pub-footer__links a:not([href^="tel:"]):not([href^="mailto:"])::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -1517,9 +1520,12 @@
   transform: translateX(-101%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.pub-navbar__link:hover::after,
-.pub-footer__links a:hover::after {
+.pub-footer__links a:not([href^="tel:"]):not([href^="mailto:"]):hover::after {
   transform: translateX(0);
+}
+/* Navbar links: no ::after animation — use border-bottom on .active instead */
+.pub-navbar__link::after {
+  display: none;
 }
 
 /* ── Focus styles ────────────────────────────────────────────────── */

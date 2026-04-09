@@ -22,13 +22,15 @@ export interface Tenant {
   name: string
   logo_url: string | null
   primary_color: string
-  email: string | null
   phone: string | null
+  email: string | null
   address: string | null
+  whatsapp: string | null
   domain: string | null
   instagram_url: string | null
   facebook_url: string | null
   tiktok_url: string | null
+  pinterest_url: string | null
 }
 
 export interface PanelCategory {

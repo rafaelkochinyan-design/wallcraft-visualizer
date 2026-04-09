@@ -5,11 +5,19 @@ import { ok, fail } from '../utils/response'
 
 const router = Router()
 
-// GET /api/tenant — branding info for current tenant
+// GET /api/tenant — branding + contact + social info for current tenant
 router.get('/tenant', async (req, res, next) => {
   try {
-    const { id, slug, name, logo_url, primary_color } = req.tenant
-    ok(res, { id, slug, name, logo_url, primary_color })
+    const {
+      id, slug, name, logo_url, primary_color,
+      phone, email, address, whatsapp,
+      instagram_url, facebook_url, tiktok_url, pinterest_url,
+    } = req.tenant
+    ok(res, {
+      id, slug, name, logo_url, primary_color,
+      phone, email, address, whatsapp,
+      instagram_url, facebook_url, tiktok_url, pinterest_url,
+    })
   } catch (err) {
     next(err)
   }
