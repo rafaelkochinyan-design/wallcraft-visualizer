@@ -107,14 +107,24 @@ export default function HomePage() {
       {/* ── Partner Logos ─────────────────────────────────── */}
       {partners && partners.length > 0 && (
         <FadeIn>
-          <section className="pub-section" style={{ textAlign: 'center' }}>
-            <p className="pub-section-subtitle" style={{ marginBottom: 24 }}>
+          <section className="pub-partners-section">
+            <p className="pub-partners-section__title">
               {t('home.partners_title')}
             </p>
-            <div className="pub-partners-strip" style={{ justifyContent: 'center' }}>
+            <div className="pub-partners-strip">
               {partners.map((p) => (
-                <a key={p.id} href={p.website || '#'} target="_blank" rel="noreferrer">
-                  <img src={p.logo_url} alt={p.name} />
+                <a
+                  key={p.id}
+                  href={p.website || '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="pub-partner-item"
+                >
+                  {p.logo_url ? (
+                    <img src={p.logo_url} alt={p.name} />
+                  ) : (
+                    <span className="pub-partner-item__name">{p.name}</span>
+                  )}
                 </a>
               ))}
             </div>

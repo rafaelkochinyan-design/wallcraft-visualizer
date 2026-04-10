@@ -42,6 +42,16 @@
   --accent-soft: rgba(196, 98, 45, 0.12);
   --accent-border: rgba(196, 98, 45, 0.3);
 
+  /* Secondary accent — purple (categories, tags, chips, pagination, dropdowns) */
+  --accent-purple:       #7c3aed;
+  --accent-purple-light: #ede9fe;
+  --accent-purple-muted: #a78bfa;
+
+  /* Tertiary accent — gold (dark/hero backgrounds ONLY — never on light bg) */
+  --accent-gold:         #f59e0b;
+  --accent-gold-light:   #fef3c7;
+  --accent-gold-dark:    #b45309;
+
   /* Семантические */
   --accent-blue: #3b6fb5;
   --accent-green: #2e7d52;
