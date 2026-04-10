@@ -25,8 +25,11 @@ model Tenant {
   instagram_url String?
   facebook_url  String?
   tiktok_url    String?
-  pinterest_url String?
-  active        Boolean  @default(true)
+  pinterest_url           String?
+  instagram_access_token  String?
+  instagram_token_expiry  DateTime?
+  instagram_user_id       String?
+  active                  Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 

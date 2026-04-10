@@ -19,9 +19,16 @@ interface Settings {
   whatsapp: string | null
 }
 
+interface IgStatus {
+  connected: boolean
+  expiry?: string | null
+}
+
 export default function StoreSettingsPage() {
   const { fetchTenant } = useVisualizerStore()
   const [settings, setSettings] = useState<Settings | null>(null)
+  const [igStatus, setIgStatus] = useState<IgStatus | null>(null)
+  const [igImporting, setIgImporting] = useState(false)
   const [form, setForm] = useState({
     name: '',
     primary_color: '#1a1a1a',
@@ -38,6 +45,12 @@ export default function StoreSettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
+
+  useEffect(() => {
+    api.get('/admin/instagram/status')
+      .then((r) => setIgStatus(r.data.data))
+      .catch(() => setIgStatus({ connected: false }))
+  }, [])
 
   useEffect(() => {
     api.get('/admin/settings').then((res) => {
@@ -215,6 +228,82 @@ export default function StoreSettingsPage() {
             {field('TikTok URL', 'tiktok_url', { placeholder: 'https://tiktok.com/@wallcraft.am' })}
             {field('Pinterest URL', 'pinterest_url', { placeholder: 'https://pinterest.com/wallcraft' })}
           </div>
+        </div>
+
+        {/* Instagram Auto-Import */}
+        <div className="pt-2 border-t border-gray-100">
+          <p className="text-xs font-medium text-gray-700 mb-3">Instagram Auto-Import</p>
+          {igStatus === null ? (
+            <div className="text-xs text-gray-400">Loading...</div>
+          ) : igStatus.connected ? (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-xs text-green-700 font-medium">Connected to @wallcraft_am</span>
+              </div>
+              {igStatus.expiry && (
+                <p className="text-xs text-gray-400">
+                  Token expires: {new Date(igStatus.expiry).toLocaleDateString()}
+                </p>
+              )}
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={async () => {
+                    setIgImporting(true)
+                    try {
+                      const r = await api.post('/admin/instagram/import')
+                      toast.success(`Imported ${r.data.data.imported} new photos from Instagram`)
+                    } catch {
+                      toast.error('Import failed')
+                    } finally {
+                      setIgImporting(false)
+                    }
+                  }}
+                  disabled={igImporting}
+                  className="px-4 py-2 bg-gray-900 text-white text-xs rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                >
+                  {igImporting ? 'Importing...' : '↓ Import Latest Photos'}
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await api.post('/admin/instagram/refresh-token')
+                      const r = await api.get('/admin/instagram/status')
+                      setIgStatus(r.data.data)
+                      toast.success('Token refreshed')
+                    } catch {
+                      toast.error('Refresh failed')
+                    }
+                  }}
+                  className="px-4 py-2 border border-gray-200 text-gray-600 text-xs rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Refresh Token
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <p className="text-xs text-gray-500">
+                Connect Instagram to automatically import your latest photos to Gallery.
+              </p>
+              <button
+                onClick={async () => {
+                  try {
+                    const r = await api.get('/admin/instagram/auth-url')
+                    window.open(r.data.data.url, '_blank', 'width=600,height=700')
+                  } catch {
+                    toast.error('Failed to get auth URL. Check Instagram App settings in environment variables.')
+                  }
+                }}
+                className="px-4 py-2 bg-gray-900 text-white text-xs rounded-lg hover:bg-gray-800 transition-colors inline-flex items-center gap-2 w-fit"
+              >
+                Connect Instagram
+              </button>
+              <p className="text-xs text-gray-400">
+                Requires INSTAGRAM_APP_ID and INSTAGRAM_APP_SECRET in environment variables.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Slug info */}

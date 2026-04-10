@@ -10,6 +10,8 @@ import adminRouter from './routes/admin'
 import leadsRouter from './routes/leads'
 import contentRouter from './routes/content'
 import adminContentRouter from './routes/adminContent'
+import instagramRouter from './routes/instagram'
+import { refreshInstagramTokenIfNeeded } from './jobs/instagramRefresh'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -40,6 +42,7 @@ app.use('/api', publicRouter)
 app.use('/api', contentRouter)
 app.use('/admin', adminRouter)
 app.use('/admin', adminContentRouter)
+app.use('/admin/instagram', instagramRouter)
 app.use(leadsRouter)
 
 // ── Error handler (must be last) ─────────────────────────────
@@ -50,5 +53,12 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)
   console.log(`   Environment: ${process.env.NODE_ENV}`)
 })
+
+// ── Instagram token auto-refresh (daily at 3am) ───────────────
+setInterval(() => {
+  if (new Date().getHours() === 3) {
+    refreshInstagramTokenIfNeeded().catch(console.error)
+  }
+}, 60 * 60 * 1000)
 
 export default app
