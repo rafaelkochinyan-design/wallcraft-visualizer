@@ -65,8 +65,8 @@ router.get('/gallery', async (req, res, next) => {
 // ── BLOG ──────────────────────────────────────────────────────
 router.get('/blog', async (req, res, next) => {
   try {
-    const page  = Math.max(1, parseInt(String(req.query.page  || '1')))
-    const limit = Math.min(50, parseInt(String(req.query.limit || '12')))
+    const page  = Math.max(1, parseInt(String(req.query.page  || '1'), 10) || 1)
+    const limit = Math.min(50, parseInt(String(req.query.limit || '12'), 10) || 12)
     const { category } = req.query
 
     const where = {

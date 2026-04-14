@@ -132,6 +132,7 @@ export default function AdminGalleryPage() {
   const [toast, showToast] = useToast()
 
   async function load() {
+    setLoading(true)
     try {
       setItems((await api.get('/admin/gallery')).data.data)
     } finally {

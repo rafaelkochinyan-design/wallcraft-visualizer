@@ -52,7 +52,7 @@ router.post('/auth/login', async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
-    ok(res, { accessToken, refreshToken })
+    ok(res, { accessToken })
   } catch (err) {
     next(err)
   }
@@ -60,7 +60,7 @@ router.post('/auth/login', async (req, res, next) => {
 
 router.post('/auth/refresh', async (req, res, next) => {
   try {
-    const token = req.cookies?.refreshToken || req.body?.refreshToken
+    const token = req.cookies?.refreshToken
     if (!token) return fail(res, 401, 'No refresh token')
 
     const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as {
@@ -79,8 +79,8 @@ router.post('/auth/refresh', async (req, res, next) => {
 
 router.get('/auth/me', authMiddleware, async (req, res, next) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user!.id },
+    const user = await prisma.user.findFirst({
+      where: { id: req.user!.id, tenant_id: req.tenant.id },
       select: { id: true, email: true, role: true, tenant_id: true },
     })
     ok(res, user)
@@ -128,10 +128,21 @@ router.get('/panels', async (req, res, next) => {
   try {
     const panels = await prisma.panel.findMany({
       where: { tenant_id: req.tenant.id },
+      include: { sizes: { orderBy: { sort_order: 'asc' } } },
       orderBy: { sort_order: 'asc' },
     })
     ok(res, panels)
   } catch (err) { next(err) }
+})
+
+const panelSizeSchema = z.object({
+  id: z.string().optional(),
+  label: z.string().min(1).max(50),
+  width_mm: z.coerce.number().positive(),
+  height_mm: z.coerce.number().positive(),
+  depth_mm: z.coerce.number().positive(),
+  price: z.coerce.number().positive().optional().nullable(),
+  sort_order: z.coerce.number().int().default(0),
 })
 
 const panelSchema = z.object({
@@ -152,14 +163,23 @@ const panelSchema = z.object({
   active: z.coerce.boolean().default(true),
   sort_order: z.coerce.number().int().default(0),
   category_id: z.string().optional(),
+  sizes: z.array(panelSizeSchema).optional().default([]),
 })
 
 router.post('/panels', async (req, res, next) => {
   try {
     const parsed = panelSchema.safeParse(req.body)
     if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+    const { sizes, ...panelData } = parsed.data
     const panel = await prisma.panel.create({
-      data: { ...parsed.data, tenant_id: req.tenant.id },
+      data: {
+        ...panelData,
+        tenant_id: req.tenant.id,
+        sizes: sizes && sizes.length > 0
+          ? { create: sizes.map(({ id: _id, ...s }) => s) }
+          : undefined,
+      },
+      include: { sizes: { orderBy: { sort_order: 'asc' } } },
     })
     ok(res, panel, 201)
   } catch (err) { next(err) }
@@ -167,18 +187,39 @@ router.post('/panels', async (req, res, next) => {
 
 router.put('/panels/:id', async (req, res, next) => {
   try {
-    const panel = await prisma.panel.findFirst({
+    const existing = await prisma.panel.findFirst({
       where: { id: req.params.id, tenant_id: req.tenant.id },
     })
-    if (!panel) return fail(res, 404, 'Panel not found')
+    if (!existing) return fail(res, 404, 'Panel not found')
 
     const parsed = panelSchema.partial().safeParse(req.body)
     if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
 
-    const updated = await prisma.panel.update({
-      where: { id: req.params.id },
-      data: parsed.data,
-    })
+    const { sizes, ...panelData } = parsed.data
+
+    // Delete all existing sizes and recreate atomically to prevent data loss on crash
+    let updated
+    if (sizes !== undefined) {
+      updated = await prisma.$transaction(async (tx) => {
+        await tx.panelSize.deleteMany({ where: { panel_id: req.params.id } })
+        return tx.panel.update({
+          where: { id: req.params.id },
+          data: {
+            ...panelData,
+            ...(sizes.length > 0
+              ? { sizes: { create: sizes.map(({ id: _id, ...s }) => s) } }
+              : {}),
+          },
+          include: { sizes: { orderBy: { sort_order: 'asc' } } },
+        })
+      })
+    } else {
+      updated = await prisma.panel.update({
+        where: { id: req.params.id },
+        data: panelData,
+        include: { sizes: { orderBy: { sort_order: 'asc' } } },
+      })
+    }
     ok(res, updated)
   } catch (err) { next(err) }
 })
@@ -370,6 +411,66 @@ router.post('/settings/upload-logo', upload.single('file'), async (req, res, nex
     if (req.file.size > 2 * 1024 * 1024) return fail(res, 400, 'File too large. Max 2MB.')
     const url = await uploadFile(req.file.buffer, 'logos', req.file.originalname, req.file.mimetype)
     ok(res, { url })
+  } catch (err) { next(err) }
+})
+
+// ── COLLECTIONS ───────────────────────────────────────────────
+
+const collectionSchema = z.object({
+  name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
+  description: z.string().optional(),
+  cover_url: z.string().optional().nullable(),
+  panel_ids: z.array(z.string()).default([]),
+  active: z.coerce.boolean().default(true),
+  sort_order: z.coerce.number().int().default(0),
+})
+
+router.get('/collections', async (req, res, next) => {
+  try {
+    const collections = await prisma.collection.findMany({
+      where: { tenant_id: req.tenant.id },
+      orderBy: { sort_order: 'asc' },
+    })
+    ok(res, collections)
+  } catch (err) { next(err) }
+})
+
+router.post('/collections', async (req, res, next) => {
+  try {
+    const parsed = collectionSchema.safeParse(req.body)
+    if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+    const collection = await prisma.collection.create({
+      data: { ...parsed.data, tenant_id: req.tenant.id },
+    })
+    ok(res, collection, 201)
+  } catch (err) { next(err) }
+})
+
+router.put('/collections/:id', async (req, res, next) => {
+  try {
+    const existing = await prisma.collection.findFirst({
+      where: { id: req.params.id, tenant_id: req.tenant.id },
+    })
+    if (!existing) return fail(res, 404, 'Collection not found')
+    const parsed = collectionSchema.partial().safeParse(req.body)
+    if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+    const updated = await prisma.collection.update({
+      where: { id: req.params.id },
+      data: parsed.data,
+    })
+    ok(res, updated)
+  } catch (err) { next(err) }
+})
+
+router.delete('/collections/:id', async (req, res, next) => {
+  try {
+    const existing = await prisma.collection.findFirst({
+      where: { id: req.params.id, tenant_id: req.tenant.id },
+    })
+    if (!existing) return fail(res, 404, 'Collection not found')
+    await prisma.collection.delete({ where: { id: req.params.id } })
+    ok(res, { deleted: true })
   } catch (err) { next(err) }
 })
 

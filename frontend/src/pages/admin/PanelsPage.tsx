@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
-import { Panel, PanelCategory } from '../../types'
+import { Panel, PanelCategory, PanelSize } from '../../types'
 import { apiErr } from './adminUtils'
 
 export default function PanelsPage() {
@@ -171,8 +171,26 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
     active: panel?.active ?? true,
   })
   const [images, setImages] = useState<{ url: string }[]>(panel?.images || [])
+  const [sizes, setSizes] = useState<Omit<PanelSize, 'panel_id'>[]>(
+    panel?.sizes?.map(({ panel_id: _, ...s }) => s) ?? []
+  )
   const [uploading, setUploading] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+
+  function addSize() {
+    setSizes((prev) => [
+      ...prev,
+      { id: `new-${Date.now()}`, label: '', width_mm: 500, height_mm: 500, depth_mm: 19, price: null, sort_order: prev.length },
+    ])
+  }
+
+  function updateSize(idx: number, field: string, value: string | number | null) {
+    setSizes((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: value } : s))
+  }
+
+  function removeSize(idx: number) {
+    setSizes((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   useEffect(() => {
     api.get('/admin/panel-categories').then((r) => setCategories(r.data.data || [])).catch(() => {})
@@ -228,6 +246,15 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
         weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : undefined,
         category_id: form.category_id || undefined,
         images,
+        sizes: sizes.map((s, i) => ({
+          id: s.id.startsWith('new-') ? undefined : s.id,
+          label: s.label,
+          width_mm: s.width_mm,
+          height_mm: s.height_mm,
+          depth_mm: s.depth_mm,
+          price: s.price ?? undefined,
+          sort_order: i,
+        })),
       }
       if (panel) {
         await api.put(`/admin/panels/${panel.id}`, payload)
@@ -389,6 +416,62 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
               className={inputClass} rows={3}
               placeholder="Describe the panel design, finish, ideal use cases..." />
           </Field>
+
+          {/* Size variants */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-gray-500">Size Variants (optional)</label>
+              <button type="button" onClick={addSize}
+                className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700">
+                + Add size
+              </button>
+            </div>
+            {sizes.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {sizes.map((size, idx) => (
+                  <div key={size.id} className="grid grid-cols-[1fr_80px_80px_80px_80px_32px] gap-2 items-end">
+                    <div>
+                      {idx === 0 && <div className="text-xs text-gray-400 mb-1">Label</div>}
+                      <input
+                        value={size.label}
+                        onChange={(e) => updateSize(idx, 'label', e.target.value)}
+                        className={inputClass} placeholder="e.g. 500×500" />
+                    </div>
+                    <div>
+                      {idx === 0 && <div className="text-xs text-gray-400 mb-1">W mm</div>}
+                      <input type="number" value={size.width_mm}
+                        onChange={(e) => updateSize(idx, 'width_mm', parseFloat(e.target.value))}
+                        className={inputClass} />
+                    </div>
+                    <div>
+                      {idx === 0 && <div className="text-xs text-gray-400 mb-1">H mm</div>}
+                      <input type="number" value={size.height_mm}
+                        onChange={(e) => updateSize(idx, 'height_mm', parseFloat(e.target.value))}
+                        className={inputClass} />
+                    </div>
+                    <div>
+                      {idx === 0 && <div className="text-xs text-gray-400 mb-1">D mm</div>}
+                      <input type="number" value={size.depth_mm}
+                        onChange={(e) => updateSize(idx, 'depth_mm', parseFloat(e.target.value))}
+                        className={inputClass} />
+                    </div>
+                    <div>
+                      {idx === 0 && <div className="text-xs text-gray-400 mb-1">Price</div>}
+                      <input type="number" value={size.price ?? ''}
+                        onChange={(e) => updateSize(idx, 'price', e.target.value ? parseFloat(e.target.value) : null)}
+                        className={inputClass} placeholder="—" />
+                    </div>
+                    <div style={{ paddingTop: idx === 0 ? 20 : 0 }}>
+                      <button type="button" onClick={() => removeSize(idx)}
+                        className="w-8 h-9 flex items-center justify-center rounded text-gray-400 hover:text-red-500 hover:bg-red-50">
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Active */}
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">

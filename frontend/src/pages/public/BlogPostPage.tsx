@@ -12,7 +12,17 @@ export default function BlogPostPage() {
 
   if (loading)
     return <div style={{ padding: '80px 32px', textAlign: 'center' }}>{t('common.loading')}</div>
-  if (!post) return <div style={{ padding: '80px 32px', textAlign: 'center' }}>Post not found</div>
+  if (!post)
+    return (
+      <div className="pub-section" style={{ textAlign: 'center', padding: '80px 0' }}>
+        <p style={{ fontSize: 48, marginBottom: 16 }}>📄</p>
+        <h2 className="pub-section-title">{t('not_found.title')}</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>{t('not_found.blog_post')}</p>
+        <Link to="/blog" className="pub-filter-chip active" style={{ textDecoration: 'none' }}>
+          ← {t('blog.title')}
+        </Link>
+      </div>
+    )
 
   return (
     <div className="pub-section" style={{ maxWidth: 800, margin: '0 auto' }}>

@@ -25,9 +25,15 @@ export function usePublicData<T>(
       if (mountedRef.current) {
         setData(res.data.data)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (mountedRef.current) {
-        setError(err?.response?.data?.error?.message || 'Failed to load data')
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === 'object' && err !== null && 'response' in err
+              ? ((err as { response?: { data?: { error?: { message?: string } } } }).response?.data?.error?.message ?? 'Failed to load data')
+              : 'Failed to load data'
+        setError(message)
       }
     } finally {
       if (mountedRef.current) {

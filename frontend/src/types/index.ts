@@ -38,6 +38,17 @@ export interface PanelCategory {
   name: string
 }
 
+export interface PanelSize {
+  id: string
+  panel_id: string
+  label: string
+  width_mm: number
+  height_mm: number
+  depth_mm: number
+  price: number | null
+  sort_order: number
+}
+
 export interface Panel {
   id: string
   tenant_id: string
@@ -59,6 +70,7 @@ export interface Panel {
   active: boolean
   sort_order: number
   category: PanelCategory | null
+  sizes?: PanelSize[]
 }
 
 export interface AccessoryType {
@@ -198,4 +210,16 @@ export interface TeamMember {
 export interface PageContent {
   page_key: string
   content: Record<string, LocalizedString>
+}
+
+export interface Collection {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  cover_url: string | null
+  panel_ids: string[]
+  active: boolean
+  sort_order: number
+  created_at: string
 }

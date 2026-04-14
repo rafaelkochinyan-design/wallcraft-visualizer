@@ -1,11 +1,15 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import multer from 'multer'
 import { z } from 'zod'
 import { prisma } from '../utils/prisma'
 import { ok, fail } from '../utils/response'
 import { uploadFile } from '../services/r2'
+import { authMiddleware } from '../middleware/auth'
 
 const router = Router()
+
+// All admin content routes require authentication
+router.use(authMiddleware)
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -21,7 +25,7 @@ const localizedOpt = z.object({
   am: z.string().default(''),
 }).optional()
 
-async function imageUpload(req: any, res: any, folder: string) {
+async function imageUpload(req: Request, res: Response, folder: string) {
   if (!req.file) return fail(res, 400, 'No file uploaded')
   const allowed = ['image/jpeg', 'image/png', 'image/webp']
   if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type. Use JPG, PNG, or WebP.')

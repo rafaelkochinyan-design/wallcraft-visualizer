@@ -1,30 +1,43 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import api from '../../lib/api'
-import { Panel } from '../../types'
+import { Panel, PanelSize } from '../../types'
 import { Icon } from '../../components/ui/Icon'
+import { downloadModelAsZip } from '../../utils/downloadAsZip'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation()
   const [panel, setPanel] = useState<Panel | null>(null)
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)
   const [activeImg, setActiveImg] = useState(0)
   const [descExpanded, setDescExpanded] = useState(false)
   const [stickyVisible, setStickyVisible] = useState(false)
+  const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
 
   const priceRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!id) return
+    const controller = new AbortController()
+    setLoading(true)
+    setFetchError(false)
     api
-      .get(`/api/panels/${id}`)
+      .get(`/api/panels/${id}`, { signal: controller.signal })
       .then((r) => {
         setPanel(r.data.data)
         setActiveImg(0)
       })
-      .finally(() => setLoading(false))
+      .catch((err) => {
+        if (!controller.signal.aborted) setFetchError(true)
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false)
+      })
+    return () => controller.abort()
   }, [id])
 
   // Sticky bar: observe price element going out of view
@@ -39,10 +52,38 @@ export default function ProductDetailPage() {
     return () => observer.disconnect()
   }, [panel])
 
+  // useMemo MUST be before any conditional returns (Rules of Hooks)
+  const activeSize: PanelSize | null = useMemo(() => {
+    if (!panel?.sizes || panel.sizes.length === 0) return null
+    return panel.sizes.find((s) => s.id === selectedSizeId) ?? panel.sizes[0]
+  }, [panel?.sizes, selectedSizeId])
+
   if (loading)
     return <div style={{ padding: '80px 32px', textAlign: 'center' }}>{t('common.loading')}</div>
+  if (fetchError)
+    return (
+      <div className="pub-section" style={{ textAlign: 'center', padding: '80px 0' }}>
+        <p style={{ fontSize: 48, marginBottom: 16 }}>⚠️</p>
+        <h2 className="pub-section-title">{t('common.error')}</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>{t('not_found.product')}</p>
+        <Link to="/products" className="pub-filter-chip active" style={{ textDecoration: 'none' }}>
+          ← {t('products.title')}
+        </Link>
+      </div>
+    )
   if (!panel)
-    return <div style={{ padding: '80px 32px', textAlign: 'center' }}>Product not found</div>
+    return (
+      <div className="pub-section" style={{ textAlign: 'center', padding: '80px 0' }}>
+        <p style={{ fontSize: 48, marginBottom: 16 }}>🏛</p>
+        <h2 className="pub-section-title">{t('not_found.title')}</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>{t('not_found.product')}</p>
+        <Link to="/products" className="pub-filter-chip active" style={{ textDecoration: 'none' }}>
+          ← {t('products.title')}
+        </Link>
+      </div>
+    )
+
+  const hasSizes = panel.sizes && panel.sizes.length > 0
 
   // Build image list: gallery images first, then fall back to thumb/texture
   const galleryImages: string[] = [
@@ -51,23 +92,34 @@ export default function ProductDetailPage() {
     ...(panel.texture_url && panel.texture_url !== panel.thumb_url ? [panel.texture_url] : []),
   ].filter(Boolean)
 
+  // Active dimensions — prefer selected size, fall back to panel defaults
+  const activeWidth = activeSize ? activeSize.width_mm : panel.width_mm
+  const activeHeight = activeSize ? activeSize.height_mm : panel.height_mm
+  const activeDepth = activeSize ? activeSize.depth_mm : panel.depth_mm
+  const activePrice = activeSize?.price ?? panel.price
+
   // Calculate area from dimensions
-  const areaM2 =
-    panel.width_mm && panel.height_mm
-      ? ((panel.width_mm * panel.height_mm) / 1_000_000).toFixed(4)
+  const itemArea =
+    activeWidth && activeHeight
+      ? (activeWidth * activeHeight) / 1_000_000
       : null
+  const areaM2 = itemArea ? itemArea.toFixed(4) : null
 
   // Format price with thousands separator
-  const priceFormatted = panel.price
-    ? Math.round(panel.price).toLocaleString('ru-RU')
+  const priceFormatted = activePrice
+    ? Math.round(activePrice).toLocaleString('ru-RU')
     : null
+
+  // Price per item = price (per m²) × item area
+  const pricePerItem =
+    activePrice && itemArea ? Math.round(activePrice * itemArea) : null
 
   const specRows = [
     {
       label: t('products.dimensions'),
       value:
-        panel.width_mm && panel.height_mm && panel.depth_mm
-          ? `${panel.width_mm} × ${panel.height_mm} × ${panel.depth_mm} mm`
+        activeWidth && activeHeight && activeDepth
+          ? `${activeWidth} × ${activeHeight} × ${activeDepth} mm`
           : null,
     },
     {
@@ -101,20 +153,28 @@ export default function ProductDetailPage() {
             {priceFormatted} {t('products.price_per_m2')}
           </span>
         )}
-        {(panel.model_url || panel.catalog_url) && (
-          <a
-            href={panel.model_url || panel.catalog_url || '#'}
-            download
+        {panel.model_url && (
+          <button
+            onClick={async () => {
+              try { await downloadModelAsZip(panel.model_url!, panel.name) }
+              catch { toast.error(t('common.error')) }
+            }}
             className="pub-detail-sticky-bar__cta"
+            style={{ border: 'none', cursor: 'pointer' }}
           >
-            ↓ {panel.model_url ? t('products.download_3d') : t('products.download_catalog')}
+            ↓ {t('products.download_3d')} (ZIP)
+          </button>
+        )}
+        {!panel.model_url && panel.catalog_url && (
+          <a href={panel.catalog_url} target="_blank" rel="noreferrer" className="pub-detail-sticky-bar__cta">
+            📄 {t('products.view_catalog')}
           </a>
         )}
       </div>
 
       {/* ── Breadcrumb ───────────────────────────────────────── */}
       <nav className="pub-breadcrumb" aria-label="breadcrumb">
-        <Link to="/">Home</Link>
+        <Link to="/">{t('nav.home')}</Link>
         <span className="pub-breadcrumb__sep">/</span>
         <Link to="/products">{t('products.title')}</Link>
         <span className="pub-breadcrumb__sep">/</span>
@@ -249,7 +309,7 @@ export default function ProductDetailPage() {
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: '0.08em',
-                color: 'var(--accent)',
+                color: 'var(--accent-purple)',
                 marginBottom: 8,
               }}
             >
@@ -267,13 +327,51 @@ export default function ProductDetailPage() {
             </p>
           )}
 
+          {/* Size selector chips */}
+          {hasSizes && panel.sizes && panel.sizes.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 8, fontWeight: 500 }}>
+                {t('products.select_size')}
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {panel.sizes.map((size) => {
+                  const isActive = activeSize?.id === size.id
+                  return (
+                    <button
+                      key={size.id}
+                      onClick={() => setSelectedSizeId(size.id)}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: 8,
+                        border: `1.5px solid ${isActive ? 'var(--accent)' : 'var(--ui-border)'}`,
+                        background: isActive ? 'var(--accent)' : 'var(--ui-surface)',
+                        color: isActive ? '#fff' : 'var(--text-primary)',
+                        fontWeight: 500,
+                        fontSize: 13,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      {size.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Price — observed for sticky bar */}
           {priceFormatted && (
-            <div
-              ref={priceRef}
-              style={{ fontSize: 28, fontWeight: 700, color: 'var(--accent)', marginBottom: 28 }}
-            >
-              {priceFormatted} {t('products.price_per_m2')}
+            <div ref={priceRef} style={{ marginBottom: 28 }}>
+              <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--accent)' }}>
+                {priceFormatted} {t('products.price_per_m2')}
+              </div>
+              {pricePerItem && itemArea && (
+                <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 6 }}>
+                  {t('products.item_price')}: {pricePerItem.toLocaleString('ru-RU')} AMD
+                  ({itemArea.toFixed(4)} m² {t('products.per_item')})
+                </div>
+              )}
             </div>
           )}
 
@@ -336,9 +434,14 @@ export default function ProductDetailPage() {
           {/* Download buttons — desktop */}
           <div className="pub-detail-actions" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {panel.model_url && (
-              <a
-                href={panel.model_url}
-                download
+              <button
+                onClick={async () => {
+                  try {
+                    await downloadModelAsZip(panel.model_url!, panel.name)
+                  } catch {
+                    toast.error(t('common.error'))
+                  }
+                }}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -350,17 +453,17 @@ export default function ProductDetailPage() {
                   borderRadius: 12,
                   fontWeight: 600,
                   fontSize: 15,
-                  textDecoration: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
                   transition: 'opacity 0.15s',
                 }}
               >
-                ↓ {t('products.download_3d')}
-              </a>
+                ↓ {t('products.download_3d')} (ZIP)
+              </button>
             )}
             {panel.catalog_url && (
               <a
                 href={panel.catalog_url}
-                download
                 target="_blank"
                 rel="noreferrer"
                 style={{
@@ -379,7 +482,7 @@ export default function ProductDetailPage() {
                   transition: 'background 0.15s',
                 }}
               >
-                ↓ {t('products.download_catalog')}
+                📄 {t('products.view_catalog')}
               </a>
             )}
           </div>
@@ -390,23 +493,28 @@ export default function ProductDetailPage() {
       {(panel.model_url || panel.catalog_url) && (
         <div className="pub-detail-sticky-cta">
           {panel.model_url && (
-            <a
-              href={panel.model_url}
-              download
+            <button
+              onClick={async () => {
+                try {
+                  await downloadModelAsZip(panel.model_url!, panel.name)
+                } catch {
+                  toast.error(t('common.error'))
+                }
+              }}
               className="pub-detail-sticky-cta__btn pub-detail-sticky-cta__btn--primary"
+              style={{ border: 'none', cursor: 'pointer' }}
             >
-              ↓ {t('products.download_3d')}
-            </a>
+              ↓ {t('products.download_3d')} (ZIP)
+            </button>
           )}
           {panel.catalog_url && (
             <a
               href={panel.catalog_url}
-              download
               target="_blank"
               rel="noreferrer"
               className="pub-detail-sticky-cta__btn pub-detail-sticky-cta__btn--secondary"
             >
-              ↓ {t('products.download_catalog')}
+              📄 {t('products.view_catalog')}
             </a>
           )}
         </div>

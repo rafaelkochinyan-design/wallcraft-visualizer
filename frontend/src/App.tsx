@@ -5,11 +5,13 @@ import { Toaster } from 'sonner'
 
 import PublicLayout from './components/layout/PublicLayout'
 import HomePage from './pages/public/HomePage'
+import ErrorBoundary from './components/ui/ErrorBoundary'
 
 // Admin pages (existing)
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminLayout from './pages/admin/AdminLayout'
 import PanelsPage from './pages/admin/PanelsPage'
+import AdminCollectionsPage from './pages/admin/AdminCollectionsPage'
 import StoreSettingsPage from './pages/admin/StoreSettingsPage'
 import LeadsPage from './pages/admin/LeadsPage'
 
@@ -221,6 +223,7 @@ function AnimatedRoutes() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/panels" replace />} />
             <Route path="panels" element={<PanelsPage />} />
+            <Route path="collections" element={<AdminCollectionsPage />} />
             <Route path="settings" element={<StoreSettingsPage />} />
             <Route path="leads" element={<LeadsPage />} />
             <Route path="hero-slides" element={<AdminHeroSlidesPage />} />
@@ -257,9 +260,11 @@ export default function App() {
           },
         }}
       />
-      <Suspense fallback={<PageLoader />}>
-        <AnimatedRoutes />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <AnimatedRoutes />
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   )
 }

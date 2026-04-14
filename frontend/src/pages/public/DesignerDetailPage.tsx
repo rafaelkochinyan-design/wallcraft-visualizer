@@ -13,7 +13,16 @@ export default function DesignerDetailPage() {
   if (loading)
     return <div style={{ padding: '80px 32px', textAlign: 'center' }}>{t('common.loading')}</div>
   if (!designer)
-    return <div style={{ padding: '80px 32px', textAlign: 'center' }}>Designer not found</div>
+    return (
+      <div className="pub-section" style={{ textAlign: 'center', padding: '80px 0' }}>
+        <p style={{ fontSize: 48, marginBottom: 16 }}>👤</p>
+        <h2 className="pub-section-title">{t('not_found.title')}</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>{t('not_found.designer')}</p>
+        <Link to="/designers" className="pub-filter-chip active" style={{ textDecoration: 'none' }}>
+          ← {t('designers.title')}
+        </Link>
+      </div>
+    )
 
   return (
     <div className="pub-section">

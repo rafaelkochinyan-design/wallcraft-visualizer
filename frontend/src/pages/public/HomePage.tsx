@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../../store/visualizer'
@@ -10,6 +11,7 @@ import FadeIn, { StaggerChildren } from '../../components/ui/FadeIn'
 import PageMeta from '../../components/ui/PageMeta'
 
 export default function HomePage() {
+  const [failedLogos, setFailedLogos] = useState<Set<string>>(new Set())
   const { t, i18n } = useTranslation()
   const lang = i18n.language as 'en' | 'ru' | 'am'
   const { availablePanels } = useVisualizerStore()
@@ -120,8 +122,13 @@ export default function HomePage() {
                   rel="noreferrer"
                   className="pub-partner-item"
                 >
-                  {p.logo_url ? (
-                    <img src={p.logo_url} alt={p.name} />
+                  {p.logo_url && !failedLogos.has(p.id) ? (
+                    <img
+                      src={p.logo_url}
+                      alt={p.name}
+                      loading="lazy"
+                      onError={() => setFailedLogos((prev) => new Set([...prev, p.id]))}
+                    />
                   ) : (
                     <span className="pub-partner-item__name">{p.name}</span>
                   )}

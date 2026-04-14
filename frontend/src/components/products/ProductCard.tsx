@@ -1,6 +1,9 @@
 import { useRef, type CSSProperties } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { Panel } from '../../types'
+
+const MotionLink = motion(Link)
 
 interface Props {
   panel: Panel
@@ -8,7 +11,7 @@ interface Props {
 }
 
 export default function ProductCard({ panel, index = 0 }: Props) {
-  const ref = useRef<HTMLAnchorElement>(null)
+  const ref = useRef<HTMLAnchorElement & { href: string }>(null)
 
   // Mouse position for 3D tilt
   const tiltX = useMotionValue(0)
@@ -39,9 +42,9 @@ export default function ProductCard({ panel, index = 0 }: Props) {
   }
 
   return (
-    <motion.a
+    <MotionLink
       ref={ref}
-      href={`/products/${panel.id}`}
+      to={`/products/${panel.id}`}
       className="pub-product-card"
       style={
         {
@@ -68,14 +71,6 @@ export default function ProductCard({ panel, index = 0 }: Props) {
           }}
         />
         <div className="pub-product-card__overlay" />
-        <button
-          className="pub-product-card__quick-view"
-          onClick={(e) => e.preventDefault()}
-          tabIndex={-1}
-          aria-hidden="true"
-        >
-          Quick View
-        </button>
       </div>
       <div className="pub-product-card__body">
         {panel.category?.name && (
@@ -94,6 +89,6 @@ export default function ProductCard({ panel, index = 0 }: Props) {
           </div>
         ) : null}
       </div>
-    </motion.a>
+    </MotionLink>
   )
 }

@@ -31,7 +31,19 @@ frontend/src/styles/components.css ← .btn .card .card-dark .input .badge
 --glass-dark: rgba(10,10,10,0.84)  /* dark overlay over 3D */
 --glass-light: rgba(255,255,255,0.97) /* white card */
 --ease: cubic-bezier(0.16,1,0.3,1)
+
+/* Accent hierarchy */
+--accent           /* orange — prices, primary CTA buttons, links, active nav */
+--accent-purple    /* purple — categories, tags, filter chips active, pagination active, dropdown hover, lang switcher active */
+--accent-purple-light  /* light purple — tag/chip backgrounds */
+--accent-gold      /* gold — ONLY on dark/hero backgrounds (never on light bg) */
+--accent-gold-dark /* darker gold — hover state for gold buttons */
 ```
+
+### Accent color rules:
+- **Orange** (`--accent`): prices, primary CTA buttons, active nav links, links
+- **Purple** (`--accent-purple`): category tags, filter chips active state, pagination active page, dropdown item hover, language switcher active
+- **Gold** (`--accent-gold`): hero CTA buttons only — guaranteed dark background. **Never use on light backgrounds.**
 
 ---
 

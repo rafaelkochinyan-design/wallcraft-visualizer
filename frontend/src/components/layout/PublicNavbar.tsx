@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../../store/visualizer'
 import { useThemeStore } from '../../store/theme'
@@ -14,7 +14,7 @@ const LANGS = [
 
 export default function PublicNavbar() {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
+  const location = useLocation()
   const { tenant } = useVisualizerStore()
   const { theme, toggle } = useThemeStore()
   const [scrolled, setScrolled] = useState(false)
@@ -35,7 +35,7 @@ export default function PublicNavbar() {
     setOpen(false)
     setProductsOpen(false)
     setInfoOpen(false)
-  }, [navigate])
+  }, [location.pathname])
 
   // Fetch panel categories for dropdown
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function PublicNavbar() {
                 {categories.map((cat) => (
                   <Link
                     key={cat.id}
-                    to={`/products?category=${cat.id}`}
+                    to={`/products?category_id=${cat.id}`}
                     className="pub-navbar__dropdown-item"
                     onClick={() => setProductsOpen(false)}
                   >
@@ -206,9 +206,9 @@ export default function PublicNavbar() {
           {categories.map((cat) => (
             <Link
               key={cat.id}
-              to={`/products?category=${cat.id}`}
+              to={`/products?category_id=${cat.id}`}
               className="pub-navbar__link"
-              style={{ paddingLeft: 24, fontSize: 13, opacity: 0.8 }}
+              style={{ paddingLeft: 24, fontSize: 13, opacity: 0.7, display: 'block', width: '100%' }}
               onClick={() => setOpen(false)}
             >
               {cat.name}
@@ -232,14 +232,15 @@ export default function PublicNavbar() {
             {t('nav.information')}
           </div>
           {infoLinks.map(({ to, label }) => (
-            <Link
+            <NavLink
               key={to}
               to={to}
-              className="pub-navbar__link"
+              className={({ isActive }) => `pub-navbar__link${isActive ? ' active' : ''}`}
+              style={{ display: 'block', width: '100%' }}
               onClick={() => setOpen(false)}
             >
               {label}
-            </Link>
+            </NavLink>
           ))}
         </div>
 

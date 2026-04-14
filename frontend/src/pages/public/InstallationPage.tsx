@@ -19,10 +19,27 @@ interface InstallationContent {
 export default function InstallationPage() {
   const { t } = useTranslation()
   const localize = useLocalized()
-  const { data: page } = usePublicData<PageContent>('/api/pages/installation')
+  const { data: page, loading } = usePublicData<PageContent>('/api/pages/installation')
 
   const content = page?.content as unknown as InstallationContent | undefined
   const steps: InstallationStep[] = content?.steps ?? []
+
+  if (loading)
+    return (
+      <div className="pub-section" style={{ maxWidth: 800, margin: '0 auto' }}>
+        <div className="pub-skeleton" style={{ height: 48, width: '50%', marginBottom: 16 }} />
+        <div className="pub-skeleton" style={{ height: 24, width: '70%', marginBottom: 48 }} />
+        {[...Array(4)].map((_, i) => (
+          <div key={i} style={{ display: 'flex', gap: 24, marginBottom: 32 }}>
+            <div className="pub-skeleton" style={{ width: 48, height: 48, borderRadius: '50%', flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div className="pub-skeleton" style={{ height: 20, marginBottom: 8 }} />
+              <div className="pub-skeleton" style={{ height: 16, width: '80%' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
 
   return (
     <div className="pub-section" style={{ maxWidth: 800, margin: '0 auto' }}>

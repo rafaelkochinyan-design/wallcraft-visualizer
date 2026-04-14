@@ -8,46 +8,60 @@ import PageMeta from '../../components/ui/PageMeta'
 export default function AboutPage() {
   const { t } = useTranslation()
   const localize = useLocalized()
-  const { data: team } = usePublicData<TeamMember[]>('/api/team')
-  const { data: page } = usePublicData<PageContent>('/api/pages/about')
+  const { data: team, loading: teamLoading } = usePublicData<TeamMember[]>('/api/team')
+  const { data: page, loading: pageLoading } = usePublicData<PageContent>('/api/pages/about')
+  const loading = teamLoading || pageLoading
 
   const values = [
     {
       icon: '👥',
-      title: t('common.loading') === 'Loading...' ? 'People' : 'Люди',
+      title: t('about.value_people'),
       desc: page?.content?.people
         ? localize(page.content.people)
-        : 'Individual approach to every client',
+        : t('about.value_people_desc'),
     },
     {
       icon: '🌿',
-      title: 'Ecology',
+      title: t('about.value_ecology'),
       desc: page?.content?.ecology
         ? localize(page.content.ecology)
-        : 'Eco-friendly gypsum, no harmful substances',
+        : t('about.value_ecology_desc'),
     },
     {
       icon: '✨',
-      title: 'Self-expression',
+      title: t('about.value_expression'),
       desc: page?.content?.self_expression
         ? localize(page.content.self_expression)
-        : 'You give an idea, we create it',
+        : t('about.value_expression_desc'),
     },
     {
       icon: '🎨',
-      title: 'Aesthetics',
+      title: t('about.value_aesthetics'),
       desc: page?.content?.aesthetics
         ? localize(page.content.aesthetics)
-        : 'We value beauty, quality and innovation',
+        : t('about.value_aesthetics_desc'),
     },
     {
       icon: '🤝',
-      title: 'Responsibility',
+      title: t('about.value_responsibility'),
       desc: page?.content?.responsibility
         ? localize(page.content.responsibility)
-        : 'Every team member cares about client satisfaction',
+        : t('about.value_responsibility_desc'),
     },
   ]
+
+  if (loading)
+    return (
+      <div className="pub-section">
+        <div className="pub-skeleton" style={{ height: 48, width: '40%', marginBottom: 16 }} />
+        <div className="pub-skeleton" style={{ height: 24, width: '60%', marginBottom: 48 }} />
+        <div className="pub-grid-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="pub-skeleton" style={{ height: 160, borderRadius: 16 }} />
+          ))}
+        </div>
+      </div>
+    )
 
   return (
     <div>

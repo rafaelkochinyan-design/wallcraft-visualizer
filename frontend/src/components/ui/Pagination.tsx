@@ -6,12 +6,12 @@ const styles = `
   .pag-root {
     --pag-bg: #ffffff;
     --pag-bg-hover: #f4f4f1;
-    --pag-bg-active: #1a1a2e;
+    --pag-bg-active: #7c3aed;
     --pag-text: #0f0f12;
     --pag-text-muted: #9999a6;
-    --pag-text-active: #c9a96e;
+    --pag-text-active: #ffffff;
     --pag-border: #e0e0dc;
-    --pag-border-active: #1a1a2e;
+    --pag-border-active: #7c3aed;
     --pag-radius: 6px;
     font-family: 'DM Sans', sans-serif;
   }

@@ -47,6 +47,7 @@ model Tenant {
   teamMembers  TeamMember[]
   heroSlides   HeroSlide[]
   pageContents PageContent[]
+  collections  Collection[]
 
   @@map("tenants")
 }
@@ -107,8 +108,44 @@ model Panel {
 
   tenant   Tenant         @relation(fields: [tenant_id], references: [id])
   category PanelCategory? @relation(fields: [category_id], references: [id])
+  sizes    PanelSize[]
 
   @@map("panels")
+}
+
+model PanelSize {
+  id         String  @id @default(cuid())
+  panel_id   String
+  label      String
+  width_mm   Float
+  height_mm  Float
+  depth_mm   Float
+  price      Float?
+  sort_order Int     @default(0)
+
+  panel Panel @relation(fields: [panel_id], references: [id], onDelete: Cascade)
+
+  @@map("panel_sizes")
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  tenant_id   String
+  name        String
+  slug        String
+  description String?
+  cover_url   String?
+  panel_ids   Json     @default("[]")
+  active      Boolean  @default(true)
+  sort_order  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, slug])
+  @@index([tenant_id])
+  @@map("collections")
 }
 
 model AccessoryType {

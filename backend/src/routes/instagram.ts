@@ -1,8 +1,37 @@
 import { Router } from 'express'
 import { prisma } from '../utils/prisma'
 import { ok, fail } from '../utils/response'
+import { authMiddleware } from '../middleware/auth'
+
+interface InstagramAuthResponse {
+  access_token: string
+  user_id: string
+  error_message?: string
+}
+
+export interface InstagramLongLivedTokenResponse {
+  access_token: string
+  token_type: string
+  expires_in: number
+}
+
+interface InstagramMediaItem {
+  id: string
+  caption?: string
+  media_type: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM'
+  media_url: string
+  thumbnail_url?: string
+  timestamp: string
+}
+
+interface InstagramMediaResponse {
+  data?: InstagramMediaItem[]
+}
 
 const router = Router()
+
+// All Instagram routes require admin authentication
+router.use(authMiddleware)
 
 const APP_ID = process.env.INSTAGRAM_APP_ID
 const APP_SECRET = process.env.INSTAGRAM_APP_SECRET
@@ -49,7 +78,7 @@ router.get('/callback', async (req, res, next) => {
         code,
       }),
     })
-    const tokenData = await tokenRes.json() as any
+    const tokenData = await tokenRes.json() as InstagramAuthResponse
     if (!tokenData.access_token) {
       return fail(res, 400, `Instagram token exchange failed: ${tokenData.error_message || JSON.stringify(tokenData)}`)
     }
@@ -62,7 +91,7 @@ router.get('/callback', async (req, res, next) => {
       `&client_secret=${APP_SECRET}` +
       `&access_token=${shortToken}`
     )
-    const longData = await longRes.json() as any
+    const longData = await longRes.json() as InstagramLongLivedTokenResponse
     if (!longData.access_token) {
       return fail(res, 400, `Long-lived token exchange failed: ${JSON.stringify(longData)}`)
     }
@@ -112,12 +141,12 @@ router.post('/import', async (req, res, next) => {
       `&limit=20` +
       `&access_token=${tenant.instagram_access_token}`
     )
-    const mediaData = await mediaRes.json() as any
+    const mediaData = await mediaRes.json() as InstagramMediaResponse
     if (!mediaData.data) {
       return fail(res, 400, `Instagram API error: ${JSON.stringify(mediaData)}`)
     }
 
-    const images = (mediaData.data as any[]).filter(
+    const images = mediaData.data.filter(
       (m) => m.media_type === 'IMAGE' || m.media_type === 'CAROUSEL_ALBUM'
     )
 
@@ -172,7 +201,7 @@ router.post('/refresh-token', async (req, res, next) => {
       `?grant_type=ig_refresh_token` +
       `&access_token=${tenant.instagram_access_token}`
     )
-    const data = await refreshRes.json() as any
+    const data = await refreshRes.json() as InstagramLongLivedTokenResponse
     if (!data.access_token) {
       return fail(res, 400, `Token refresh failed: ${JSON.stringify(data)}`)
     }

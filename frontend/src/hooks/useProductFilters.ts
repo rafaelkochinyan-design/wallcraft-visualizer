@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 export interface ProductFilters {
   q: string
   category_id: string
+  collection_id: string
   sort: 'newest' | 'price_asc' | 'price_desc' | 'name_asc'
   min_price: string
   max_price: string
@@ -13,12 +14,13 @@ export function useProductFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const filters: ProductFilters = {
-    q:           searchParams.get('q') ?? '',
-    category_id: searchParams.get('category_id') ?? '',
-    sort:        (searchParams.get('sort') ?? 'newest') as ProductFilters['sort'],
-    min_price:   searchParams.get('min_price') ?? '',
-    max_price:   searchParams.get('max_price') ?? '',
-    page:        Number(searchParams.get('page') ?? 1),
+    q:             searchParams.get('q') ?? '',
+    category_id:   searchParams.get('category_id') ?? '',
+    collection_id: searchParams.get('collection_id') ?? '',
+    sort:          (searchParams.get('sort') ?? 'newest') as ProductFilters['sort'],
+    min_price:     searchParams.get('min_price') ?? '',
+    max_price:     searchParams.get('max_price') ?? '',
+    page:          Number(searchParams.get('page') ?? 1),
   }
 
   function setFilter(key: keyof ProductFilters, value: string | number) {
@@ -41,7 +43,7 @@ export function useProductFilters() {
     setSearchParams({}, { replace: true })
   }
 
-  const activeCount = [filters.q, filters.category_id, filters.min_price, filters.max_price].filter(
+  const activeCount = [filters.q, filters.category_id, filters.collection_id, filters.min_price, filters.max_price].filter(
     Boolean
   ).length
 

@@ -112,6 +112,13 @@ const styles = `
   }
   .hc-cta-ghost:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
 
+  .hc-cta--gold {
+    background: var(--accent-gold);
+    color: #1a1025;
+    font-weight: 700;
+  }
+  .hc-cta--gold:hover { background: var(--accent-gold-dark); color: #fff; }
+
   .hc-progress {
     position: absolute; bottom: 0; left: 0;
     height: 3px; background: var(--hc-accent);
@@ -248,7 +255,7 @@ export default function HeroCarousel({ slides, fallback }: Props) {
               </h1>
               {slide.desc && <p className="hc-desc">{slide.desc}</p>}
               <div className="hc-ctas">
-                <Link className="hc-cta" to={slide.ctaUrl || '/products'}>
+                <Link className="hc-cta hc-cta--gold" to={slide.ctaUrl || '/products'}>
                   {slide.ctaLabel || t('home.hero_cta')} <span>→</span>
                 </Link>
               </div>

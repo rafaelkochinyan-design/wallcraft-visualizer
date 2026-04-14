@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { usePublicData } from '../../hooks/usePublicData'
 import { Project } from '../../types'
+import Lightbox, { LightboxItem } from '../../components/ui/Lightbox'
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -13,9 +14,23 @@ export default function ProjectDetailPage() {
   if (loading)
     return <div style={{ padding: '80px 32px', textAlign: 'center' }}>{t('common.loading')}</div>
   if (!project)
-    return <div style={{ padding: '80px 32px', textAlign: 'center' }}>Project not found</div>
+    return (
+      <div className="pub-section" style={{ textAlign: 'center', padding: '80px 0' }}>
+        <p style={{ fontSize: 48, marginBottom: 16 }}>🏗</p>
+        <h2 className="pub-section-title">{t('not_found.title')}</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>{t('not_found.project')}</p>
+        <Link to="/projects" className="pub-filter-chip active" style={{ textDecoration: 'none' }}>
+          ← {t('projects.title')}
+        </Link>
+      </div>
+    )
 
   const images = project.images || []
+
+  const lbItems: LightboxItem[] = images.map((img) => ({
+    src: img.url,
+    caption: img.caption || undefined,
+  }))
 
   return (
     <div className="pub-section">
@@ -53,38 +68,12 @@ export default function ProjectDetailPage() {
       )}
 
       {lightboxIdx !== null && (
-        <div className="pub-lightbox" onClick={() => setLightboxIdx(null)}>
-          <button className="pub-lightbox__close" onClick={() => setLightboxIdx(null)}>
-            ✕
-          </button>
-          <button
-            className="pub-lightbox__nav pub-lightbox__nav--prev"
-            onClick={(e) => {
-              e.stopPropagation()
-              setLightboxIdx((i) => (i !== null ? (i - 1 + images.length) % images.length : 0))
-            }}
-          >
-            ‹
-          </button>
-          <img
-            src={images[lightboxIdx].url}
-            alt=""
-            className="pub-lightbox__img"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            className="pub-lightbox__nav pub-lightbox__nav--next"
-            onClick={(e) => {
-              e.stopPropagation()
-              setLightboxIdx((i) => (i !== null ? (i + 1) % images.length : 0))
-            }}
-          >
-            ›
-          </button>
-          {images[lightboxIdx].caption && (
-            <p className="pub-lightbox__caption">{images[lightboxIdx].caption}</p>
-          )}
-        </div>
+        <Lightbox
+          items={lbItems}
+          index={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+          onChange={setLightboxIdx}
+        />
       )}
     </div>
   )

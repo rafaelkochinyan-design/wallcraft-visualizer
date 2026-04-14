@@ -86,10 +86,10 @@ export default function AdminLayout() {
           className="text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1"
           style={{ fontSize: 11 }}
         >
-          Leads
+          Orders
         </p>
         <NavLink to="/admin/leads" className={navClass}>
-          Leads
+          Orders
         </NavLink>
 
         <p
@@ -100,6 +100,9 @@ export default function AdminLayout() {
         </p>
         <NavLink to="/admin/panels" className={navClass}>
           Panels
+        </NavLink>
+        <NavLink to="/admin/collections" className={navClass}>
+          Collections
         </NavLink>
 
         <p

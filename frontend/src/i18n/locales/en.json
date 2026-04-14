@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Home",
     "products": "Products",
     "projects": "Projects",
     "gallery": "Gallery",
@@ -28,7 +29,11 @@
     "dimensions": "Size of a panel",
     "weight": "Weight",
     "price": "Price",
-    "price_per_m2": "AMD (1 m²)",
+    "price_per_m2": "AMD per 1 m²",
+    "item_price": "Price per item",
+    "per_item": "per panel",
+    "view_catalog": "View Catalog",
+    "select_size": "Select size",
     "area": "Area",
     "item_area": "1 item",
     "depth_relief": "Depth of relief",
@@ -85,7 +90,17 @@
     "title": "About Us",
     "subtitle": "Sculpting emotions since 2013",
     "values_title": "Our Values",
-    "team_title": "Our Team"
+    "team_title": "Our Team",
+    "value_people": "People",
+    "value_ecology": "Ecology",
+    "value_expression": "Self-expression",
+    "value_aesthetics": "Aesthetics",
+    "value_responsibility": "Responsibility",
+    "value_people_desc": "Individual approach to every client",
+    "value_ecology_desc": "Eco-friendly gypsum, no harmful substances",
+    "value_expression_desc": "You give an idea, we create it",
+    "value_aesthetics_desc": "We value beauty, quality and innovation",
+    "value_responsibility_desc": "Every team member cares about client satisfaction"
   },
   "blog": {
     "title": "Blog",
@@ -126,6 +141,13 @@
   "footer": {
     "rights": "All rights reserved",
     "made_with": "Made with passion in Yerevan"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "blog_post": "This post doesn't exist or has been removed.",
+    "designer": "This designer profile doesn't exist or has been removed.",
+    "product": "This product doesn't exist or has been removed.",
+    "project": "This project doesn't exist or has been removed."
   },
   "common": {
     "loading": "Loading...",

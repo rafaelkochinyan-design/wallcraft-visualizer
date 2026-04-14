@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../utils/prisma'
 import { ok, fail } from '../utils/response'
 
@@ -40,21 +41,21 @@ router.get('/panel-categories', async (req, res, next) => {
 router.get('/panels', async (req, res, next) => {
   try {
     const schema = z.object({
-      q:           z.string().optional(),
-      category_id: z.string().optional(),
-      sort:        z.enum(['newest', 'price_asc', 'price_desc', 'name_asc']).default('newest'),
-      min_price:   z.coerce.number().positive().optional(),
-      max_price:   z.coerce.number().positive().optional(),
-      page:        z.coerce.number().int().min(1).default(1),
-      limit:       z.coerce.number().int().min(1).max(100).default(24),
+      q:             z.string().optional(),
+      category_id:   z.string().optional(),
+      collection_id: z.string().optional(),
+      sort:          z.enum(['newest', 'price_asc', 'price_desc', 'name_asc']).default('newest'),
+      min_price:     z.coerce.number().positive().optional(),
+      max_price:     z.coerce.number().positive().optional(),
+      page:          z.coerce.number().int().min(1).default(1),
+      limit:         z.coerce.number().int().min(1).max(100).default(24),
     })
     const parsed = schema.safeParse(req.query)
     if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
-    const { q, category_id, sort, min_price, max_price, page, limit } = parsed.data
+    const { q, category_id, collection_id, sort, min_price, max_price, page, limit } = parsed.data
 
     // Build where clause
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { tenant_id: req.tenant.id, active: true }
+    const where: Prisma.PanelWhereInput = { tenant_id: req.tenant.id, active: true }
     if (q) {
       where.OR = [
         { name:        { contains: q, mode: 'insensitive' } },
@@ -63,6 +64,14 @@ router.get('/panels', async (req, res, next) => {
       ]
     }
     if (category_id) where.category_id = category_id
+    if (collection_id) {
+      const col = await prisma.collection.findFirst({
+        where: { id: collection_id, tenant_id: req.tenant.id, active: true },
+        select: { panel_ids: true },
+      })
+      const ids = (col?.panel_ids as string[]) ?? []
+      where.id = { in: ids }
+    }
     if (min_price !== undefined || max_price !== undefined) {
       where.price = {}
       if (min_price !== undefined) where.price.gte = min_price
@@ -121,6 +130,7 @@ router.get('/panels/:id', async (req, res, next) => {
         catalog_url: true,
         sort_order: true,
         category: { select: { id: true, name: true } },
+        sizes: { orderBy: { sort_order: 'asc' } },
       },
     })
     if (!panel) return fail(res, 404, 'Panel not found')
@@ -180,6 +190,19 @@ router.post('/inquiry', async (req, res, next) => {
       },
     })
     ok(res, { id: inquiry.id }, 201)
+  } catch (err) {
+    next(err)
+  }
+})
+
+// GET /api/collections — active collections with panel data
+router.get('/collections', async (req, res, next) => {
+  try {
+    const collections = await prisma.collection.findMany({
+      where: { tenant_id: req.tenant.id, active: true },
+      orderBy: { sort_order: 'asc' },
+    })
+    ok(res, collections)
   } catch (err) {
     next(err)
   }

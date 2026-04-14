@@ -56,7 +56,8 @@ let refreshQueue: Array<(token: string) => void> = []
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const original = error.config!
+    if (!error.config) return Promise.reject(error)
+    const original = error.config
 
     if (
       error.response?.status === 401 &&
@@ -86,6 +87,8 @@ api.interceptors.response.use(
         return api(original)
       } catch {
         tokenStore.clear()
+        refreshQueue.forEach((cb) => cb(''))
+        refreshQueue = []
         window.location.href = '/admin/login'
         return Promise.reject(error)
       } finally {

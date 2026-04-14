@@ -55,7 +55,7 @@ export default function GalleryPage() {
         ) : items && items.length > 0 ? (
           <div className="pub-masonry">
             {items.map((item, idx) => (
-              <div key={item.id} className="pub-masonry__item" onClick={() => setLbIndex(idx)}>
+              <div key={item.id} className="pub-masonry__item" onClick={(e) => { e.stopPropagation(); setLbIndex(idx) }}>
                 <img
                   src={item.thumb_url || item.image_url}
                   alt={item.caption || ''}

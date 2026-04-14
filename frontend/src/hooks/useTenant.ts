@@ -5,6 +5,7 @@ import { useVisualizerStore } from '../store/visualizer'
 import type { Tenant, Panel } from '../types'
 
 interface UseTenantResult {
+  tenant: Tenant | null
   loading: boolean
   error: string | null
 }
@@ -13,12 +14,16 @@ export function useTenant(): UseTenantResult {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const { setTenant, setAvailablePanels } = useVisualizerStore()
+  const { tenant, setTenant, setAvailablePanels } = useVisualizerStore()
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
+      if (tenant !== null) {
+        setLoading(false)
+        return
+      }
       try {
         const [tenantRes, panelsRes] = await Promise.all([
           api.get<{ data: Tenant }>('/api/tenant'),
@@ -36,10 +41,12 @@ export function useTenant(): UseTenantResult {
         setAvailablePanels(panelArray)
 
         // Apply tenant primary color to CSS variable for theming
-        document.documentElement.style.setProperty(
-          '--tenant-primary',
-          tenantRes.data.data.primary_color
-        )
+        if (tenantRes.data.data.primary_color) {
+          document.documentElement.style.setProperty(
+            '--tenant-primary',
+            tenantRes.data.data.primary_color
+          )
+        }
       } catch (err) {
         if (!cancelled) {
           setError('Failed to load store data. Please refresh the page.')
@@ -57,5 +64,5 @@ export function useTenant(): UseTenantResult {
     }
   }, [setTenant, setAvailablePanels])
 
-  return { loading, error }
+  return { tenant, loading, error }
 }
