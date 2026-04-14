@@ -9,7 +9,7 @@ import { downloadModelAsZip } from '../../utils/downloadAsZip'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [panel, setPanel] = useState<Panel | null>(null)
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(false)
@@ -107,7 +107,7 @@ export default function ProductDetailPage() {
 
   // Format price with thousands separator
   const priceFormatted = activePrice
-    ? Math.round(activePrice).toLocaleString('ru-RU')
+    ? Math.round(activePrice).toLocaleString(i18n.language)
     : null
 
   // Price per item = price (per m²) × item area
@@ -368,7 +368,7 @@ export default function ProductDetailPage() {
               </div>
               {pricePerItem && itemArea && (
                 <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 6 }}>
-                  {t('products.item_price')}: {pricePerItem.toLocaleString('ru-RU')} AMD
+                  {t('products.item_price')}: {pricePerItem.toLocaleString(i18n.language)} AMD
                   ({itemArea.toFixed(4)} m² {t('products.per_item')})
                 </div>
               )}

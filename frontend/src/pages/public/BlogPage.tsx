@@ -16,7 +16,7 @@ const CATEGORIES = [
 ]
 
 export default function BlogPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const localize = useLocalized()
   const [category, setCategory] = useState('')
   const [page, setPage] = useState(1)
@@ -85,7 +85,7 @@ export default function BlogPage() {
                     <p className="pub-card__excerpt">{localize(post.excerpt)}</p>
                     <div className="pub-card__meta">
                       {post.published_at && (
-                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
+                        <span>{new Date(post.published_at).toLocaleDateString(i18n.language)}</span>
                       )}
                     </div>
                   </div>

@@ -94,7 +94,7 @@ router.patch('/admin/leads/:id', authMiddleware, async (req, res, next) => {
     if (!lead) return fail(res, 404, 'Lead not found')
 
     const updated = await prisma.lead.update({
-      where: { id },
+      where: { id, tenant_id: req.tenant.id },
       data:  { status, updated_at: new Date() },
     })
 

@@ -289,7 +289,8 @@ router.patch('/blog/:id/publish', async (req, res, next) => {
     const published = !existing.published
     const updated = await prisma.blogPost.update({
       where: { id: req.params.id },
-      data: { published, published_at: published ? new Date() : null },
+      // Keep original published_at on re-publish; only set on first publish; clear on unpublish
+      data: { published, published_at: published ? (existing.published_at ?? new Date()) : null },
     })
     ok(res, updated)
   } catch (err) { next(err) }

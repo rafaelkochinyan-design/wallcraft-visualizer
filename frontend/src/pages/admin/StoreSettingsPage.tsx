@@ -25,7 +25,7 @@ interface IgStatus {
 }
 
 export default function StoreSettingsPage() {
-  const { fetchTenant } = useVisualizerStore()
+  const { setTenant } = useVisualizerStore()
   const [settings, setSettings] = useState<Settings | null>(null)
   const [igStatus, setIgStatus] = useState<IgStatus | null>(null)
   const [igImporting, setIgImporting] = useState(false)
@@ -104,7 +104,8 @@ export default function StoreSettingsPage() {
         pinterest_url: form.pinterest_url || null,
       })
       toast.success('Settings saved')
-      await fetchTenant()
+      const updated = await api.get('/api/tenant')
+      setTenant(updated.data.data)
     } catch {
       toast.error('Save failed')
     } finally {

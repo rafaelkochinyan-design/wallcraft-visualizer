@@ -1,12 +1,13 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import DOMPurify from 'dompurify'
 import { usePublicData } from '../../hooks/usePublicData'
 import { useLocalized } from '../../hooks/useLocalized'
 import { BlogPost } from '../../types'
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const localize = useLocalized()
   const { data: post, loading } = usePublicData<BlogPost>(`/api/blog/${slug}`)
 
@@ -44,7 +45,7 @@ export default function BlogPostPage() {
       </h1>
       {post.published_at && (
         <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 32 }}>
-          {t('blog.published')}: {new Date(post.published_at).toLocaleDateString()}
+          {t('blog.published')}: {new Date(post.published_at).toLocaleDateString(i18n.language)}
         </p>
       )}
       {post.cover_url && (
@@ -62,7 +63,7 @@ export default function BlogPostPage() {
       )}
       <div
         style={{ fontSize: 16, lineHeight: 1.8, color: 'var(--text-secondary)' }}
-        dangerouslySetInnerHTML={{ __html: localize(post.body) }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(localize(post.body)) }}
       />
     </div>
   )

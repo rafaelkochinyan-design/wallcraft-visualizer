@@ -42,13 +42,15 @@ export function usePublicData<T>(
     }
   }
 
+  const paramsKey = params ? JSON.stringify(params) : ''
+
   useEffect(() => {
     mountedRef.current = true
     fetchData()
     return () => {
       mountedRef.current = false
     }
-  }, [endpoint, JSON.stringify(params)])
+  }, [endpoint, paramsKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return { data, loading, error, refetch: fetchData }
 }

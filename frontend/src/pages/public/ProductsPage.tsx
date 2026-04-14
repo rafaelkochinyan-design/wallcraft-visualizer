@@ -28,6 +28,8 @@ export default function ProductsPage() {
   const [fetching, setFetching] = useState(true)
   const [showPriceRange, setShowPriceRange] = useState(false)
   const [searchInput, setSearchInput] = useState(filters.q)
+  const [priceMin, setPriceMin] = useState(filters.min_price)
+  const [priceMax, setPriceMax] = useState(filters.max_price)
 
   // View toggle: grid | list (persisted)
   const [view, setView] = useState<'grid' | 'list'>(() => {
@@ -60,10 +62,10 @@ export default function ProductsPage() {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Sync searchInput when filters reset externally ────────────
-  useEffect(() => {
-    setSearchInput(filters.q)
-  }, [filters.q])
+  // ── Sync inputs when filters reset externally ────────────────
+  useEffect(() => { setSearchInput(filters.q) }, [filters.q])
+  useEffect(() => { setPriceMin(filters.min_price) }, [filters.min_price])
+  useEffect(() => { setPriceMax(filters.max_price) }, [filters.max_price])
 
   // ── Debounce search input → URL ───────────────────────────────
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -266,14 +268,16 @@ export default function ProductsPage() {
                 <input
                   type="number"
                   placeholder="Min AMD"
-                  defaultValue={filters.min_price}
+                  value={priceMin}
+                  onChange={(e) => setPriceMin(e.target.value)}
                   onBlur={(e) => setFilter('min_price', e.target.value)}
                 />
                 <span className="pub-products-price-range__sep">—</span>
                 <input
                   type="number"
                   placeholder="Max AMD"
-                  defaultValue={filters.max_price}
+                  value={priceMax}
+                  onChange={(e) => setPriceMax(e.target.value)}
                   onBlur={(e) => setFilter('max_price', e.target.value)}
                 />
               </div>

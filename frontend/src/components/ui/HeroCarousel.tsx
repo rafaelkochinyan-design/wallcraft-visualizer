@@ -161,6 +161,7 @@ const styles = `
 `
 
 interface Slide {
+  id: string
   image_url: string
   tag?: string
   title: string
@@ -187,6 +188,7 @@ export default function HeroCarousel({ slides, fallback }: Props) {
   const normalized: Slide[] =
     slides.length > 0
       ? slides.map((s) => ({
+          id: s.id,
           image_url: s.image_url,
           title: localized(s.headline),
           desc: s.subheadline ? localized(s.subheadline) : undefined,
@@ -196,6 +198,7 @@ export default function HeroCarousel({ slides, fallback }: Props) {
       : fallback
         ? [
             {
+              id: 'fallback',
               image_url: '',
               title: fallback.title,
               desc: fallback.subtitle,
@@ -243,7 +246,7 @@ export default function HeroCarousel({ slides, fallback }: Props) {
       <div className="hero-carousel">
         {normalized.map((slide, i) => (
           <div
-            key={i}
+            key={slide.id}
             className={`hc-slide${i === current ? ' active' : ''}${i === prevIdx ? ' prev' : ''}`}
           >
             {slide.image_url && <img className="hc-img" src={slide.image_url} alt={slide.title} />}
@@ -281,9 +284,9 @@ export default function HeroCarousel({ slides, fallback }: Props) {
               </button>
             </div>
             <div className="hc-dots">
-              {normalized.map((_, i) => (
+              {normalized.map((slide, i) => (
                 <button
-                  key={i}
+                  key={slide.id}
                   className={`hc-dot${i === current ? ' active' : ''}`}
                   onClick={() => goTo(i)}
                 />

@@ -98,7 +98,7 @@ router.get('/callback', async (req, res, next) => {
     const { access_token: longToken, expires_in: expiresIn } = longData
 
     // Step C: save to DB
-    await prisma.tenant.updateMany({
+    await prisma.tenant.update({
       where: { id: req.tenant.id },
       data: {
         instagram_access_token: longToken,
@@ -206,7 +206,7 @@ router.post('/refresh-token', async (req, res, next) => {
       return fail(res, 400, `Token refresh failed: ${JSON.stringify(data)}`)
     }
 
-    await prisma.tenant.updateMany({
+    await prisma.tenant.update({
       where: { id: req.tenant.id },
       data: {
         instagram_access_token: data.access_token,

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import { Collection, Panel } from '../../types'
-import { apiErr } from './adminUtils'
+import { apiErr, useToast, Toast } from './adminUtils'
 
 export default function AdminCollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Collection | null>(null)
-  const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null)
+  const [toast, showToast] = useToast()
 
   async function load() {
     try {
@@ -20,11 +20,6 @@ export default function AdminCollectionsPage() {
   }
 
   useEffect(() => { load() }, [])
-
-  function showToast(msg: string, type: 'ok' | 'err' = 'ok') {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3000)
-  }
 
   async function handleDelete(id: string) {
     if (!confirm('Delete collection?')) return
@@ -114,12 +109,7 @@ export default function AdminCollectionsPage() {
         </div>
       )}
 
-      {toast && (
-        <div className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white
-          ${toast.type === 'ok' ? 'bg-gray-900' : 'bg-red-600'}`}>
-          {toast.msg}
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {modalOpen && (
         <CollectionModal
