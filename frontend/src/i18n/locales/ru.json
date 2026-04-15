@@ -46,7 +46,10 @@
     "search_placeholder": "Поиск панелей...",
     "results_count": "результатов",
     "no_results": "Панели не найдены",
-    "reset_filters": "Сбросить фильтры"
+    "reset_filters": "Сбросить фильтры",
+    "order_now": "Заказать",
+    "send_order": "Отправить заказ",
+    "order_message_placeholder": "Укажите количество панелей, размер стены и т.д."
   },
   "sort": {
     "newest": "Новые",

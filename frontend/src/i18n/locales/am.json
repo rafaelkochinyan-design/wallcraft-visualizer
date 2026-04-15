@@ -46,7 +46,10 @@
     "search_placeholder": "Փնտրել...",
     "results_count": "արդյունք",
     "no_results": "Պանելներ չեն գտնվել",
-    "reset_filters": "Մաքրել ֆիլտրերը"
+    "reset_filters": "Մաքրել ֆիլտրերը",
+    "order_now": "Պատվիրել",
+    "send_order": "Ուղարկել պատվեր",
+    "order_message_placeholder": "Նշեք վահանակների քանակը, պատի չափսը և այլն"
   },
   "sort": {
     "newest": "Նոր",

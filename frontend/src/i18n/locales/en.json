@@ -46,7 +46,10 @@
     "search_placeholder": "Search panels...",
     "results_count": "results",
     "no_results": "No panels found",
-    "reset_filters": "Reset filters"
+    "reset_filters": "Reset filters",
+    "order_now": "Order Now",
+    "send_order": "Send Order",
+    "order_message_placeholder": "Tell us how many panels you need, wall size, etc."
   },
   "sort": {
     "newest": "Newest",
