@@ -13,7 +13,8 @@ export async function uploadFile(
   const filename = `${uuid()}.${ext}`
 
   // Dev or no R2 configured — save to backend's own uploads/ dir and serve via Express static
-  if (!process.env.R2_ACCOUNT_ID) {
+  const r2Ready = process.env.R2_ACCOUNT_ID && process.env.R2_ACCOUNT_ID !== 'skip'
+  if (!r2Ready) {
     const dir = join(process.cwd(), 'uploads', folder)
     mkdirSync(dir, { recursive: true })
     writeFileSync(join(dir, filename), buffer)
