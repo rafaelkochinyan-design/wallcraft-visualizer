@@ -55,7 +55,7 @@ export default function PartnersPage() {
         <div style={{ background: 'var(--ui-surface)', padding: '80px 32px' }}>
           <div style={{ maxWidth: 600, margin: '0 auto' }}>
             <h2 className="pub-section-title">{t('partners.become_partner')}</h2>
-            <form className="pub-form" style={{ marginTop: 32 }} onSubmit={handleSubmit}>
+            <form className="pub-form pub-form--contact" style={{ marginTop: 32 }} onSubmit={handleSubmit}>
               <div className="pub-form__group">
                 <label className="pub-form__label">{t('contact.form_name')} *</label>
                 <input

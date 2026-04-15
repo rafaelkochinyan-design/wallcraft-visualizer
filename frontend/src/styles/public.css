@@ -1108,67 +1108,127 @@
 .pub-form__group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  margin-bottom: 20px;
 }
 
 .pub-form__label {
-  font-size: 13px;
-  font-weight: 500;
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-secondary);
+  margin-bottom: 8px;
 }
 
 .pub-form__input,
 .pub-form__textarea {
   width: 100%;
-  padding: 12px 14px;
-  background: var(--ui-surface);
-  border: 1px solid var(--ui-border);
-  border-radius: 10px;
-  font-size: 14px;
-  font-family: var(--font);
+  display: block;
+  font-size: 16px;        /* prevents iOS zoom on focus */
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--ui-border);
+  background: var(--ui-bg);
   color: var(--text-primary);
-  transition: border-color 0.15s;
+  font-family: var(--font);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
   outline: none;
 }
 
 .pub-form__input:focus,
 .pub-form__textarea:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(212, 96, 26, 0.12);
 }
 
 .pub-form__textarea {
+  min-height: 140px;
   resize: vertical;
-  min-height: 120px;
 }
 
 .pub-form__submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 13px 28px;
+  width: 100%;
+  display: block;
+  padding: 16px 24px;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
   font-family: var(--font);
   cursor: pointer;
-  transition:
-    background 0.15s,
-    transform 0.15s;
+  transition: opacity 0.15s, transform 0.1s;
+  -webkit-appearance: none;
+  margin-top: 8px;
 }
 
 .pub-form__submit:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+.pub-form__submit:active {
+  transform: scale(0.98);
 }
 
 .pub-form__submit:disabled {
-  opacity: 0.6;
-  cursor: default;
-  transform: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .pub-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .pub-form--contact {
+    width: 100%;
+  }
+
+  .pub-form__input,
+  .pub-form__textarea {
+    font-size: 16px;
+    padding: 15px 16px;
+    border-radius: 14px;
+    min-height: 52px;
+  }
+
+  .pub-form__textarea {
+    min-height: 150px;
+  }
+
+  .pub-form__submit {
+    width: 100%;
+    min-height: 56px;
+    font-size: 17px;
+    border-radius: 14px;
+    margin-top: 12px;
+  }
+
+  .pub-form__label {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .pub-form__group {
+    margin-bottom: 24px;
+  }
+
+  .pub-contact-btn {
+    width: 100%;
+    min-height: 56px;
+    font-size: 17px;
+    border-radius: 14px;
+    justify-content: center;
+  }
+
+  .pub-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
 }
 
 /* ── Dealer card ──────────────────────────────────────────────── */

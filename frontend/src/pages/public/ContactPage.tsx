@@ -74,7 +74,7 @@ export default function ContactPage() {
 
         {/* Grid: form + desktop contact info */}
         <div className="pub-grid-2" style={{ alignItems: 'start', gap: 64, marginTop: 32 }}>
-          <form className="pub-form" onSubmit={handleSubmit}>
+          <form className="pub-form pub-form--contact" onSubmit={handleSubmit}>
             <div className="pub-form__group">
               <label className="pub-form__label">{t('contact.form_name')} *</label>
               <input
