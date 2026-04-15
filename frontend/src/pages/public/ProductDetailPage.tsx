@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import api from '../../lib/api'
 import { Panel, PanelSize } from '../../types'
 import { Icon } from '../../components/ui/Icon'
-import { downloadModelAsZip } from '../../utils/downloadAsZip'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -85,12 +83,8 @@ export default function ProductDetailPage() {
 
   const hasSizes = panel.sizes && panel.sizes.length > 0
 
-  // Build image list: gallery images first, then fall back to thumb/texture
-  const galleryImages: string[] = [
-    ...(panel.images || []).map((img) => img.url),
-    ...(panel.thumb_url ? [panel.thumb_url] : []),
-    ...(panel.texture_url && panel.texture_url !== panel.thumb_url ? [panel.texture_url] : []),
-  ].filter(Boolean)
+  // Gallery images from PanelImage relation only
+  const galleryImages: string[] = (panel.panelImages ?? []).map((img) => img.url).filter(Boolean)
 
   // Active dimensions — prefer selected size, fall back to panel defaults
   const activeWidth = activeSize ? activeSize.width_mm : panel.width_mm
@@ -153,21 +147,9 @@ export default function ProductDetailPage() {
             {priceFormatted} {t('products.price_per_m2')}
           </span>
         )}
-        {panel.model_url && (
-          <button
-            onClick={async () => {
-              try { await downloadModelAsZip(panel.model_url!, panel.name) }
-              catch { toast.error(t('common.error')) }
-            }}
-            className="pub-detail-sticky-bar__cta"
-            style={{ border: 'none', cursor: 'pointer' }}
-          >
-            ↓ {t('products.download_3d')} (ZIP)
-          </button>
-        )}
-        {!panel.model_url && panel.catalog_url && (
-          <a href={panel.catalog_url} target="_blank" rel="noreferrer" className="pub-detail-sticky-bar__cta">
-            📄 {t('products.view_catalog')}
+        {panel.zip_url && (
+          <a href={panel.zip_url} download className="pub-detail-sticky-bar__cta">
+            ↓ {t('products.download_zip')}
           </a>
         )}
       </div>
@@ -200,7 +182,6 @@ export default function ProductDetailPage() {
       <div className="pub-detail-grid">
         {/* ── Gallery ─────────────────────────────────────── */}
         <div>
-          {/* Main image with crossfade */}
           <div className="pub-detail-img-wrap">
             {galleryImages.length > 0 ? (
               galleryImages.map((url, idx) => (
@@ -215,27 +196,16 @@ export default function ProductDetailPage() {
               <span style={{ color: 'var(--text-muted)', fontSize: 64 }}>🏛</span>
             )}
 
-            {/* Prev / Next arrows */}
             {galleryImages.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
                   style={{
-                    position: 'absolute',
-                    left: 12,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: 'rgba(0,0,0,0.4)',
-                    border: 'none',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 3,
+                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.4)', border: 'none', color: '#fff',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', zIndex: 3,
                   }}
                   aria-label="Previous image"
                 >
@@ -244,21 +214,11 @@ export default function ProductDetailPage() {
                 <button
                   onClick={nextImage}
                   style={{
-                    position: 'absolute',
-                    right: 12,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: 'rgba(0,0,0,0.4)',
-                    border: 'none',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 3,
+                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.4)', border: 'none', color: '#fff',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', zIndex: 3,
                   }}
                   aria-label="Next image"
                 >
@@ -268,7 +228,6 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* Thumbnail strip */}
           {galleryImages.length > 1 && (
             <div className="pub-detail-thumbs">
               {galleryImages.map((url, idx) => (
@@ -277,23 +236,14 @@ export default function ProductDetailPage() {
                   onClick={() => setActiveImg(idx)}
                   className={`pub-detail-thumb-btn${activeImg === idx ? ' active' : ''}`}
                   style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 10,
-                    overflow: 'hidden',
+                    width: 64, height: 64, borderRadius: 10, overflow: 'hidden',
                     padding: 0,
                     border: `2px solid ${activeImg === idx ? 'var(--accent)' : 'var(--ui-border)'}`,
-                    cursor: 'pointer',
-                    flexShrink: 0,
-                    background: 'var(--ui-surface)',
+                    cursor: 'pointer', flexShrink: 0, background: 'var(--ui-surface)',
                   }}
                   aria-label={`Image ${idx + 1}`}
                 >
-                  <img
-                    src={url}
-                    alt=""
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
+                  <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </button>
               ))}
             </div>
@@ -305,27 +255,17 @@ export default function ProductDetailPage() {
           {panel.category?.name && (
             <div
               style={{
-                fontSize: 11,
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: 'var(--accent-purple)',
-                marginBottom: 8,
+                fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                letterSpacing: '0.08em', color: 'var(--accent-purple)', marginBottom: 8,
               }}
             >
               {panel.category.name}
             </div>
           )}
 
-          <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8 }}>
+          <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 24 }}>
             {panel.name}
           </h1>
-
-          {panel.sku && (
-            <p style={{ color: 'var(--text-muted)', marginBottom: 20, fontSize: 14 }}>
-              {t('products.sku')}: {panel.sku}
-            </p>
-          )}
 
           {/* Size selector chips */}
           {hasSizes && panel.sizes && panel.sizes.length > 0 && (
@@ -341,15 +281,11 @@ export default function ProductDetailPage() {
                       key={size.id}
                       onClick={() => setSelectedSizeId(size.id)}
                       style={{
-                        padding: '6px 14px',
-                        borderRadius: 8,
+                        padding: '6px 14px', borderRadius: 8,
                         border: `1.5px solid ${isActive ? 'var(--accent)' : 'var(--ui-border)'}`,
                         background: isActive ? 'var(--accent)' : 'var(--ui-surface)',
                         color: isActive ? '#fff' : 'var(--text-primary)',
-                        fontWeight: 500,
-                        fontSize: 13,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
+                        fontWeight: 500, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s',
                       }}
                     >
                       {size.label}
@@ -375,16 +311,11 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          {/* Specs table with row stagger */}
+          {/* Specs table */}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 0,
-              marginBottom: 28,
-              border: '1px solid var(--ui-border)',
-              borderRadius: 14,
-              overflow: 'hidden',
+              display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 28,
+              border: '1px solid var(--ui-border)', borderRadius: 14, overflow: 'hidden',
             }}
           >
             {specRows.map((row, i) => (
@@ -394,9 +325,7 @@ export default function ProductDetailPage() {
                 style={
                   {
                     '--row-index': i,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: '12px 16px',
                     borderBottom: i < specRows.length - 1 ? '1px solid var(--ui-border)' : 'none',
                     fontSize: 14,
@@ -412,113 +341,32 @@ export default function ProductDetailPage() {
           {/* Description */}
           {panel.description && (
             <div className={`pub-detail-desc${descExpanded ? ' pub-detail-desc--expanded' : ''}`}>
-              <p
-                style={{
-                  fontSize: 15,
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.7,
-                  marginBottom: 8,
-                }}
-              >
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 8 }}>
                 {panel.description}
               </p>
-              <button
-                className="pub-detail-desc__toggle"
-                onClick={() => setDescExpanded((v) => !v)}
-              >
+              <button className="pub-detail-desc__toggle" onClick={() => setDescExpanded((v) => !v)}>
                 {descExpanded ? t('common.show_less') : t('common.read_more')}
               </button>
             </div>
           )}
 
-          {/* Download buttons — desktop */}
-          <div className="pub-detail-actions" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {panel.model_url && (
-              <button
-                onClick={async () => {
-                  try {
-                    await downloadModelAsZip(panel.model_url!, panel.name)
-                  } catch {
-                    toast.error(t('common.error'))
-                  }
-                }}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  padding: '13px 24px',
-                  background: 'var(--text-primary)',
-                  color: 'var(--ui-bg)',
-                  borderRadius: 12,
-                  fontWeight: 600,
-                  fontSize: 15,
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'opacity 0.15s',
-                }}
-              >
-                ↓ {t('products.download_3d')} (ZIP)
-              </button>
-            )}
-            {panel.catalog_url && (
-              <a
-                href={panel.catalog_url}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 10,
-                  padding: '13px 24px',
-                  background: 'var(--ui-surface)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--ui-border)',
-                  borderRadius: 12,
-                  fontWeight: 600,
-                  fontSize: 15,
-                  textDecoration: 'none',
-                  transition: 'background 0.15s',
-                }}
-              >
-                📄 {t('products.view_catalog')}
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Sticky CTA bar (mobile only) ─────────────────── */}
-      {(panel.model_url || panel.catalog_url) && (
-        <div className="pub-detail-sticky-cta">
-          {panel.model_url && (
-            <button
-              onClick={async () => {
-                try {
-                  await downloadModelAsZip(panel.model_url!, panel.name)
-                } catch {
-                  toast.error(t('common.error'))
-                }
-              }}
-              className="pub-detail-sticky-cta__btn pub-detail-sticky-cta__btn--primary"
-              style={{ border: 'none', cursor: 'pointer' }}
-            >
-              ↓ {t('products.download_3d')} (ZIP)
-            </button>
-          )}
-          {panel.catalog_url && (
+          {/* ZIP download button */}
+          {panel.zip_url && (
             <a
-              href={panel.catalog_url}
-              target="_blank"
-              rel="noreferrer"
-              className="pub-detail-sticky-cta__btn pub-detail-sticky-cta__btn--secondary"
+              href={panel.zip_url}
+              download
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                gap: 10, padding: '14px 28px', background: 'var(--accent)', color: '#fff',
+                borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none',
+                width: '100%', marginTop: 16,
+              }}
             >
-              📄 {t('products.view_catalog')}
+              ↓ {t('products.download_zip')}
             </a>
           )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

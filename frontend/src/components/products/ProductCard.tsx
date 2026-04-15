@@ -62,14 +62,27 @@ export default function ProductCard({ panel, index = 0 }: Props) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="pub-product-card__img">
-        <img
-          src={panel.thumb_url || panel.texture_url || ''}
-          alt={panel.name}
-          loading="lazy"
-          onError={(e) => {
-            ;(e.target as HTMLImageElement).style.opacity = '0'
-          }}
-        />
+        {panel.panelImages?.[0]?.url ? (
+          <img
+            src={panel.panelImages[0].url}
+            alt={panel.name}
+            loading="lazy"
+            onError={(e) => {
+              ;(e.target as HTMLImageElement).style.opacity = '0'
+            }}
+          />
+        ) : (
+          <div style={{
+            width: '100%', paddingTop: '100%', background: 'var(--ui-surface)',
+            borderRadius: 12, position: 'relative',
+          }}>
+            <span style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)', fontSize: 32,
+              color: 'var(--text-muted)',
+            }}>🏛</span>
+          </div>
+        )}
         <div className="pub-product-card__overlay" />
       </div>
       <div className="pub-product-card__body">
@@ -77,7 +90,6 @@ export default function ProductCard({ panel, index = 0 }: Props) {
           <div className="pub-product-card__category">{panel.category.name}</div>
         )}
         <div className="pub-product-card__name">{panel.name}</div>
-        {panel.sku && <div className="pub-product-card__sku">SKU: {panel.sku}</div>}
         {panel.price ? (
           <div className="pub-product-card__footer">
             <span

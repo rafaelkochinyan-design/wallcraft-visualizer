@@ -59,7 +59,6 @@ router.get('/panels', async (req, res, next) => {
     if (q) {
       where.OR = [
         { name:        { contains: q, mode: 'insensitive' } },
-        { sku:         { contains: q, mode: 'insensitive' } },
         { description: { contains: q, mode: 'insensitive' } },
       ]
     }
@@ -87,17 +86,21 @@ router.get('/panels', async (req, res, next) => {
     } as const
     const orderBy = orderByMap[sort]
 
-    const select = {
-      id: true, name: true, sku: true,
-      texture_url: true, thumb_url: true, model_url: true,
-      width_mm: true, height_mm: true, depth_mm: true,
-      weight_kg: true, price: true, images: true, sort_order: true,
-      category: { select: { id: true, name: true } },
-    }
-
     const [total, panels] = await prisma.$transaction([
       prisma.panel.count({ where }),
-      prisma.panel.findMany({ where, select, orderBy, skip: (page - 1) * limit, take: limit }),
+      prisma.panel.findMany({
+        where,
+        select: {
+          id: true, name: true, zip_url: true,
+          width_mm: true, height_mm: true, depth_mm: true,
+          weight_kg: true, price: true, sort_order: true,
+          category: { select: { id: true, name: true } },
+          panelImages: { orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
     ])
 
     ok(res, { data: panels, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } })
@@ -114,23 +117,19 @@ router.get('/panels/:id', async (req, res, next) => {
       select: {
         id: true,
         name: true,
-        sku: true,
-        texture_url: true,
-        thumb_url: true,
-        model_url: true,
+        zip_url: true,
         width_mm: true,
         height_mm: true,
         depth_mm: true,
         weight_kg: true,
         price: true,
-        images: true,
         description: true,
         material: true,
         depth_relief_mm: true,
-        catalog_url: true,
         sort_order: true,
         category: { select: { id: true, name: true } },
         sizes: { orderBy: { sort_order: 'asc' } },
+        panelImages: { orderBy: { sort_order: 'asc' } },
       },
     })
     if (!panel) return fail(res, 404, 'Panel not found')

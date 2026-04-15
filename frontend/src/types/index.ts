@@ -49,28 +49,31 @@ export interface PanelSize {
   sort_order: number
 }
 
+export interface PanelImage {
+  id: string
+  url: string
+  caption?: string | null
+  sort_order: number
+}
+
 export interface Panel {
   id: string
   tenant_id: string
   name: string
-  sku: string | null
-  texture_url: string | null
-  thumb_url: string
-  model_url: string | null
+  zip_url?: string | null
   width_mm: number
   height_mm: number
   depth_mm: number
   weight_kg: number | null
   price: number | null
-  images: { url: string }[]
   description: string | null
   material: string | null
   depth_relief_mm: number | null
-  catalog_url: string | null
   active: boolean
   sort_order: number
   category: PanelCategory | null
   sizes?: PanelSize[]
+  panelImages?: PanelImage[]
 }
 
 export interface AccessoryType {

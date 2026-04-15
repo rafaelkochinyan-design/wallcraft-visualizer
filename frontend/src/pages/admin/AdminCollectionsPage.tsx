@@ -238,9 +238,12 @@ function CollectionModal({ collection, onClose, onSaved, onError }: CollectionMo
                     onChange={() => togglePanel(p.id)}
                     className="rounded flex-shrink-0"
                   />
-                  <img src={p.thumb_url} alt={p.name} className="w-8 h-8 rounded object-cover bg-gray-100 flex-shrink-0" />
+                  {p.panelImages?.[0]?.url ? (
+                    <img src={p.panelImages[0].url} alt={p.name} className="w-8 h-8 rounded object-cover bg-gray-100 flex-shrink-0" />
+                  ) : (
+                    <div className="w-8 h-8 rounded bg-gray-100 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs">🏛</div>
+                  )}
                   <span className="text-sm text-gray-800">{p.name}</span>
-                  {p.sku && <span className="text-xs text-gray-400 ml-auto">{p.sku}</span>}
                 </label>
               ))}
               {panels.length === 0 && (

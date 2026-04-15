@@ -128,7 +128,10 @@ router.get('/panels', async (req, res, next) => {
   try {
     const panels = await prisma.panel.findMany({
       where: { tenant_id: req.tenant.id },
-      include: { sizes: { orderBy: { sort_order: 'asc' } } },
+      include: {
+        sizes: { orderBy: { sort_order: 'asc' } },
+        panelImages: { orderBy: { sort_order: 'asc' }, take: 1 },
+      },
       orderBy: { sort_order: 'asc' },
     })
     ok(res, panels)
@@ -147,19 +150,15 @@ const panelSizeSchema = z.object({
 
 const panelSchema = z.object({
   name: z.string().min(1).max(100),
-  sku: z.string().max(50).optional(),
-  texture_url: urlOrPath.optional().nullable(),
-  thumb_url: urlOrPath,
+  zip_url: z.string().optional().nullable(),
   width_mm: z.coerce.number().int().positive().default(500),
   height_mm: z.coerce.number().int().positive().default(500),
   depth_mm: z.coerce.number().int().positive().default(19),
   weight_kg: z.coerce.number().positive().optional(),
   price: z.coerce.number().positive().optional(),
-  images: z.array(z.object({ url: z.string() })).optional().default([]),
   description: z.string().optional(),
   material: z.string().optional(),
   depth_relief_mm: z.coerce.number().int().positive().optional(),
-  catalog_url: z.string().optional(),
   active: z.coerce.boolean().default(true),
   sort_order: z.coerce.number().int().default(0),
   category_id: z.string().optional(),
@@ -179,7 +178,10 @@ router.post('/panels', async (req, res, next) => {
           ? { create: sizes.map(({ id: _id, ...s }) => s) }
           : undefined,
       },
-      include: { sizes: { orderBy: { sort_order: 'asc' } } },
+      include: {
+        sizes: { orderBy: { sort_order: 'asc' } },
+        panelImages: { orderBy: { sort_order: 'asc' } },
+      },
     })
     ok(res, panel, 201)
   } catch (err) { next(err) }
@@ -210,14 +212,20 @@ router.put('/panels/:id', async (req, res, next) => {
               ? { sizes: { create: sizes.map(({ id: _id, ...s }) => s) } }
               : {}),
           },
-          include: { sizes: { orderBy: { sort_order: 'asc' } } },
+          include: {
+            sizes: { orderBy: { sort_order: 'asc' } },
+            panelImages: { orderBy: { sort_order: 'asc' } },
+          },
         })
       })
     } else {
       updated = await prisma.panel.update({
         where: { id: req.params.id },
         data: panelData,
-        include: { sizes: { orderBy: { sort_order: 'asc' } } },
+        include: {
+          sizes: { orderBy: { sort_order: 'asc' } },
+          panelImages: { orderBy: { sort_order: 'asc' } },
+        },
       })
     }
     ok(res, updated)
@@ -236,17 +244,6 @@ router.delete('/panels/:id', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-router.post('/panels/upload-texture', upload.single('file'), async (req, res, next) => {
-  try {
-    if (!req.file) return fail(res, 400, 'No file uploaded')
-    const allowed = ['image/jpeg', 'image/png', 'image/webp']
-    if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type. Use JPG, PNG, or WebP.')
-    if (req.file.size > 5 * 1024 * 1024) return fail(res, 400, 'File too large. Max 5MB.')
-    const url = await uploadFile(req.file.buffer, 'textures', req.file.originalname, req.file.mimetype)
-    ok(res, { url })
-  } catch (err) { next(err) }
-})
-
 router.post('/panels/upload-image', upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) return fail(res, 400, 'No file uploaded')
@@ -258,13 +255,44 @@ router.post('/panels/upload-image', upload.single('file'), async (req, res, next
   } catch (err) { next(err) }
 })
 
-router.post('/panels/upload-catalog', upload.single('file'), async (req, res, next) => {
+const uploadZip = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+})
+
+router.post('/panels/upload-zip', uploadZip.single('file'), async (req, res, next) => {
   try {
     if (!req.file) return fail(res, 400, 'No file uploaded')
-    if (req.file.mimetype !== 'application/pdf') return fail(res, 400, 'Only PDF files allowed.')
-    if (req.file.size > 20 * 1024 * 1024) return fail(res, 400, 'File too large. Max 20MB.')
-    const url = await uploadFile(req.file.buffer, 'catalogs', req.file.originalname, 'application/pdf')
+    const ext = req.file.originalname.split('.').pop()?.toLowerCase()
+    const isZip = req.file.mimetype === 'application/zip'
+      || req.file.mimetype === 'application/x-zip-compressed'
+      || ext === 'zip'
+    if (!isZip) return fail(res, 400, 'Only ZIP files allowed.')
+    if (req.file.size > 100 * 1024 * 1024) return fail(res, 400, 'File too large. Max 100MB.')
+    const url = await uploadFile(req.file.buffer, 'panel-zips', req.file.originalname, 'application/zip')
     ok(res, { url })
+  } catch (err) { next(err) }
+})
+
+// Panel images CRUD
+router.post('/panels/:id/images', async (req, res, next) => {
+  try {
+    const panel = await prisma.panel.findFirst({ where: { id: req.params.id, tenant_id: req.tenant.id } })
+    if (!panel) return fail(res, 404, 'Panel not found')
+    const schema = z.object({ url: z.string().min(1), caption: z.string().optional().nullable(), sort_order: z.coerce.number().int().default(0) })
+    const parsed = schema.safeParse(req.body)
+    if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)
+    const img = await prisma.panelImage.create({ data: { ...parsed.data, panel_id: req.params.id } })
+    ok(res, img, 201)
+  } catch (err) { next(err) }
+})
+
+router.delete('/panels/:id/images/:imageId', async (req, res, next) => {
+  try {
+    const panel = await prisma.panel.findFirst({ where: { id: req.params.id, tenant_id: req.tenant.id } })
+    if (!panel) return fail(res, 404, 'Panel not found')
+    await prisma.panelImage.deleteMany({ where: { id: req.params.imageId, panel_id: req.params.id } })
+    ok(res, { deleted: true })
   } catch (err) { next(err) }
 })
 

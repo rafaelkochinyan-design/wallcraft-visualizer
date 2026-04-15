@@ -11,6 +11,7 @@ async function main() {
   await prisma.galleryItem.deleteMany()
   await prisma.blogPost.deleteMany()
   await prisma.heroSlide.deleteMany()
+  await prisma.panelImage.deleteMany()
   await prisma.panel.deleteMany()
   await prisma.panelCategory.deleteMany()
   await prisma.project.deleteMany()
@@ -66,118 +67,36 @@ async function main() {
   // ── 3. Panels ───────────────────────────────────────────────
   const panelsData = [
     // GEOMETRIC
-    {
-      name: 'Consul', sku: 'WC-GEO-001', category: 'geometric',
-      width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 25,
-      weight_kg: 3.2, material: 'Natural gypsum', price: 31500,
-      description: 'Clean geometric diamond pattern creating deep shadow play. Perfect for accent walls in living rooms and lobbies. Seamless tiling in any direction.',
-      thumb_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=90',
-    },
-    {
-      name: 'Hexa', sku: 'WC-GEO-002', category: 'geometric',
-      width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 20,
-      weight_kg: 3.0, material: 'Natural gypsum', price: 28000,
-      description: 'Hexagonal honeycomb structure inspired by nature. Creates a stunning 3D effect with directional lighting. Ideal for bedrooms and spa areas.',
-      thumb_url: 'https://images.unsplash.com/photo-1615529328331-f8917597711f?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1615529328331-f8917597711f?w=1200&q=90',
-    },
-    {
-      name: 'Prism', sku: 'WC-GEO-003', category: 'geometric',
-      width_mm: 600, height_mm: 300, depth_mm: 22, depth_relief_mm: 30,
-      weight_kg: 3.8, material: 'Natural gypsum', price: 34000,
-      description: 'Bold triangular prism pattern with dramatic depth. Statement piece for feature walls. The angular geometry creates ever-changing shadows throughout the day.',
-      thumb_url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&q=90',
-    },
-    {
-      name: 'Vault', sku: 'WC-GEO-004', category: 'geometric',
-      width_mm: 500, height_mm: 500, depth_mm: 22, depth_relief_mm: 32,
-      weight_kg: 3.4, material: 'Natural gypsum', price: 38000,
-      description: 'Architectural arch vault pattern with maximum relief depth. Creates a strong visual impact reminiscent of grand cathedral interiors. The deepest relief in the collection.',
-      thumb_url: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1200&q=90',
-    },
+    { name: 'Consul', category: 'geometric', width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 25, weight_kg: 3.2, material: 'Natural gypsum', price: 31500, description: 'Clean geometric diamond pattern creating deep shadow play. Perfect for accent walls in living rooms and lobbies. Seamless tiling in any direction.', imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80' },
+    { name: 'Hexa', category: 'geometric', width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 20, weight_kg: 3.0, material: 'Natural gypsum', price: 28000, description: 'Hexagonal honeycomb structure inspired by nature. Creates a stunning 3D effect with directional lighting. Ideal for bedrooms and spa areas.', imageUrl: 'https://images.unsplash.com/photo-1615529328331-f8917597711f?w=600&q=80' },
+    { name: 'Prism', category: 'geometric', width_mm: 600, height_mm: 300, depth_mm: 22, depth_relief_mm: 30, weight_kg: 3.8, material: 'Natural gypsum', price: 34000, description: 'Bold triangular prism pattern with dramatic depth. Statement piece for feature walls. The angular geometry creates ever-changing shadows throughout the day.', imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80' },
+    { name: 'Vault', category: 'geometric', width_mm: 500, height_mm: 500, depth_mm: 22, depth_relief_mm: 32, weight_kg: 3.4, material: 'Natural gypsum', price: 38000, description: 'Architectural arch vault pattern with maximum relief depth. Creates a strong visual impact reminiscent of grand cathedral interiors. The deepest relief in the collection.', imageUrl: 'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80' },
     // ORGANIC
-    {
-      name: 'Wave', sku: 'WC-ORG-001', category: 'organic',
-      width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 22,
-      weight_kg: 2.9, material: 'Natural gypsum', price: 26500,
-      description: 'Flowing wave pattern inspired by ocean movement. Soft curves create a calming atmosphere. Perfect for bathrooms, bedrooms, and wellness spaces.',
-      thumb_url: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=1200&q=90',
-    },
-    {
-      name: 'Petal', sku: 'WC-ORG-002', category: 'organic',
-      width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 18,
-      weight_kg: 2.7, material: 'Natural gypsum', price: 24000,
-      description: 'Delicate floral petal motif with soft overlapping layers. Brings nature indoors with an elegant botanical touch. Beautiful with warm lighting.',
-      thumb_url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&q=90',
-    },
-    {
-      name: 'Ripple', sku: 'WC-ORG-003', category: 'organic',
-      width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 28,
-      weight_kg: 3.1, material: 'Natural gypsum', price: 29500,
-      description: 'Concentric ripple rings radiating from the center. High relief creates dramatic shadow depth. A bold statement for contemporary dining and reception areas.',
-      thumb_url: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=1200&q=90',
-    },
+    { name: 'Wave', category: 'organic', width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 22, weight_kg: 2.9, material: 'Natural gypsum', price: 26500, description: 'Flowing wave pattern inspired by ocean movement. Soft curves create a calming atmosphere. Perfect for bathrooms, bedrooms, and wellness spaces.', imageUrl: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&q=80' },
+    { name: 'Petal', category: 'organic', width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 18, weight_kg: 2.7, material: 'Natural gypsum', price: 24000, description: 'Delicate floral petal motif with soft overlapping layers. Brings nature indoors with an elegant botanical touch. Beautiful with warm lighting.', imageUrl: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80' },
+    { name: 'Ripple', category: 'organic', width_mm: 500, height_mm: 500, depth_mm: 19, depth_relief_mm: 28, weight_kg: 3.1, material: 'Natural gypsum', price: 29500, description: 'Concentric ripple rings radiating from the center. High relief creates dramatic shadow depth. A bold statement for contemporary dining and reception areas.', imageUrl: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80' },
     // CLASSIC
-    {
-      name: 'Acanthus', sku: 'WC-CLS-001', category: 'classic',
-      width_mm: 600, height_mm: 600, depth_mm: 25, depth_relief_mm: 35,
-      weight_kg: 4.5, material: 'Natural gypsum', price: 42000,
-      description: 'Classic Mediterranean acanthus leaf ornament with high relief. Timeless elegance for traditional and neoclassical interiors. A touch of ancient Rome in your home.',
-      thumb_url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=90',
-    },
-    {
-      name: 'Roma', sku: 'WC-CLS-002', category: 'classic',
-      width_mm: 500, height_mm: 500, depth_mm: 20, depth_relief_mm: 28,
-      weight_kg: 3.5, material: 'Natural gypsum', price: 36000,
-      description: 'Roman-inspired coffered panel with clean border framing. Sophisticated grid pattern perfect for ceilings and grand entrance halls.',
-      thumb_url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=90',
-    },
+    { name: 'Acanthus', category: 'classic', width_mm: 600, height_mm: 600, depth_mm: 25, depth_relief_mm: 35, weight_kg: 4.5, material: 'Natural gypsum', price: 42000, description: 'Classic Mediterranean acanthus leaf ornament with high relief. Timeless elegance for traditional and neoclassical interiors. A touch of ancient Rome in your home.', imageUrl: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80' },
+    { name: 'Roma', category: 'classic', width_mm: 500, height_mm: 500, depth_mm: 20, depth_relief_mm: 28, weight_kg: 3.5, material: 'Natural gypsum', price: 36000, description: 'Roman-inspired coffered panel with clean border framing. Sophisticated grid pattern perfect for ceilings and grand entrance halls.', imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80' },
     // BRICK & STONE
-    {
-      name: 'Brooklyn', sku: 'WC-BRK-001', category: 'brick-stone',
-      width_mm: 600, height_mm: 200, depth_mm: 30, depth_relief_mm: 15,
-      weight_kg: 4.2, material: 'Natural gypsum', price: 18500,
-      description: 'Industrial-style elongated brick with authentic surface texture. Creates a loft aesthetic without the weight or cost of real brick. Available in any paint finish.',
-      thumb_url: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=1200&q=90',
-    },
-    {
-      name: 'Slate', sku: 'WC-BRK-002', category: 'brick-stone',
-      width_mm: 500, height_mm: 500, depth_mm: 25, depth_relief_mm: 20,
-      weight_kg: 3.8, material: 'Natural gypsum', price: 22000,
-      description: 'Natural slate stone imitation with raw, irregular texture. Perfect for feature walls, fireplaces, and outdoor-inspired interiors. Lightweight alternative to real stone.',
-      thumb_url: 'https://images.unsplash.com/photo-1558905585-24cf272427a0?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1558905585-24cf272427a0?w=1200&q=90',
-    },
-    {
-      name: 'Cobble', sku: 'WC-BRK-003', category: 'brick-stone',
-      width_mm: 500, height_mm: 500, depth_mm: 28, depth_relief_mm: 22,
-      weight_kg: 4.0, material: 'Natural gypsum', price: 25000,
-      description: 'Irregular cobblestone pattern evoking old European streets. Warm and rustic character for restaurants, cafes, and boutique hotels.',
-      thumb_url: 'https://images.unsplash.com/photo-1604014237800-1c9102c219da?w=600&q=80',
-      texture_url: 'https://images.unsplash.com/photo-1604014237800-1c9102c219da?w=1200&q=90',
-    },
+    { name: 'Brooklyn', category: 'brick-stone', width_mm: 600, height_mm: 200, depth_mm: 30, depth_relief_mm: 15, weight_kg: 4.2, material: 'Natural gypsum', price: 18500, description: 'Industrial-style elongated brick with authentic surface texture. Creates a loft aesthetic without the weight or cost of real brick. Available in any paint finish.', imageUrl: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=600&q=80' },
+    { name: 'Slate', category: 'brick-stone', width_mm: 500, height_mm: 500, depth_mm: 25, depth_relief_mm: 20, weight_kg: 3.8, material: 'Natural gypsum', price: 22000, description: 'Natural slate stone imitation with raw, irregular texture. Perfect for feature walls, fireplaces, and outdoor-inspired interiors. Lightweight alternative to real stone.', imageUrl: 'https://images.unsplash.com/photo-1558905585-24cf272427a0?w=600&q=80' },
+    { name: 'Cobble', category: 'brick-stone', width_mm: 500, height_mm: 500, depth_mm: 28, depth_relief_mm: 22, weight_kg: 4.0, material: 'Natural gypsum', price: 25000, description: 'Irregular cobblestone pattern evoking old European streets. Warm and rustic character for restaurants, cafes, and boutique hotels.', imageUrl: 'https://images.unsplash.com/photo-1604014237800-1c9102c219da?w=600&q=80' },
   ]
 
   for (let i = 0; i < panelsData.length; i++) {
-    const { category, ...rest } = panelsData[i]
-    await prisma.panel.create({
+    const { category, imageUrl, ...rest } = panelsData[i]
+    const panel = await prisma.panel.create({
       data: {
         ...rest,
         tenant_id: tenantId,
         category_id: catMap[category],
         sort_order: i,
         active: true,
-        images: [{ url: rest.texture_url! }],
       },
+    })
+    await prisma.panelImage.create({
+      data: { panel_id: panel.id, url: imageUrl, caption: null, sort_order: 0 },
     })
   }
 

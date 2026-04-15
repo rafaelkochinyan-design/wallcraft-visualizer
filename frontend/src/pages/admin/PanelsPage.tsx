@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
-import { Panel, PanelCategory, PanelSize } from '../../types'
+import { Panel, PanelCategory, PanelImage, PanelSize } from '../../types'
 import { apiErr } from './adminUtils'
 
 export default function PanelsPage() {
@@ -19,9 +19,7 @@ export default function PanelsPage() {
     }
   }
 
-  useEffect(() => {
-    load()
-  }, [])
+  useEffect(() => { load() }, [])
 
   function showToast(msg: string, type: 'ok' | 'err' = 'ok') {
     setToast({ msg, type })
@@ -61,7 +59,6 @@ export default function PanelsPage() {
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Panel</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">SKU</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Size (mm)</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Price</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Status</th>
@@ -73,7 +70,11 @@ export default function PanelsPage() {
                 <tr key={panel.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <img src={panel.thumb_url} alt={panel.name} className="w-10 h-10 rounded-lg object-cover bg-gray-100" />
+                      {panel.panelImages?.[0]?.url ? (
+                        <img src={panel.panelImages[0].url} alt={panel.name} className="w-10 h-10 rounded-lg object-cover bg-gray-100" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-lg">🏛</div>
+                      )}
                       <div>
                         <span className="font-medium text-gray-900">{panel.name}</span>
                         {panel.category && (
@@ -82,7 +83,6 @@ export default function PanelsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-gray-500">{panel.sku || '—'}</td>
                   <td className="px-4 py-3 text-gray-500">{panel.width_mm}×{panel.height_mm}×{panel.depth_mm}</td>
                   <td className="px-4 py-3 text-gray-500">{panel.price ? `${panel.price} AMD` : '—'}</td>
                   <td className="px-4 py-3">
@@ -111,7 +111,7 @@ export default function PanelsPage() {
               ))}
               {panels.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm">
+                  <td colSpan={5} className="px-4 py-12 text-center text-gray-400 text-sm">
                     No panels yet. Add your first panel.
                   </td>
                 </tr>
@@ -121,7 +121,6 @@ export default function PanelsPage() {
         </div>
       )}
 
-      {/* Toast */}
       {toast && (
         <div className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white
           ${toast.type === 'ok' ? 'bg-gray-900' : 'bg-red-600'}`}>
@@ -129,7 +128,6 @@ export default function PanelsPage() {
         </div>
       )}
 
-      {/* Modal */}
       {modalOpen && (
         <PanelModal
           panel={editing}
@@ -154,9 +152,7 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
   const [categories, setCategories] = useState<PanelCategory[]>([])
   const [form, setForm] = useState({
     name: panel?.name ?? '',
-    sku: panel?.sku ?? '',
-    texture_url: panel?.texture_url ?? '',
-    thumb_url: panel?.thumb_url ?? '',
+    zip_url: panel?.zip_url ?? '',
     price: panel?.price?.toString() ?? '',
     width_mm: panel?.width_mm?.toString() ?? '500',
     height_mm: panel?.height_mm?.toString() ?? '500',
@@ -165,16 +161,15 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
     weight_kg: panel?.weight_kg?.toString() ?? '',
     material: panel?.material ?? '',
     description: panel?.description ?? '',
-    catalog_url: panel?.catalog_url ?? '',
-    model_url: panel?.model_url ?? '',
     category_id: panel?.category?.id ?? '',
     active: panel?.active ?? true,
   })
-  const [images, setImages] = useState<{ url: string }[]>(panel?.images || [])
+  const [images, setImages] = useState<PanelImage[]>(panel?.panelImages ?? [])
   const [sizes, setSizes] = useState<Omit<PanelSize, 'panel_id'>[]>(
     panel?.sizes?.map(({ panel_id: _, ...s }) => s) ?? []
   )
   const [uploading, setUploading] = useState<string | null>(null)
+  const [uploadingZip, setUploadingZip] = useState(false)
   const [saving, setSaving] = useState(false)
 
   function addSize() {
@@ -196,32 +191,27 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
     api.get('/admin/panel-categories').then((r) => setCategories(r.data.data || [])).catch(() => {})
   }, [])
 
-  async function uploadFile(file: File, type: 'texture' | 'thumb' | 'image' | 'catalog') {
+  async function uploadImage(file: File, isMain: boolean) {
     const imageTypes = ['image/jpeg', 'image/png', 'image/webp']
-    if (type !== 'catalog' && !imageTypes.includes(file.type)) {
+    if (!imageTypes.includes(file.type)) {
       onError('Only JPG, PNG or WebP')
       return
     }
-    if (type === 'catalog' && file.type !== 'application/pdf') {
-      onError('Only PDF files for catalog')
-      return
-    }
-    setUploading(type)
+    setUploading(isMain ? 'main' : 'image')
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const endpoints: Record<string, string> = {
-        texture: '/admin/panels/upload-texture',
-        thumb: '/admin/panels/upload-texture',
-        image: '/admin/panels/upload-image',
-        catalog: '/admin/panels/upload-catalog',
-      }
-      const res = await api.post(endpoints[type], formData)
+      const res = await api.post('/admin/panels/upload-image', formData)
       const url = res.data.data.url
-      if (type === 'texture') setForm((f) => ({ ...f, texture_url: url }))
-      else if (type === 'thumb') setForm((f) => ({ ...f, thumb_url: url }))
-      else if (type === 'catalog') setForm((f) => ({ ...f, catalog_url: url }))
-      else if (type === 'image') setImages((imgs) => [...imgs, { url }])
+      if (isMain) {
+        // Replace first image (sort_order 0) or prepend
+        setImages((imgs) => {
+          const rest = imgs.filter((_, i) => i !== 0)
+          return [{ id: `new-${Date.now()}`, url, caption: null, sort_order: 0 }, ...rest]
+        })
+      } else {
+        setImages((imgs) => [...imgs, { id: `new-${Date.now()}`, url, caption: null, sort_order: imgs.length }])
+      }
     } catch {
       onError('Upload error')
     } finally {
@@ -229,15 +219,34 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
     }
   }
 
+  async function uploadZip(file: File) {
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      onError('Only ZIP files allowed')
+      return
+    }
+    setUploadingZip(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await api.post('/admin/panels/upload-zip', fd)
+      setForm((f) => ({ ...f, zip_url: res.data.data.url }))
+    } catch {
+      onError('ZIP upload failed')
+    } finally {
+      setUploadingZip(false)
+    }
+  }
+
   async function handleSave() {
-    if (!form.name || !form.thumb_url) {
-      onError('Fill in the name and upload at least a thumbnail')
+    if (!form.name || images.length === 0) {
+      onError('Fill in the name and upload at least one photo')
       return
     }
     setSaving(true)
     try {
       const payload = {
         ...form,
+        zip_url: form.zip_url || null,
         price: form.price ? parseFloat(form.price) : undefined,
         width_mm: form.width_mm ? parseInt(form.width_mm) : undefined,
         height_mm: form.height_mm ? parseInt(form.height_mm) : undefined,
@@ -245,7 +254,6 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
         depth_relief_mm: form.depth_relief_mm ? parseInt(form.depth_relief_mm) : undefined,
         weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : undefined,
         category_id: form.category_id || undefined,
-        images,
         sizes: sizes.map((s, i) => ({
           id: s.id.startsWith('new-') ? undefined : s.id,
           label: s.label,
@@ -256,11 +264,32 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
           sort_order: i,
         })),
       }
+
+      let savedPanelId: string
       if (panel) {
         await api.put(`/admin/panels/${panel.id}`, payload)
+        savedPanelId = panel.id
       } else {
-        await api.post('/admin/panels', payload)
+        const res = await api.post('/admin/panels', payload)
+        savedPanelId = res.data.data.id
       }
+
+      // Sync images: delete all existing, recreate from current state
+      const existing = await api.get('/admin/panels').then((r) => {
+        const found = (r.data.data as Panel[]).find((p) => p.id === savedPanelId)
+        return found?.panelImages ?? []
+      })
+      for (const img of existing) {
+        await api.delete(`/admin/panels/${savedPanelId}/images/${img.id}`)
+      }
+      for (let i = 0; i < images.length; i++) {
+        await api.post(`/admin/panels/${savedPanelId}/images`, {
+          url: images[i].url,
+          caption: images[i].caption ?? null,
+          sort_order: i,
+        })
+      }
+
       onSaved()
     } catch (err: unknown) {
       onError(apiErr(err) || 'Save error')
@@ -268,6 +297,8 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
       setSaving(false)
     }
   }
+
+  const mainPhoto = images[0]?.url ?? ''
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-50 p-4 overflow-y-auto">
@@ -283,28 +314,23 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
               <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className={inputClass} placeholder="Consul A" />
             </Field>
-            <Field label="SKU">
-              <input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                className={inputClass} placeholder="CONSUL-A" />
-            </Field>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Price (AMD)">
-              <input type="number" value={form.price}
-                onChange={(e) => setForm({ ...form, price: e.target.value })}
-                className={inputClass} placeholder="31500" />
-            </Field>
-            <Field label="Category">
-              <select value={form.category_id}
-                onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                className={inputClass}>
-                <option value="">— none —</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Price (AMD)">
+                <input type="number" value={form.price}
+                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                  className={inputClass} placeholder="31500" />
+              </Field>
+              <Field label="Category">
+                <select value={form.category_id}
+                  onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                  className={inputClass}>
+                  <option value="">— none —</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </Field>
+            </div>
           </div>
 
           {/* Dimensions */}
@@ -344,22 +370,17 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
             </Field>
           </div>
 
-          {/* Images */}
-          <Field label="Thumbnail (JPG/PNG) *">
-            <FileUpload url={form.thumb_url} uploading={uploading === 'thumb'}
-              accept="image/jpeg,image/png,image/webp" onFile={(f) => uploadFile(f, 'thumb')} />
-          </Field>
-
-          <Field label="Texture for 3D (JPG/PNG)">
-            <FileUpload url={form.texture_url} uploading={uploading === 'texture'}
-              accept="image/jpeg,image/png,image/webp" onFile={(f) => uploadFile(f, 'texture')} />
+          {/* Main photo */}
+          <Field label="Main Photo *">
+            <FileUpload url={mainPhoto} uploading={uploading === 'main'}
+              accept="image/jpeg,image/png,image/webp" onFile={(f) => uploadImage(f, true)} />
           </Field>
 
           {/* Gallery images */}
           <Field label="Gallery Images">
             <div className="flex flex-wrap gap-2 mb-2">
               {images.map((img, i) => (
-                <div key={i} style={{ position: 'relative' }}>
+                <div key={img.id} style={{ position: 'relative' }}>
                   <img src={img.url} alt="" className="w-16 h-16 rounded-lg object-cover bg-gray-100" />
                   <button
                     onClick={() => setImages((imgs) => imgs.filter((_, j) => j !== i))}
@@ -378,35 +399,46 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
                 ${uploading === 'image' ? 'opacity-50 pointer-events-none' : ''}`}>
                 {uploading === 'image' ? '…' : '+'}
                 <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
-                  onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], 'image') }} />
+                  onChange={(e) => { if (e.target.files?.[0]) uploadImage(e.target.files[0], false) }} />
               </label>
             </div>
           </Field>
 
-          {/* 3D Model URL */}
-          <Field label="3D Model URL (GLB)">
-            <input value={form.model_url}
-              onChange={(e) => setForm({ ...form, model_url: e.target.value })}
-              className={inputClass} placeholder="https://... or /uploads/models/panel.glb" />
-          </Field>
-
-          {/* Catalog PDF */}
-          <Field label="Catalog PDF">
-            <div className="flex items-center gap-3">
-              {form.catalog_url && (
-                <a href={form.catalog_url} target="_blank" rel="noreferrer"
-                  className="text-xs text-blue-600 hover:underline truncate max-w-[160px]">
-                  📄 View PDF
+          {/* ZIP download */}
+          <Field label="Download Files (ZIP) — optional">
+            {form.zip_url && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 12px', background: '#f0fdf4',
+                border: '1px solid #86efac', borderRadius: 8,
+                marginBottom: 8, fontSize: 13, color: '#166534',
+              }}>
+                📦 ZIP uploaded
+                <a href={form.zip_url} target="_blank" rel="noreferrer"
+                  style={{ marginLeft: 'auto', color: '#166534', fontSize: 12 }}>
+                  Preview
                 </a>
-              )}
-              <label className={`flex-1 flex items-center justify-center h-10 rounded-lg border-2 border-dashed
-                border-gray-200 text-xs text-gray-400 cursor-pointer hover:border-gray-400
-                ${uploading === 'catalog' ? 'opacity-50 pointer-events-none' : ''}`}>
-                {uploading === 'catalog' ? 'Uploading...' : form.catalog_url ? 'Replace PDF' : 'Upload PDF'}
-                <input type="file" accept="application/pdf" className="hidden"
-                  onChange={(e) => { if (e.target.files?.[0]) uploadFile(e.target.files[0], 'catalog') }} />
-              </label>
-            </div>
+                <button type="button"
+                  onClick={() => setForm((f) => ({ ...f, zip_url: '' }))}
+                  style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>
+                  Remove
+                </button>
+              </div>
+            )}
+            <label style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              height: 40, borderRadius: 8, border: '2px dashed #d1d5db',
+              cursor: uploadingZip ? 'not-allowed' : 'pointer',
+              opacity: uploadingZip ? 0.5 : 1,
+              fontSize: 13, color: '#9ca3af',
+            }}>
+              {uploadingZip ? 'Uploading...' : form.zip_url ? 'Replace ZIP' : 'Upload ZIP file'}
+              <input type="file" accept=".zip" style={{ display: 'none' }}
+                onChange={(e) => { if (e.target.files?.[0]) uploadZip(e.target.files[0]) }} />
+            </label>
+            <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>
+              Max 100MB · Include 3D models, catalogs, or any files for this panel.
+            </p>
           </Field>
 
           {/* Description */}
@@ -432,8 +464,7 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
                   <div key={size.id} className="grid grid-cols-[1fr_80px_80px_80px_80px_32px] gap-2 items-end">
                     <div>
                       {idx === 0 && <div className="text-xs text-gray-400 mb-1">Label</div>}
-                      <input
-                        value={size.label}
+                      <input value={size.label}
                         onChange={(e) => updateSize(idx, 'label', e.target.value)}
                         className={inputClass} placeholder="e.g. 500×500" />
                     </div>
@@ -478,7 +509,7 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
             <input type="checkbox" checked={form.active}
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
               className="rounded" />
-            Active (visible on website and in 3D visualizer)
+            Active (visible on website)
           </label>
         </div>
 
