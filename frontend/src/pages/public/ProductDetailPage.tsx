@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import api from '../../lib/api'
@@ -14,11 +14,8 @@ export default function ProductDetailPage() {
   const [fetchError, setFetchError] = useState(false)
   const [activeImg, setActiveImg] = useState(0)
   const [descExpanded, setDescExpanded] = useState(false)
-  const [stickyVisible, setStickyVisible] = useState(false)
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
   const [orderOpen, setOrderOpen] = useState(false)
-
-  const priceRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!id) return
@@ -39,18 +36,6 @@ export default function ProductDetailPage() {
       })
     return () => controller.abort()
   }, [id])
-
-  // Sticky bar: observe price element going out of view
-  useEffect(() => {
-    const el = priceRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => setStickyVisible(!entry.isIntersecting),
-      { threshold: 0 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [panel])
 
   // useMemo MUST be before any conditional returns (Rules of Hooks)
   const activeSize: PanelSize | null = useMemo(() => {
@@ -141,21 +126,6 @@ export default function ProductDetailPage() {
 
   return (
     <div className="pub-section pub-detail-page-wrap">
-      {/* ── Sticky price bar ─────────────────────────────────── */}
-      <div className={`pub-detail-sticky-bar${stickyVisible ? ' visible' : ''}`}>
-        <span className="pub-detail-sticky-bar__name">{panel.name}</span>
-        {priceFormatted && (
-          <span className="pub-detail-sticky-bar__price">
-            {priceFormatted} {t('products.price_per_m2')}
-          </span>
-        )}
-        {panel.zip_url && (
-          <a href={panel.zip_url} download className="pub-detail-sticky-bar__cta">
-            ↓ {t('products.download_zip')}
-          </a>
-        )}
-      </div>
-
       {/* ── Breadcrumb ───────────────────────────────────────── */}
       <nav className="pub-breadcrumb" aria-label="breadcrumb">
         <Link to="/">{t('nav.home')}</Link>
@@ -300,7 +270,7 @@ export default function ProductDetailPage() {
 
           {/* Price — observed for sticky bar */}
           {priceFormatted && (
-            <div ref={priceRef} style={{ marginBottom: 28 }}>
+            <div style={{ marginBottom: 28 }}>
               <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--accent)' }}>
                 {priceFormatted} {t('products.price_per_m2')}
               </div>

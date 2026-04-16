@@ -114,26 +114,32 @@ export default function HomePage() {
               {t('home.partners_title')}
             </p>
             <div className="pub-partners-strip">
-              {partners.map((p) => (
-                <a
-                  key={p.id}
-                  href={p.website || '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pub-partner-item"
-                >
-                  {p.logo_url && !failedLogos.has(p.id) ? (
-                    <img
-                      src={p.logo_url}
-                      alt={p.name}
-                      loading="lazy"
-                      onError={() => setFailedLogos((prev) => new Set([...prev, p.id]))}
-                    />
-                  ) : (
+              {partners.map((p) => {
+                const initials = p.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+                return (
+                  <a
+                    key={p.id}
+                    href={p.website || '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="pub-partner-item"
+                  >
+                    <div className="pub-partner-item__circle">
+                      {p.logo_url && !failedLogos.has(p.id) ? (
+                        <img
+                          src={p.logo_url}
+                          alt={p.name}
+                          loading="lazy"
+                          onError={() => setFailedLogos((prev) => new Set([...prev, p.id]))}
+                        />
+                      ) : (
+                        <span className="pub-partner-item__initials">{initials}</span>
+                      )}
+                    </div>
                     <span className="pub-partner-item__name">{p.name}</span>
-                  )}
-                </a>
-              ))}
+                  </a>
+                )
+              })}
             </div>
           </section>
         </FadeIn>
