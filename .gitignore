@@ -9,6 +9,10 @@ node_modules/
 # MCP config (contains DB credentials)
 .mcp.json
 
+# Claude Code local overrides (personal notes, never commit)
+CLAUDE.local.md
+.claude/settings.local.json
+
 # Build output
 dist/
 build/
