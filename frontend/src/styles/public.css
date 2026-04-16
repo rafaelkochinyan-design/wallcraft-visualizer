@@ -4,6 +4,33 @@
    Uses CSS variables from tokens.css — NO hardcoded colors
    ═══════════════════════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════════════════════
+   BRAND WATERMARK
+   "WallCraft" diagonal repeat — LV / Gucci style luxury treatment.
+   Fixed overlay, pointer-events: none, barely perceptible at 4%.
+   Below all interactive layers (navbar 1000, modals 300+) but above
+   solid section backgrounds so it shows on every surface.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Light mode — dark ink on pale background */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Ctext x='0' y='72' transform='rotate(-28 130 72)' font-family='Georgia%2Cserif' font-size='14' font-weight='600' letter-spacing='5' fill='%232a2520'%3EWallCraft%3C/text%3E%3Ctext x='152' y='158' transform='rotate(-28 282 158)' font-family='Georgia%2Cserif' font-size='14' font-weight='600' letter-spacing='5' fill='%232a2520'%3EWallCraft%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 300px 180px;
+}
+
+/* Dark mode — pale ink, slightly stronger to compensate for dark bg */
+[data-theme='dark'] body::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='180'%3E%3Ctext x='0' y='72' transform='rotate(-28 130 72)' font-family='Georgia%2Cserif' font-size='14' font-weight='600' letter-spacing='5' fill='%23e0dcd8'%3EWallCraft%3C/text%3E%3Ctext x='152' y='158' transform='rotate(-28 282 158)' font-family='Georgia%2Cserif' font-size='14' font-weight='600' letter-spacing='5' fill='%23e0dcd8'%3EWallCraft%3C/text%3E%3C/svg%3E");
+  opacity: 0.055;
+}
+
 /* ── Dark Theme Overrides ────────────────────────────────────── */
 [data-theme='dark'] {
   --ui-bg: #181614;
