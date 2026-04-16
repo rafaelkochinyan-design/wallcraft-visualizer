@@ -899,21 +899,32 @@
   margin-bottom: 32px;
 }
 
-/* Horizontal scrollable one-line strip */
+/* Marquee clipping container */
 .pub-partners-strip {
+  overflow: hidden;
+  padding: 8px 0 16px;
+  /* Fade edges */
+  mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+
+/* Animated track — duplicated in JSX so -50% = one full loop */
+.pub-partners-track {
   display: flex;
   align-items: flex-start;
   gap: 28px;
-  padding: 8px 32px 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  /* Justify center when items fit; scroll when they don't */
-  justify-content: center;
-  flex-wrap: nowrap;
+  width: max-content;
+  animation: pub-marquee 18s linear infinite;
 }
-.pub-partners-strip::-webkit-scrollbar {
-  display: none;
+
+/* Pause on hover */
+.pub-partners-strip:hover .pub-partners-track {
+  animation-play-state: paused;
+}
+
+@keyframes pub-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* Each partner: circle + name below */
@@ -989,9 +1000,10 @@
 
 @media (max-width: 768px) {
   .pub-partners-strip {
-    padding: 8px 16px 16px;
-    justify-content: flex-start; /* allow scroll on mobile */
-    gap: 12px;
+    padding: 8px 0 16px;
+  }
+  .pub-partners-track {
+    gap: 20px;
   }
   .pub-partner-item__circle {
     width: 64px;
