@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../../store/visualizer'
@@ -12,6 +13,7 @@ import PageMeta from '../../components/ui/PageMeta'
 
 export default function HomePage() {
   const [failedLogos, setFailedLogos] = useState<Set<string>>(new Set())
+  const partnersStripRef = useRef<HTMLDivElement>(null)
   const { t, i18n } = useTranslation()
   const lang = i18n.language as 'en' | 'ru' | 'am'
   const { availablePanels } = useVisualizerStore()
@@ -113,19 +115,24 @@ export default function HomePage() {
             <p className="pub-partners-section__title">
               {t('home.partners_title')}
             </p>
-            <div className="pub-partners-strip">
-              {/* Single track — items duplicated inline for seamless loop */}
-              <div className="pub-partners-track">
-                {[...partners, ...partners].map((p, i) => {
+            <div className="pub-partners-strip" ref={partnersStripRef}>
+              <motion.div
+                className="pub-partners-track"
+                drag="x"
+                dragConstraints={partnersStripRef}
+                dragElastic={0.05}
+                dragMomentum
+              >
+                {partners.map((p) => {
                   const initials = p.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
                   return (
                     <a
-                      key={`${p.id}-${i}`}
+                      key={p.id}
                       href={p.website || '#'}
                       target="_blank"
                       rel="noreferrer"
                       className="pub-partner-item"
-                      aria-hidden={i >= partners.length}
+                      draggable={false}
                     >
                       <div className="pub-partner-item__circle">
                         {p.logo_url && !failedLogos.has(p.id) ? (
@@ -133,6 +140,7 @@ export default function HomePage() {
                             src={p.logo_url}
                             alt={p.name}
                             loading="lazy"
+                            draggable={false}
                             onError={() => setFailedLogos((prev) => new Set([...prev, p.id]))}
                           />
                         ) : (
@@ -143,7 +151,7 @@ export default function HomePage() {
                     </a>
                   )
                 })}
-              </div>
+              </motion.div>
             </div>
           </section>
         </FadeIn>
