@@ -13,6 +13,9 @@ interface Props {
 export default function ProductCard({ panel, index = 0 }: Props) {
   const ref = useRef<HTMLAnchorElement & { href: string }>(null)
 
+  // Detect touch-only devices — disable 3D tilt, use tap feedback instead
+  const isTouch = typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
+
   // Mouse position for 3D tilt
   const tiltX = useMotionValue(0)
   const tiltY = useMotionValue(0)
@@ -47,19 +50,23 @@ export default function ProductCard({ panel, index = 0 }: Props) {
       to={`/products/${panel.id}`}
       className="pub-product-card"
       style={
-        {
-          rotateX,
-          rotateY,
-          scale,
-          y: liftY,
-          transformPerspective: 800,
-          transformStyle: 'preserve-3d',
-          '--card-index': index,
-        } as unknown as CSSProperties
+        isTouch
+          ? { '--card-index': index } as unknown as CSSProperties
+          : {
+              rotateX,
+              rotateY,
+              scale,
+              y: liftY,
+              transformPerspective: 800,
+              transformStyle: 'preserve-3d',
+              '--card-index': index,
+            } as unknown as CSSProperties
       }
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      // Touch: tap scale feedback. Desktop: 3D tilt via mouse events
+      whileTap={isTouch ? { scale: 0.97 } : undefined}
+      onMouseMove={isTouch ? undefined : handleMouseMove}
+      onMouseEnter={isTouch ? undefined : handleMouseEnter}
+      onMouseLeave={isTouch ? undefined : handleMouseLeave}
     >
       <div className="pub-product-card__img">
         {panel.panelImages?.[0]?.url ? (

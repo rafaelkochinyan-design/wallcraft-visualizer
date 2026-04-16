@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { usePublicData } from '../../hooks/usePublicData'
 import { Project } from '../../types'
 import Lightbox, { LightboxItem } from '../../components/ui/Lightbox'
+import FadeIn, { StaggerChildren } from '../../components/ui/FadeIn'
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -34,28 +35,30 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="pub-section">
-      <Link
-        to="/projects"
-        style={{
-          color: 'var(--text-secondary)',
-          fontSize: 14,
-          textDecoration: 'none',
-          display: 'block',
-          marginBottom: 24,
-        }}
-      >
-        ← {t('common.back')}
-      </Link>
-      {project.space_type && (
-        <div className="pub-card__tag" style={{ marginBottom: 8 }}>
-          {project.space_type}
-        </div>
-      )}
-      <h1 className="pub-section-title">{project.title}</h1>
-      {project.description && <p className="pub-section-subtitle">{project.description}</p>}
+      <FadeIn direction="up" delay={0}>
+        <Link
+          to="/projects"
+          style={{
+            color: 'var(--text-secondary)',
+            fontSize: 14,
+            textDecoration: 'none',
+            display: 'block',
+            marginBottom: 24,
+          }}
+        >
+          ← {t('common.back')}
+        </Link>
+        {project.space_type && (
+          <div className="pub-card__tag" style={{ marginBottom: 8 }}>
+            {project.space_type}
+          </div>
+        )}
+        <h1 className="pub-section-title">{project.title}</h1>
+        {project.description && <p className="pub-section-subtitle">{project.description}</p>}
+      </FadeIn>
 
       {images.length > 0 && (
-        <div className="pub-masonry" style={{ marginTop: 40 }}>
+        <StaggerChildren className="pub-masonry" baseDelay={0.05} style={{ marginTop: 40 }}>
           {images.map((img, i) => (
             <div key={i} className="pub-masonry__item" onClick={() => setLightboxIdx(i)}>
               <img src={img.url} alt={img.caption || ''} loading="lazy" />
@@ -64,7 +67,7 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           ))}
-        </div>
+        </StaggerChildren>
       )}
 
       {lightboxIdx !== null && (

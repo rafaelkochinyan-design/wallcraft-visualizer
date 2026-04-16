@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../../store/visualizer'
@@ -18,6 +19,8 @@ export default function PublicNavbar() {
   const { tenant } = useVisualizerStore()
   const { theme, toggle } = useThemeStore()
   const [scrolled, setScrolled] = useState(false)
+  const [navHidden, setNavHidden] = useState(false)
+  const lastScrollY = useRef(0)
   const [open, setOpen] = useState(false)
   const [productsOpen, setProductsOpen] = useState(false)
   const [infoOpen, setInfoOpen] = useState(false)
@@ -26,7 +29,17 @@ export default function PublicNavbar() {
   const infoRef = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrolled(y > 10)
+      // Auto-hide on mobile only (< 768px) when scrolling down past 80px
+      if (window.innerWidth < 768) {
+        setNavHidden(y > 80 && y > lastScrollY.current)
+      } else {
+        setNavHidden(false)
+      }
+      lastScrollY.current = y
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -72,7 +85,11 @@ export default function PublicNavbar() {
 
   return (
     <>
-      <nav className={`pub-navbar${scrolled ? ' scrolled' : ''}`}>
+      <motion.nav
+        className={`pub-navbar${scrolled ? ' scrolled' : ''}`}
+        animate={{ y: navHidden ? -80 : 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      >
         {/* Mobile burger — before logo */}
         <button
           className={`pub-navbar__burger${open ? ' open' : ''}`}
@@ -190,7 +207,7 @@ export default function PublicNavbar() {
           </button>
 
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Mobile drawer */}
       <div className={`pub-navbar__drawer${open ? ' open' : ''}`}>

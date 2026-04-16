@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLocalized } from '../../hooks/useLocalized'
@@ -243,7 +244,17 @@ export default function HeroCarousel({ slides, fallback }: Props) {
   return (
     <>
       <style>{styles}</style>
-      <div className="hero-carousel">
+      <motion.div
+        className="hero-carousel"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.1}
+        onDragEnd={(_, info) => {
+          if (normalized.length < 2) return
+          if (info.offset.x < -50) next()
+          else if (info.offset.x > 50) prev()
+        }}
+      >
         {normalized.map((slide, i) => (
           <div
             key={slide.id}
@@ -298,7 +309,7 @@ export default function HeroCarousel({ slides, fallback }: Props) {
             </div>
           </>
         )}
-      </div>
+      </motion.div>
     </>
   )
 }

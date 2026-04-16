@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import api from '../../lib/api'
@@ -30,6 +31,11 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
   const [phoneError, setPhoneError] = useState('')
   const [sqmError, setSqmError] = useState('')
   const [sending, setSending] = useState(false)
+  const [mounted, setMounted] = useState(true)
+
+  function handleClose() {
+    setMounted(false)
+  }
 
   // ── Calculator derived values ─────────────────────────────
   const panelAreaM2 =
@@ -102,7 +108,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
         },
       })
       toast.success(t('contact.success'))
-      onClose()
+      handleClose()
     } catch {
       toast.error(t('common.error'))
     } finally {
@@ -111,14 +117,24 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
   }
 
   return (
-    <div
+    <AnimatePresence onExitComplete={onClose}>
+      {mounted && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
       style={{
         position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
         zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
       }}
-      onClick={onClose}
+      onClick={handleClose}
     >
-      <div
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 400, damping: 40 }}
         style={{
           background: 'var(--ui-bg)', borderRadius: '20px 20px 0 0',
           padding: '28px 24px 40px', width: '100%', maxWidth: 560,
@@ -132,7 +148,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
             {t('products.order_now')}
           </h3>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             style={{ background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: 'var(--text-muted)', padding: '4px 8px', lineHeight: 1 }}
           >
             ✕
@@ -295,7 +311,9 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
             {sending ? '...' : t('products.send_order')}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
