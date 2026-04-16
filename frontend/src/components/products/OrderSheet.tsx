@@ -11,16 +11,24 @@ interface OrderSheetProps {
   onClose: () => void
 }
 
-// +374 followed by 8 digits, with optional spaces/dashes
+const PHONE_PREFIX = '+374 '
+
 function validateArmenianPhone(phone: string): boolean {
   const clean = phone.replace(/[\s\-()]/g, '')
   return /^(\+374|374|0)\d{8}$/.test(clean)
 }
 
+function phoneIsEmpty(phone: string): boolean {
+  return phone.replace(/^\+374\s?/, '').trim().length === 0
+}
+
+const INITIAL_FORM = { name: '', phone: PHONE_PREFIX, message: '', square_meters: '' }
+
 export default function OrderSheet({ panel, priceFormatted, activePrice, onClose }: OrderSheetProps) {
   const { t, i18n } = useTranslation()
-  const [form, setForm] = useState({ name: '', phone: '', message: '', square_meters: '' })
+  const [form, setForm] = useState(INITIAL_FORM)
   const [phoneError, setPhoneError] = useState('')
+  const [sqmError, setSqmError] = useState('')
   const [sending, setSending] = useState(false)
 
   // ── Calculator derived values ─────────────────────────────
@@ -44,36 +52,53 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
       ? Math.round(panelsTotal * panelAreaM2 * activePrice)
       : null
 
-  const disabled = sending || !form.name || !form.phone || !!phoneError
+  // Disabled: name empty | phone empty | phone error | sqm required but empty/invalid
+  const sqmRequired = panelAreaM2 !== null
+  const disabled =
+    sending ||
+    !form.name.trim() ||
+    phoneIsEmpty(form.phone) ||
+    !!phoneError ||
+    (sqmRequired ? (!form.square_meters || !!sqmError) : false)
+
+  function validateSqm(val: string) {
+    if (!val) { setSqmError(t('products.sqm_required')); return false }
+    const n = parseFloat(val)
+    if (isNaN(n) || n <= 0) { setSqmError(t('products.sqm_invalid')); return false }
+    if (n > 10000) { setSqmError(t('products.sqm_too_large')); return false }
+    setSqmError('')
+    return true
+  }
 
   async function handleSubmit() {
-    // Re-validate phone on submit in case user skipped blur
-    if (!validateArmenianPhone(form.phone)) {
+    // Guard: phone
+    if (phoneIsEmpty(form.phone) || !validateArmenianPhone(form.phone)) {
       setPhoneError(t('products.phone_invalid'))
       return
     }
+    // Guard: sqm (only when panel has dimensions)
+    if (sqmRequired && !validateSqm(form.square_meters)) return
+
     setSending(true)
     try {
       await api.post('/api/leads', {
-        name:    form.name,
-        phone:   form.phone,
+        name:    form.name.trim(),
+        phone:   form.phone.trim(),
         comment: form.message || undefined,
         wall_config: {
           type:         'product_order',
           panel_name:   panel.name,
           panel_id:     panel.id,
-          price:        priceFormatted ?? undefined,
-          width_mm:     panel.width_mm,
-          height_mm:    panel.height_mm,
-          depth_mm:     panel.depth_mm,
           square_meters: squareMetersNum > 0 ? squareMetersNum : undefined,
-          panels_total:  panelsTotal ?? undefined,
-          total_cost:    totalPrice ?? undefined,
-          // Fields used by LeadCard display
-          width:   0,
-          height:  0,
-          color:   'var(--accent)',
-          panels:  [{ name: panel.name }],
+          panels_base:   panelsBase   ?? undefined,
+          panels_extra:  panelsExtra  ?? undefined,
+          panels_total:  panelsTotal  ?? undefined,
+          panel_area_m2: panelAreaM2  ?? undefined,
+          price_per_m2:  activePrice  ?? undefined,
+          total_cost:    totalPrice   ?? undefined,
+          // LeadCard display fields (visualizer compat)
+          width:  0, height: 0, color: '#D4601A',
+          panels: [{ name: panel.name }],
         },
       })
       toast.success(t('contact.success'))
@@ -142,7 +167,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
             />
           </div>
 
-          {/* Phone */}
+          {/* Phone — pre-filled +374, prefix protected */}
           <div>
             <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
               {t('contact.form_phone')} *
@@ -153,19 +178,25 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
               required
               value={form.phone}
               onChange={e => {
-                setForm(f => ({ ...f, phone: e.target.value }))
+                let val = e.target.value
+                // Prevent user from deleting the +374 prefix
+                if (!val.startsWith('+374')) {
+                  val = PHONE_PREFIX + val.replace(/^\+374\s?/, '')
+                }
+                setForm(f => ({ ...f, phone: val }))
                 if (phoneError) setPhoneError('')
               }}
               onBlur={e => {
-                const val = e.target.value.trim()
-                if (val && !validateArmenianPhone(val)) {
+                const val = e.target.value
+                // Only validate if the user actually typed digits after the prefix
+                if (!phoneIsEmpty(val) && !validateArmenianPhone(val)) {
                   setPhoneError(t('products.phone_invalid'))
                 }
               }}
               placeholder="+374 XX XXX XXX"
             />
             {phoneError && (
-              <p style={{ fontSize: 12, color: '#dc2626', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4, margin: '6px 0 0' }}>
+              <p style={{ fontSize: 12, color: '#dc2626', marginTop: 6, margin: '6px 0 0' }}>
                 ⚠ {phoneError}
               </p>
             )}
@@ -174,24 +205,33 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
             </p>
           </div>
 
-          {/* Wall area + calculator */}
+          {/* Wall area — required when panel has dimensions */}
           {panelAreaM2 && (
             <div>
               <label style={{ display: 'block', fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
-                {t('products.wall_area')} (m²)
+                {t('products.wall_area')} (m²) *
               </label>
               <input
                 className="pub-form__input"
                 type="number"
-                min="0"
+                min="0.1"
                 step="0.1"
                 value={form.square_meters}
-                onChange={e => setForm(f => ({ ...f, square_meters: e.target.value }))}
+                onChange={e => {
+                  setForm(f => ({ ...f, square_meters: e.target.value }))
+                  if (sqmError) setSqmError('')
+                }}
+                onBlur={e => validateSqm(e.target.value)}
                 placeholder="e.g. 12.5"
               />
+              {sqmError && (
+                <p style={{ fontSize: 12, color: '#dc2626', marginTop: 6, margin: '6px 0 0' }}>
+                  ⚠ {sqmError}
+                </p>
+              )}
 
               {/* Calculator result */}
-              {panelsTotal !== null && (
+              {panelsTotal !== null && !sqmError && (
                 <div style={{
                   marginTop: 10,
                   padding: '12px 14px',
@@ -210,19 +250,14 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
                     {' + '}
                     {panelsExtra} {t('products.panels_extra')}
                   </div>
-                  {panelAreaM2 && (
-                    <div style={{ marginTop: 2 }}>
-                      {t('products.panel_area')}: {panelAreaM2.toFixed(4)} m²
-                    </div>
-                  )}
+                  <div style={{ marginTop: 2 }}>
+                    {t('products.panel_area')}: {panelAreaM2.toFixed(4)} m²
+                  </div>
                   {totalPrice !== null && (
                     <div style={{
-                      marginTop: 8,
-                      paddingTop: 8,
+                      marginTop: 8, paddingTop: 8,
                       borderTop: '1px solid rgba(167,139,250,0.25)',
-                      fontSize: 16,
-                      fontWeight: 700,
-                      color: 'var(--accent)',
+                      fontSize: 16, fontWeight: 700, color: 'var(--accent)',
                     }}>
                       {t('products.estimated_total')}: {totalPrice.toLocaleString(i18n.language)} AMD
                     </div>

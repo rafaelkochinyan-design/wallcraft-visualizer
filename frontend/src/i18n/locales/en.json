@@ -57,7 +57,10 @@
     "panel_area": "Panel area",
     "estimated_total": "Estimated total",
     "phone_invalid": "Please enter a valid Armenian phone number",
-    "phone_hint": "Format: +374 XX XXX XXX"
+    "phone_hint": "Format: +374 XX XXX XXX",
+    "sqm_required": "Please enter the wall area",
+    "sqm_invalid": "Please enter a valid area (e.g. 12.5)",
+    "sqm_too_large": "Area seems too large, please check"
   },
   "sort": {
     "newest": "Newest",

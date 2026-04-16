@@ -57,7 +57,10 @@
     "panel_area": "Վահանակի մակերես",
     "estimated_total": "Մոտավոր արժեք",
     "phone_invalid": "Մուտքագրեք ճիշտ հայկական հեռախոսահամար",
-    "phone_hint": "Ձևաչափ: +374 XX XXX XXX"
+    "phone_hint": "Ձևաչափ: +374 XX XXX XXX",
+    "sqm_required": "Նշեք պատի մակերեսը",
+    "sqm_invalid": "Մուտքագրեք ճիշտ մակերես (օր. 12.5)",
+    "sqm_too_large": "Մակերեսը շատ մեծ է, խնդրում ենք ստուգել"
   },
   "sort": {
     "newest": "Նոր",

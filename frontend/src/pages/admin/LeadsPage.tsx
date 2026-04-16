@@ -15,13 +15,23 @@ interface Lead {
   status: 'new' | 'contacted' | 'sold' | 'cancelled'
   created_at: string
   wall_config: {
+    // visualizer order fields
     width: number
     height: number
     color: string
     panels: { sku?: string; name: string }[]
     total_panels?: number
-    total_cost?: number
     share_url?: string
+    // product order fields
+    type?: string
+    panel_name?: string
+    square_meters?: number
+    panels_base?: number
+    panels_extra?: number
+    panels_total?: number
+    panel_area_m2?: number
+    price_per_m2?: number
+    total_cost?: number
   }
 }
 
@@ -256,33 +266,66 @@ function LeadCard({
       </a>
 
       {/* Row 3: Order details */}
-      <div
-        style={{
-          background: '#f9fafb',
-          borderRadius: 12,
-          padding: '14px 16px',
-          marginBottom: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 8,
-        }}
-      >
-        {wc.panels.length > 0 && (
-          <div style={{ fontSize: 15, color: '#374151' }}>
-            <span style={{ color: '#6b7280', marginRight: 8 }}>Panels:</span>
-            <strong>{wc.panels.map((p) => p.name).join(' + ')}</strong>
-          </div>
-        )}
-        {wc.total_panels && (
-          <div style={{ fontSize: 15, color: '#374151' }}>
-            <span style={{ color: '#6b7280', marginRight: 8 }}>Quantity:</span>
-            <strong>{wc.total_panels} pcs</strong>
-            {wc.total_cost && (
-              <span style={{ marginLeft: 16, fontSize: 18, fontWeight: 700, color: '#D4601A' }}>
-                {wc.total_cost.toLocaleString('en-US')} AMD
-              </span>
+      <div style={{ background: '#f9fafb', borderRadius: 12, padding: '14px 16px', marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {isProductOrder ? (
+          // ── Product page order ──────────────────────────────
+          <>
+            {wc.panel_name && (
+              <div style={{ fontSize: 15, color: '#374151' }}>
+                <span style={{ color: '#6b7280', marginRight: 8 }}>Panel:</span>
+                <strong>{wc.panel_name}</strong>
+              </div>
             )}
-          </div>
+            {wc.square_meters && (
+              <div style={{ fontSize: 15, color: '#374151' }}>
+                <span style={{ color: '#6b7280', marginRight: 8 }}>Wall area:</span>
+                <strong>{wc.square_meters} m²</strong>
+              </div>
+            )}
+            {wc.panels_total && (
+              <div style={{ fontSize: 15, color: '#374151' }}>
+                <span style={{ color: '#6b7280', marginRight: 8 }}>Panels needed:</span>
+                <strong>{wc.panels_total} pcs</strong>
+                {wc.panels_base && wc.panels_extra && (
+                  <span style={{ color: '#9ca3af', fontSize: 13, marginLeft: 8 }}>
+                    ({wc.panels_base} + {wc.panels_extra} extra)
+                  </span>
+                )}
+              </div>
+            )}
+            {wc.price_per_m2 && wc.price_per_m2 > 0 && (
+              <div style={{ fontSize: 15, color: '#374151' }}>
+                <span style={{ color: '#6b7280', marginRight: 8 }}>Price/m²:</span>
+                <strong>{wc.price_per_m2.toLocaleString('ru-RU')} AMD</strong>
+              </div>
+            )}
+            {wc.total_cost && wc.total_cost > 0 && (
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#D4601A', paddingTop: 8, borderTop: '1px solid #e5e7eb', marginTop: 4 }}>
+                Total: {wc.total_cost.toLocaleString('ru-RU')} AMD
+              </div>
+            )}
+          </>
+        ) : (
+          // ── Visualizer order ────────────────────────────────
+          <>
+            {wc.panels && wc.panels.length > 0 && (
+              <div style={{ fontSize: 15, color: '#374151' }}>
+                <span style={{ color: '#6b7280', marginRight: 8 }}>Panels:</span>
+                <strong>{wc.panels.map((p) => p.name).join(' + ')}</strong>
+              </div>
+            )}
+            {wc.total_panels && (
+              <div style={{ fontSize: 15, color: '#374151' }}>
+                <span style={{ color: '#6b7280', marginRight: 8 }}>Quantity:</span>
+                <strong>{wc.total_panels} pcs</strong>
+                {wc.total_cost && (
+                  <span style={{ marginLeft: 16, fontSize: 18, fontWeight: 700, color: '#D4601A' }}>
+                    {wc.total_cost.toLocaleString('ru-RU')} AMD
+                  </span>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
 
