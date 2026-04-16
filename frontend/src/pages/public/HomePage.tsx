@@ -114,37 +114,36 @@ export default function HomePage() {
               {t('home.partners_title')}
             </p>
             <div className="pub-partners-strip">
-              {/* Track duplicated so loop is seamless — CSS animates -50% */}
-              {[0, 1].map((copy) => (
-                <div key={copy} className="pub-partners-track" aria-hidden={copy === 1 ? true : undefined}>
-                  {partners.map((p) => {
-                    const initials = p.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
-                    return (
-                      <a
-                        key={p.id}
-                        href={p.website || '#'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="pub-partner-item"
-                      >
-                        <div className="pub-partner-item__circle">
-                          {p.logo_url && !failedLogos.has(p.id) ? (
-                            <img
-                              src={p.logo_url}
-                              alt={p.name}
-                              loading="lazy"
-                              onError={() => setFailedLogos((prev) => new Set([...prev, p.id]))}
-                            />
-                          ) : (
-                            <span className="pub-partner-item__initials">{initials}</span>
-                          )}
-                        </div>
-                        <span className="pub-partner-item__name">{p.name}</span>
-                      </a>
-                    )
-                  })}
-                </div>
-              ))}
+              {/* Single track — items duplicated inline for seamless loop */}
+              <div className="pub-partners-track">
+                {[...partners, ...partners].map((p, i) => {
+                  const initials = p.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+                  return (
+                    <a
+                      key={`${p.id}-${i}`}
+                      href={p.website || '#'}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="pub-partner-item"
+                      aria-hidden={i >= partners.length}
+                    >
+                      <div className="pub-partner-item__circle">
+                        {p.logo_url && !failedLogos.has(p.id) ? (
+                          <img
+                            src={p.logo_url}
+                            alt={p.name}
+                            loading="lazy"
+                            onError={() => setFailedLogos((prev) => new Set([...prev, p.id]))}
+                          />
+                        ) : (
+                          <span className="pub-partner-item__initials">{initials}</span>
+                        )}
+                      </div>
+                      <span className="pub-partner-item__name">{p.name}</span>
+                    </a>
+                  )
+                })}
+              </div>
             </div>
           </section>
         </FadeIn>
