@@ -49,7 +49,15 @@
     "reset_filters": "Մաքրել ֆիլտրերը",
     "order_now": "Պատվիրել",
     "send_order": "Ուղարկել պատվեր",
-    "order_message_placeholder": "Նշեք վահանակների քանակը, պատի չափսը և այլն"
+    "order_message_placeholder": "Նշեք վահանակների քանակը, պատի չափսը և այլն",
+    "wall_area": "Պատի մակերես",
+    "panels_needed": "վահանակ պետք է",
+    "panels_base": "վահանակ մակերեսի համար",
+    "panels_extra": "պահուստ կտրման համար",
+    "panel_area": "Վահանակի մակերես",
+    "estimated_total": "Մոտավոր արժեք",
+    "phone_invalid": "Մուտքագրեք ճիշտ հայկական հեռախոսահամար",
+    "phone_hint": "Ձևաչափ: +374 XX XXX XXX"
   },
   "sort": {
     "newest": "Նոր",

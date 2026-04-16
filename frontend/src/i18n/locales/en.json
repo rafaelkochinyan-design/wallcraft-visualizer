@@ -49,7 +49,15 @@
     "reset_filters": "Reset filters",
     "order_now": "Order Now",
     "send_order": "Send Order",
-    "order_message_placeholder": "Tell us how many panels you need, wall size, etc."
+    "order_message_placeholder": "Tell us how many panels you need, wall size, etc.",
+    "wall_area": "Wall area",
+    "panels_needed": "panels needed",
+    "panels_base": "panels for the area",
+    "panels_extra": "extra for cuts & waste",
+    "panel_area": "Panel area",
+    "estimated_total": "Estimated total",
+    "phone_invalid": "Please enter a valid Armenian phone number",
+    "phone_hint": "Format: +374 XX XXX XXX"
   },
   "sort": {
     "newest": "Newest",

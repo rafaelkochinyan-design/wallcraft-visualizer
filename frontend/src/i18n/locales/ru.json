@@ -49,7 +49,15 @@
     "reset_filters": "Сбросить фильтры",
     "order_now": "Заказать",
     "send_order": "Отправить заказ",
-    "order_message_placeholder": "Укажите количество панелей, размер стены и т.д."
+    "order_message_placeholder": "Укажите количество панелей, размер стены и т.д.",
+    "wall_area": "Площадь стены",
+    "panels_needed": "панелей нужно",
+    "panels_base": "панелей на площадь",
+    "panels_extra": "запас на подрезку",
+    "panel_area": "Площадь панели",
+    "estimated_total": "Примерная стоимость",
+    "phone_invalid": "Введите корректный армянский номер телефона",
+    "phone_hint": "Формат: +374 XX XXX XXX"
   },
   "sort": {
     "newest": "Новые",

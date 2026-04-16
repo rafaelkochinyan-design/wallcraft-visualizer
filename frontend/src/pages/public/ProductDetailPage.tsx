@@ -389,6 +389,7 @@ export default function ProductDetailPage() {
         <OrderSheet
           panel={panel}
           priceFormatted={priceFormatted}
+          activePrice={activePrice}
           onClose={() => setOrderOpen(false)}
         />
       )}
