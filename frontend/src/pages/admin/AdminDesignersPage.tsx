@@ -19,21 +19,7 @@ import {
   emptyLocale,
 } from './adminUtils'
 import { genSlug } from '../../utils/slug'
-import type { LocalizedString } from '../../types'
-
-interface Designer {
-  id: string
-  name: string
-  slug: string
-  photo_url: string | null
-  bio: LocalizedString | null
-  specialty: string | null
-  portfolio: string[]
-  instagram: string | null
-  website: string | null
-  active: boolean
-  sort_order: number
-}
+import type { Designer } from '../../types'
 
 export default function AdminDesignersPage() {
   const [items, setItems] = useState<Designer[]>([])

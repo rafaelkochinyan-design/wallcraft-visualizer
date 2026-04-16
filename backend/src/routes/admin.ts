@@ -7,13 +7,14 @@ import { prisma } from '../utils/prisma'
 import { ok, fail } from '../utils/response'
 import { authMiddleware } from '../middleware/auth'
 import { uploadFile } from '../services/r2'
+import { handleImageUpload } from '../utils/upload'
 
 const router = Router()
 
-// multer: memory storage, validate in controller
+// Single multer instance — per-handler validation enforces specific limits
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB max
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB ceiling (zip uploads need this)
 })
 
 // ── AUTH ──────────────────────────────────────────────────────
@@ -245,22 +246,10 @@ router.delete('/panels/:id', async (req, res, next) => {
 })
 
 router.post('/panels/upload-image', upload.single('file'), async (req, res, next) => {
-  try {
-    if (!req.file) return fail(res, 400, 'No file uploaded')
-    const allowed = ['image/jpeg', 'image/png', 'image/webp']
-    if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type. Use JPG, PNG, or WebP.')
-    if (req.file.size > 10 * 1024 * 1024) return fail(res, 400, 'File too large. Max 10MB.')
-    const url = await uploadFile(req.file.buffer, 'panel-images', req.file.originalname, req.file.mimetype)
-    ok(res, { url })
-  } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'panel-images') } catch (err) { next(err) }
 })
 
-const uploadZip = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
-})
-
-router.post('/panels/upload-zip', uploadZip.single('file'), async (req, res, next) => {
+router.post('/panels/upload-zip', upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) return fail(res, 400, 'No file uploaded')
     const ext = req.file.originalname.split('.').pop()?.toLowerCase()
@@ -364,7 +353,6 @@ router.delete('/accessories/:id', async (req, res, next) => {
 router.post('/accessories/upload-model', upload.single('file'), async (req, res, next) => {
   try {
     if (!req.file) return fail(res, 400, 'No file uploaded')
-    const allowed = ['model/gltf-binary', 'application/octet-stream']
     const ext = req.file.originalname.split('.').pop()?.toLowerCase()
     if (ext !== 'glb') return fail(res, 400, 'Invalid file type. Only .glb files allowed.')
     if (req.file.size > 20 * 1024 * 1024) return fail(res, 400, 'File too large. Max 20MB.')
@@ -374,13 +362,7 @@ router.post('/accessories/upload-model', upload.single('file'), async (req, res,
 })
 
 router.post('/accessories/upload-thumb', upload.single('file'), async (req, res, next) => {
-  try {
-    if (!req.file) return fail(res, 400, 'No file uploaded')
-    const allowed = ['image/jpeg', 'image/png', 'image/webp']
-    if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type.')
-    const url = await uploadFile(req.file.buffer, 'thumbs', req.file.originalname, req.file.mimetype)
-    ok(res, { url })
-  } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'thumbs') } catch (err) { next(err) }
 })
 
 // ── INQUIRIES ─────────────────────────────────────────────────
@@ -432,14 +414,7 @@ router.put('/settings', async (req, res, next) => {
 })
 
 router.post('/settings/upload-logo', upload.single('file'), async (req, res, next) => {
-  try {
-    if (!req.file) return fail(res, 400, 'No file uploaded')
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
-    if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type. Use JPG, PNG, WebP, or SVG.')
-    if (req.file.size > 2 * 1024 * 1024) return fail(res, 400, 'File too large. Max 2MB.')
-    const url = await uploadFile(req.file.buffer, 'logos', req.file.originalname, req.file.mimetype)
-    ok(res, { url })
-  } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'logos', { allowSvg: true, maxBytes: 2 * 1024 * 1024 }) } catch (err) { next(err) }
 })
 
 // ── COLLECTIONS ───────────────────────────────────────────────

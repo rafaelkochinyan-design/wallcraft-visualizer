@@ -16,16 +16,7 @@ import {
   apiErr,
 } from './adminUtils'
 
-interface GalleryItem {
-  id: string
-  image_url: string
-  thumb_url: string | null
-  caption: string | null
-  space_type: string | null
-  tags: string[]
-  sort_order: number
-  active: boolean
-}
+import type { GalleryItem } from '../../types'
 
 const SPACE_TYPES = ['living_room', 'bedroom', 'office', 'hotel', 'restaurant', 'bathroom']
 const SPACE_LABELS: Record<string, string> = {

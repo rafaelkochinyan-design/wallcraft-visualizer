@@ -130,6 +130,7 @@ export interface HeroSlide {
   cta_label: LocalizedString | null
   cta_url: string | null
   sort_order: number
+  active: boolean
 }
 
 export interface Project {
@@ -142,6 +143,8 @@ export interface Project {
   images: { url: string; caption?: string }[]
   space_type: string | null
   panel_ids: string[]
+  active: boolean
+  sort_order: number
   created_at: string
 }
 
@@ -153,6 +156,7 @@ export interface GalleryItem {
   space_type: string | null
   tags: string[]
   sort_order: number
+  active: boolean
 }
 
 export interface BlogPost {
@@ -179,6 +183,8 @@ export interface Designer {
   portfolio: string[]
   instagram: string | null
   website: string | null
+  active: boolean
+  sort_order: number
 }
 
 export interface Dealer {
@@ -192,7 +198,11 @@ export interface Dealer {
   email: string | null
   website: string | null
   map_url: string | null
+  lat: number | null
+  lng: number | null
   logo_url: string | null
+  active: boolean
+  sort_order: number
 }
 
 export interface Partner {
@@ -200,6 +210,8 @@ export interface Partner {
   name: string
   logo_url: string
   website: string | null
+  sort_order: number
+  active: boolean
 }
 
 export interface TeamMember {
@@ -208,6 +220,8 @@ export interface TeamMember {
   role: LocalizedString
   photo_url: string | null
   bio: LocalizedString | null
+  sort_order: number
+  active: boolean
 }
 
 export interface PageContent {

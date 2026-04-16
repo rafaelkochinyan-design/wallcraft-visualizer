@@ -13,23 +13,7 @@ import {
   apiErr,
 } from './adminUtils'
 
-interface Dealer {
-  id: string
-  name: string
-  country: string
-  region: string | null
-  city: string
-  address: string | null
-  phone: string | null
-  email: string | null
-  website: string | null
-  map_url: string | null
-  lat: number | null
-  lng: number | null
-  logo_url: string | null
-  active: boolean
-  sort_order: number
-}
+import type { Dealer } from '../../types'
 
 const empty = (): Omit<Dealer, 'id'> => ({
   name: '',

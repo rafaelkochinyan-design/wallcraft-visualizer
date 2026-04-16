@@ -18,21 +18,7 @@ import {
   emptyLocale,
 } from './adminUtils'
 import { genSlug } from '../../utils/slug'
-import type { LocalizedString } from '../../types'
-
-interface BlogPost {
-  id: string
-  slug: string
-  title: LocalizedString
-  excerpt: LocalizedString
-  body: LocalizedString
-  cover_url: string | null
-  category: string | null
-  tags: string[]
-  published: boolean
-  published_at: string | null
-  created_at: string
-}
+import type { BlogPost } from '../../types'
 
 export default function AdminBlogPage() {
   const [items, setItems] = useState<BlogPost[]>([])

@@ -25,10 +25,11 @@ wallcraft/
 │   │   └── styles/            # CSS variables, pub-* classes, admin.css
 ├── backend/                   # Node.js + Express + Prisma + PostgreSQL
 │   ├── src/
-│   │   ├── routes/            # admin.ts, public.ts, auth.ts
-│   │   ├── controllers/       # Business logic
-│   │   ├── middleware/        # auth, error handling
-│   │   └── lib/               # prisma client, helpers
+│   │   ├── routes/            # admin.ts, adminContent.ts, public.ts, content.ts, leads.ts, instagram.ts
+│   │   ├── middleware/        # auth.ts, tenant.ts, errorHandler.ts
+│   │   ├── services/          # r2.ts (file uploads — local disk or Cloudflare R2)
+│   │   ├── utils/             # prisma.ts, response.ts (ok/fail), upload.ts (shared upload validation)
+│   │   └── jobs/              # instagramRefresh.ts
 │   └── prisma/
 │       └── schema.prisma      # Source of truth for DB schema
 └── CLAUDE.md                  # ← You are here

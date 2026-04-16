@@ -2,22 +2,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import api from '../../lib/api'
 import { useVisualizerStore } from '../../store/visualizer'
-
-interface Settings {
-  id: string
-  slug: string
-  name: string
-  logo_url: string | null
-  primary_color: string
-  phone: string | null
-  email: string | null
-  address: string | null
-  instagram_url: string | null
-  facebook_url: string | null
-  tiktok_url: string | null
-  pinterest_url: string | null
-  whatsapp: string | null
-}
+import type { Tenant } from '../../types'
 
 interface IgStatus {
   connected: boolean
@@ -26,7 +11,7 @@ interface IgStatus {
 
 export default function StoreSettingsPage() {
   const { setTenant } = useVisualizerStore()
-  const [settings, setSettings] = useState<Settings | null>(null)
+  const [settings, setSettings] = useState<Tenant | null>(null)
   const [igStatus, setIgStatus] = useState<IgStatus | null>(null)
   const [igImporting, setIgImporting] = useState(false)
   const [form, setForm] = useState({
@@ -54,7 +39,7 @@ export default function StoreSettingsPage() {
 
   useEffect(() => {
     api.get('/admin/settings').then((res) => {
-      const data = res.data.data as Settings
+      const data = res.data.data as Tenant
       setSettings(data)
       setForm({
         name: data.name,

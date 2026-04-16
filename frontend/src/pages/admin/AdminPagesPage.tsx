@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
-import { Toast, useToast, textareaClass } from './adminUtils'
+import { Toast, useToast, textareaClass, LocaleTabs } from './adminUtils'
 
 // Known page keys with labels
 const PAGE_KEYS = [
@@ -11,7 +11,7 @@ const PAGE_KEYS = [
   { key: 'partners', label: 'Partners' },
 ]
 
-type Lang = 'ru' | 'en' | 'am'
+type Lang = 'ru' | 'en' | 'am' // local alias — matches adminUtils Lang
 type ContentRecord = Record<string, { ru: string; en: string; am: string } | string>
 
 export default function AdminPagesPage() {
@@ -122,21 +122,9 @@ export default function AdminPagesPage() {
         {/* Content editor */}
         <div className="flex-1">
           {/* Lang tabs */}
-          <div className="flex gap-1 mb-4">
-            {(['ru', 'en', 'am'] as Lang[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  lang === l
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                }`}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-            <span className="ml-auto text-xs text-gray-400 self-center">
+          <div className="flex items-center justify-between mb-4">
+            <LocaleTabs lang={lang} onChange={setLang} />
+            <span className="text-xs text-gray-400 self-center">
               Page: <code className="bg-gray-100 px-1 rounded">{pageKey}</code>
             </span>
           </div>

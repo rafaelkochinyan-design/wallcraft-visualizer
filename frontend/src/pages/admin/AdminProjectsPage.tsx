@@ -17,17 +17,7 @@ import {
 } from './adminUtils'
 import { genSlug } from '../../utils/slug'
 
-interface Project {
-  id: string
-  title: string
-  slug: string
-  description: string | null
-  cover_url: string | null
-  space_type: string | null
-  active: boolean
-  sort_order: number
-  created_at: string
-}
+import type { Project } from '../../types'
 
 const SPACE_TYPES = [
   'living_room',

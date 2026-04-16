@@ -15,14 +15,7 @@ import {
   apiErr,
 } from './adminUtils'
 
-interface Partner {
-  id: string
-  name: string
-  logo_url: string
-  website: string | null
-  sort_order: number
-  active: boolean
-}
+import type { Partner } from '../../types'
 const empty = () => ({ name: '', logo_url: '', website: '', sort_order: 0, active: true })
 
 export default function AdminPartnersPage() {

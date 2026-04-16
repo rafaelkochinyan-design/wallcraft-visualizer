@@ -18,17 +18,7 @@ import {
   useLocaleLang,
   emptyLocale,
 } from './adminUtils'
-import type { LocalizedString } from '../../types'
-
-interface TeamMember {
-  id: string
-  name: string
-  role: LocalizedString
-  photo_url: string | null
-  bio: LocalizedString | null
-  sort_order: number
-  active: boolean
-}
+import type { TeamMember } from '../../types'
 
 export default function AdminTeamPage() {
   const [items, setItems] = useState<TeamMember[]>([])

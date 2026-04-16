@@ -1,10 +1,10 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import multer from 'multer'
 import { z } from 'zod'
 import { prisma } from '../utils/prisma'
 import { ok, fail } from '../utils/response'
-import { uploadFile } from '../services/r2'
 import { authMiddleware } from '../middleware/auth'
+import { handleImageUpload } from '../utils/upload'
 
 const router = Router()
 
@@ -24,15 +24,6 @@ const localizedOpt = z.object({
   ru: z.string().default(''),
   am: z.string().default(''),
 }).optional()
-
-async function imageUpload(req: Request, res: Response, folder: string) {
-  if (!req.file) return fail(res, 400, 'No file uploaded')
-  const allowed = ['image/jpeg', 'image/png', 'image/webp']
-  if (!allowed.includes(req.file.mimetype)) return fail(res, 400, 'Invalid file type. Use JPG, PNG, or WebP.')
-  if (req.file.size > 10 * 1024 * 1024) return fail(res, 400, 'File too large. Max 10MB.')
-  const url = await uploadFile(req.file.buffer, folder, req.file.originalname, req.file.mimetype)
-  return ok(res, { url })
-}
 
 // ── HERO SLIDES ───────────────────────────────────────────────
 
@@ -101,7 +92,7 @@ router.patch('/hero-slides/reorder', async (req, res, next) => {
 })
 
 router.post('/hero-slides/upload-image', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'hero') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'hero') } catch (err) { next(err) }
 })
 
 // ── PROJECTS ──────────────────────────────────────────────────
@@ -166,7 +157,7 @@ router.delete('/projects/:id', async (req, res, next) => {
 })
 
 router.post('/projects/upload-image', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'projects') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'projects') } catch (err) { next(err) }
 })
 
 // ── GALLERY ───────────────────────────────────────────────────
@@ -221,7 +212,7 @@ router.delete('/gallery/:id', async (req, res, next) => {
 })
 
 router.post('/gallery/upload-image', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'gallery') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'gallery') } catch (err) { next(err) }
 })
 
 // ── BLOG ──────────────────────────────────────────────────────
@@ -306,7 +297,7 @@ router.delete('/blog/:id', async (req, res, next) => {
 })
 
 router.post('/blog/upload-cover', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'blog') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'blog') } catch (err) { next(err) }
 })
 
 // ── DESIGNERS ─────────────────────────────────────────────────
@@ -372,7 +363,7 @@ router.delete('/designers/:id', async (req, res, next) => {
 })
 
 router.post('/designers/upload-photo', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'designers') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'designers') } catch (err) { next(err) }
 })
 
 // ── DEALERS ───────────────────────────────────────────────────
@@ -491,7 +482,7 @@ router.delete('/partners/:id', async (req, res, next) => {
 })
 
 router.post('/partners/upload-logo', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'partners') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'partners') } catch (err) { next(err) }
 })
 
 // ── TEAM ──────────────────────────────────────────────────────
@@ -553,7 +544,7 @@ router.delete('/team/:id', async (req, res, next) => {
 })
 
 router.post('/team/upload-photo', upload.single('file'), async (req, res, next) => {
-  try { await imageUpload(req, res, 'team') } catch (err) { next(err) }
+  try { await handleImageUpload(req, res, 'team') } catch (err) { next(err) }
 })
 
 // ── PAGE CONTENT (CMS) ────────────────────────────────────────

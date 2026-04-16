@@ -35,23 +35,7 @@ import {
   emptyLocale,
 } from './adminUtils'
 
-interface LocaleStr {
-  ru: string
-  en: string
-  am: string
-}
-
-interface HeroSlide {
-  id: string
-  image_url: string
-  video_url: string | null
-  headline: LocaleStr
-  subheadline: LocaleStr | null
-  cta_label: LocaleStr | null
-  cta_url: string | null
-  sort_order: number
-  active: boolean
-}
+import type { HeroSlide } from '../../types'
 
 // ── Sortable row ───────────────────────────────────────────────
 function SortableRow({
