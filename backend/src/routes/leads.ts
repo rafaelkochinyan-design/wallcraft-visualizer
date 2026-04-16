@@ -11,6 +11,7 @@ import { Prisma } from '@prisma/client'
 import { prisma } from '../utils/prisma'
 import { ok, fail } from '../utils/response'
 import { authMiddleware } from '../middleware/auth'
+import { emitNewOrder } from '../utils/socket'
 
 const router = Router()
 
@@ -29,16 +30,8 @@ const LeadSchema = z.object({
   name:        z.string().min(1).max(100),
   phone:       z.string().min(5).max(30),
   comment:     z.string().max(500).optional(),
-  wall_config: z.object({
-    width:        z.number(),
-    height:       z.number(),
-    color:        z.string(),
-    panels:       z.array(z.object({ id: z.string().optional(), sku: z.string().nullable().optional(), name: z.string() })),
-    accessories:  z.array(z.object({ name: z.string() })).optional(),
-    total_panels: z.number().optional(),
-    total_cost:   z.number().optional(),
-    share_url:    z.string().optional(),
-  }),
+  // Accept any JSON — supports both visualizer orders and product page orders
+  wall_config: z.record(z.unknown()).default({}),
 })
 
 // ── POST /api/leads ────────────────────────────────────────
@@ -61,6 +54,8 @@ router.post('/api/leads', async (req, res, next) => {
         status:      'new',
       },
     })
+
+    emitNewOrder(lead)
 
     return ok(res, { id: lead.id })
   } catch (err) { next(err) }

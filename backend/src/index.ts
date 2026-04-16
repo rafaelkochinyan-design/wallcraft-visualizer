@@ -1,6 +1,8 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 import { join } from 'path'
 import cookieParser from 'cookie-parser'
 import { tenantMiddleware } from './middleware/tenant'
@@ -12,8 +14,10 @@ import contentRouter from './routes/content'
 import adminContentRouter from './routes/adminContent'
 import instagramRouter from './routes/instagram'
 import { refreshInstagramTokenIfNeeded } from './jobs/instagramRefresh'
+import { setIO } from './utils/socket'
 
 const app = express()
+const httpServer = createServer(app)
 const PORT = process.env.PORT || 3001
 
 // ── Middleware ────────────────────────────────────────────────
@@ -24,6 +28,15 @@ app.use(cors({
   origin: allowedOrigins.length === 1 ? allowedOrigins[0] : allowedOrigins,
   credentials: true,
 }))
+
+// ── Socket.io ─────────────────────────────────────────────────
+const io = new Server(httpServer, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
+})
+setIO(io)
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -49,7 +62,7 @@ app.use(leadsRouter)
 app.use(errorHandler)
 
 // ── Listen ────────────────────────────────────────────────────
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)
   console.log(`   Environment: ${process.env.NODE_ENV}`)
 })

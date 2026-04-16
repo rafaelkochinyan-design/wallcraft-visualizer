@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import api from '../../lib/api'
+import { useOrderSocket, IncomingOrder } from '../../hooks/useOrderSocket'
 
 interface Lead {
   id: string
@@ -50,6 +51,20 @@ export default function LeadsPage() {
   useEffect(() => {
     load()
   }, [])
+
+  useOrderSocket((order: IncomingOrder) => {
+    const newLead: Lead = {
+      id:         order.id,
+      name:       order.name,
+      phone:      order.phone,
+      comment:    order.comment ?? undefined,
+      status:     (order.status as Lead['status']) ?? 'new',
+      created_at: order.created_at,
+      wall_config: (order.wall_config ?? {}) as Lead['wall_config'],
+    }
+    setLeads((prev) => [newLead, ...prev])
+    toast.success(`New order from ${order.name}`, { duration: 5000 })
+  })
 
   async function updateStatus(id: string, status: string) {
     try {
@@ -154,6 +169,7 @@ function LeadCard({
 }) {
   const { label: statusLabel, color: statusColor } = STATUS[lead.status] ?? STATUS.new
   const wc = lead.wall_config
+  const isProductOrder = (wc as unknown as { type?: string }).type === 'product_order'
 
   return (
     <div
@@ -178,18 +194,18 @@ function LeadCard({
             height: 56,
             borderRadius: 12,
             flexShrink: 0,
-            background: wc.color || '#e5e7eb',
+            background: isProductOrder ? '#D4601A' : (wc.color || '#e5e7eb'),
             border: '1px solid rgba(0,0,0,0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 11,
+            fontSize: isProductOrder ? 24 : 11,
             color: '#fff',
             fontWeight: 700,
             textShadow: '0 1px 2px rgba(0,0,0,0.5)',
           }}
         >
-          {wc.width}×{wc.height}
+          {isProductOrder ? '🪵' : `${wc.width}×${wc.height}`}
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>

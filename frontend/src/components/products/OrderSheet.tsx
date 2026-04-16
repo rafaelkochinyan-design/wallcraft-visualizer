@@ -20,12 +20,24 @@ export default function OrderSheet({ panel, priceFormatted, onClose }: OrderShee
   async function handleSubmit() {
     setSending(true)
     try {
-      const dimensions = panel.width_mm ? ` · ${panel.width_mm}×${panel.height_mm}mm` : ''
-      const price = priceFormatted ? ` · ${priceFormatted} AMD/m²` : ''
-      await api.post('/api/inquiry', {
-        name: form.name,
-        phone: form.phone,
-        message: `[Order: ${panel.name}${dimensions}${price}] ${form.message}`,
+      await api.post('/api/leads', {
+        name:    form.name,
+        phone:   form.phone,
+        comment: form.message || undefined,
+        wall_config: {
+          type:       'product_order',
+          panel_name:  panel.name,
+          panel_id:    panel.id,
+          price:       priceFormatted ?? undefined,
+          width_mm:    panel.width_mm,
+          height_mm:   panel.height_mm,
+          depth_mm:    panel.depth_mm,
+          // LeadCard uses these fields for display
+          width:   0,
+          height:  0,
+          color:   'var(--accent)',
+          panels:  [{ name: panel.name }],
+        },
       })
       toast.success(t('contact.success'))
       onClose()
