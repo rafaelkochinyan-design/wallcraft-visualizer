@@ -28,6 +28,12 @@ interface InstagramMediaResponse {
   data?: InstagramMediaItem[]
 }
 
+const INSTAGRAM_OAUTH_URL    = 'https://api.instagram.com/oauth/authorize'
+const INSTAGRAM_TOKEN_URL    = 'https://api.instagram.com/oauth/access_token'
+const INSTAGRAM_LONG_TOKEN_URL = 'https://graph.instagram.com/access_token'
+const INSTAGRAM_MEDIA_URL    = 'https://graph.instagram.com/me/media'
+export const INSTAGRAM_REFRESH_URL = 'https://graph.instagram.com/refresh_access_token'
+
 const router = Router()
 
 // All Instagram routes require admin authentication
@@ -45,7 +51,7 @@ router.get('/auth-url', async (req, res, next) => {
       return fail(res, 500, 'Instagram App credentials not configured. Set INSTAGRAM_APP_ID and INSTAGRAM_REDIRECT_URI in environment variables.')
     }
     const url =
-      `https://api.instagram.com/oauth/authorize` +
+      INSTAGRAM_OAUTH_URL +
       `?client_id=${APP_ID}` +
       `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
       `&scope=user_profile,user_media` +
@@ -67,7 +73,7 @@ router.get('/callback', async (req, res, next) => {
     }
 
     // Step A: exchange code for short-lived token
-    const tokenRes = await fetch('https://api.instagram.com/oauth/access_token', {
+    const tokenRes = await fetch(INSTAGRAM_TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -86,7 +92,7 @@ router.get('/callback', async (req, res, next) => {
 
     // Step B: exchange for long-lived token (60 days)
     const longRes = await fetch(
-      `https://graph.instagram.com/access_token` +
+      INSTAGRAM_LONG_TOKEN_URL +
       `?grant_type=ig_exchange_token` +
       `&client_secret=${APP_SECRET}` +
       `&access_token=${shortToken}`
@@ -136,7 +142,7 @@ router.post('/import', async (req, res, next) => {
     }
 
     const mediaRes = await fetch(
-      `https://graph.instagram.com/me/media` +
+      INSTAGRAM_MEDIA_URL +
       `?fields=id,caption,media_type,media_url,thumbnail_url,timestamp` +
       `&limit=20` +
       `&access_token=${tenant.instagram_access_token}`
@@ -197,7 +203,7 @@ router.post('/refresh-token', async (req, res, next) => {
     }
 
     const refreshRes = await fetch(
-      `https://graph.instagram.com/refresh_access_token` +
+      INSTAGRAM_REFRESH_URL +
       `?grant_type=ig_refresh_token` +
       `&access_token=${tenant.instagram_access_token}`
     )

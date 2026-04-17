@@ -1,5 +1,4 @@
-import { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useVisualizerStore } from '../../store/visualizer'
@@ -13,7 +12,6 @@ import PageMeta from '../../components/ui/PageMeta'
 
 export default function HomePage() {
   const [failedLogos, setFailedLogos] = useState<Set<string>>(new Set())
-  const partnersStripRef = useRef<HTMLDivElement>(null)
   const { t, i18n } = useTranslation()
   const lang = i18n.language as 'en' | 'ru' | 'am'
   const { availablePanels } = useVisualizerStore()
@@ -59,7 +57,7 @@ export default function HomePage() {
 
       {/* ── Hero Carousel ────────────────────────────────────── */}
       {slides === null ? (
-        <div style={{ height: '100vh', minHeight: 560, background: '#0a0a0f' }} />
+        <div style={{ height: '100vh', minHeight: 560, background: 'var(--text-primary)' }} />
       ) : (
         <HeroCarousel slides={slides} fallback={heroFallback} />
       )}
@@ -115,14 +113,8 @@ export default function HomePage() {
             <p className="pub-partners-section__title">
               {t('home.partners_title')}
             </p>
-            <div className="pub-partners-strip" ref={partnersStripRef}>
-              <motion.div
-                className="pub-partners-track"
-                drag="x"
-                dragConstraints={partnersStripRef}
-                dragElastic={0.05}
-                dragMomentum
-              >
+            <div className="pub-partners-strip">
+              <div className="pub-partners-track">
                 {partners.map((p) => {
                   const initials = p.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
                   return (
@@ -151,7 +143,7 @@ export default function HomePage() {
                     </a>
                   )
                 })}
-              </motion.div>
+              </div>
             </div>
           </section>
         </FadeIn>

@@ -9,11 +9,11 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
   .hero-carousel {
-    --hc-bg: #0a0a0f;
-    --hc-accent: #c9a96e;
+    --hc-bg: #1A2518;
+    --hc-accent: #C9B88A;
     --hc-text: #ffffff;
     --hc-muted: rgba(255,255,255,0.45);
-    --hc-overlay: rgba(10,10,15,0.55);
+    --hc-overlay: rgba(26,37,24,0.55);
     --hc-transition: 0.72s cubic-bezier(0.77, 0, 0.175, 1);
     position: relative;
     width: 100%;
@@ -44,7 +44,7 @@ const styles = `
 
   .hc-overlay {
     position: absolute; inset: 0;
-    background: linear-gradient(120deg, rgba(10,10,15,0.82) 0%, rgba(10,10,15,0.38) 55%, rgba(10,10,15,0.15) 100%);
+    background: linear-gradient(120deg, rgba(26,37,24,0.82) 0%, rgba(26,37,24,0.38) 55%, rgba(26,37,24,0.15) 100%);
   }
 
   .hc-content {
@@ -93,7 +93,7 @@ const styles = `
 
   .hc-cta {
     display: inline-flex; align-items: center; gap: 10px;
-    background: var(--hc-accent); color: #0a0a0f;
+    background: var(--hc-accent); color: #1A2518;
     font-family: 'Syne', sans-serif; font-weight: 700;
     font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
     padding: 14px 28px; border: none; cursor: pointer;

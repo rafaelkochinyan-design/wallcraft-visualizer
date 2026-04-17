@@ -4,23 +4,23 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
 
   .fc-root {
-    --fc-bg: #f6f6f4;
-    --fc-bg-hover: #ededea;
-    --fc-bg-active: #1a1a2e;
-    --fc-text: #0f0f12;
-    --fc-text-active: #c9a96e;
-    --fc-border: #e0e0dc;
-    --fc-border-active: #1a1a2e;
+    --fc-bg: #F4F0E8;
+    --fc-bg-hover: #EDEAE0;
+    --fc-bg-active: #2C3D28;
+    --fc-text: #1A2518;
+    --fc-text-active: #C9B88A;
+    --fc-border: #D8D2C0;
+    --fc-border-active: #2C3D28;
     font-family: 'DM Sans', sans-serif;
   }
   .fc-root.dark {
     --fc-bg: rgba(255,255,255,0.07);
     --fc-bg-hover: rgba(255,255,255,0.12);
-    --fc-bg-active: #c9a96e;
+    --fc-bg-active: #C9B88A;
     --fc-text: rgba(255,255,255,0.75);
-    --fc-text-active: #0a0a0f;
+    --fc-text-active: #1A2518;
     --fc-border: rgba(255,255,255,0.12);
-    --fc-border-active: #c9a96e;
+    --fc-border-active: #C9B88A;
   }
 
   .fc-scroll-wrap { position: relative; overflow: hidden; }
@@ -91,7 +91,7 @@ export default function FilterChips({
       <div className={`fc-root${dark ? ' dark' : ''} ${className}`}>
         <div
           className="fc-scroll-wrap"
-          style={{ '--fc-fade-end': dark ? '#0a0a0f' : '#fff' } as React.CSSProperties}
+          style={{ '--fc-fade-end': dark ? '#1A2518' : '#F4F0E8' } as React.CSSProperties}
         >
           <div ref={listRef} className="fc-list">
             {options.map((opt) => (

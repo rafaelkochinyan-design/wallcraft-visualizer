@@ -30,8 +30,8 @@ export function useOrderSocket(onNewOrder: (order: IncomingOrder) => void) {
       callbackRef.current(order)
     })
 
-    socket.on('connect_error', (err) => {
-      console.warn('[socket] connection error:', err.message)
+    socket.on('connect_error', () => {
+      // suppress — socket auto-reconnects; noise in prod
     })
 
     return () => {

@@ -72,6 +72,13 @@ export default function StoreSettingsPage() {
     }
   }
 
+  function normalizeUrl(val: string): string | null {
+    const s = val.trim()
+    if (!s) return null
+    if (/^https?:\/\//i.test(s)) return s
+    return `https://${s}`
+  }
+
   async function handleSave() {
     setSaving(true)
     try {
@@ -83,10 +90,10 @@ export default function StoreSettingsPage() {
         email: form.email || null,
         address: form.address || null,
         whatsapp: form.whatsapp || null,
-        instagram_url: form.instagram_url || null,
-        facebook_url: form.facebook_url || null,
-        tiktok_url: form.tiktok_url || null,
-        pinterest_url: form.pinterest_url || null,
+        instagram_url: normalizeUrl(form.instagram_url),
+        facebook_url:  normalizeUrl(form.facebook_url),
+        tiktok_url:    normalizeUrl(form.tiktok_url),
+        pinterest_url: normalizeUrl(form.pinterest_url),
       })
       toast.success('Settings saved')
       const updated = await api.get('/api/tenant')

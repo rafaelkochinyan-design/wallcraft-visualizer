@@ -57,7 +57,7 @@ const styles = `
     transition: border-color 0.2s, background 0.2s, color 0.2s;
     z-index: 9999; backdrop-filter: blur(4px);
   }
-  .lb-nav:hover { border-color: #c9a96e; background: rgba(201,169,110,0.1); color: #c9a96e; }
+  .lb-nav:hover { border-color: #C9B88A; background: rgba(201,184,138,0.1); color: #C9B88A; }
   .lb-prev { left: 20px; }
   .lb-next { right: 20px; }
 
@@ -71,7 +71,7 @@ const styles = `
     z-index: 9999; backdrop-filter: blur(4px);
     transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
   }
-  .lb-close:hover { border-color: #c9a96e; color: #c9a96e; transform: rotate(90deg); }
+  .lb-close:hover { border-color: #C9B88A; color: #C9B88A; transform: rotate(90deg); }
 
   .lb-count {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -91,7 +91,7 @@ const styles = `
     border: 2px solid transparent; cursor: pointer;
     opacity: 0.45; transition: opacity 0.2s, border-color 0.2s; flex-shrink: 0;
   }
-  .lb-thumb.active { opacity: 1; border-color: #c9a96e; }
+  .lb-thumb.active { opacity: 1; border-color: #C9B88A; }
 `
 
 export interface LightboxItem {

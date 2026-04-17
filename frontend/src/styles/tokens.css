@@ -1,134 +1,164 @@
 /* ═══════════════════════════════════════════════════════════════════
-   WALLCRAFT — LIGHT THEME TOKENS v3
-   Тёплая светлая палитра — дружелюбная, как интерьерный шоурум.
-   Sidebar/toolbar: тёплый кремовый белый, не тёмный.
+   WALLCRAFT — DESIGN TOKENS v4
+   Warm luxury palette — like a premium showroom or editorial magazine.
    ═══════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Cormorant+Garamond:wght@600;700&display=swap');
 
 :root {
   /* ──────────────────────────────────────────────────────
-     UI SURFACE COLORS — светлый UI (sidebar, toolbar)
-     Тёплые off-white тона, как бумага или гипс
+     UI SURFACE COLORS — light mode
+     Warm cream palette, like gypsum and handmade paper
   ────────────────────────────────────────────────────── */
-  --ui-bg: #faf8f5; /* фон sidebar, toolbar — тёплый белый   */
-  --ui-surface: #f3f0eb; /* карточки, инпуты                      */
-  --ui-elevated: #ece8e1; /* hover states, raised elements         */
-  --ui-border: #ddd8d0; /* границы, dividers                     */
-  --ui-border-muted: #e8e4dc; /* тихие границы                         */
+  --ui-bg:           #F4F0E8; /* page background — ivory                 */
+  --ui-surface:      #EDEAE0; /* cards, inputs — ivory warm              */
+  --ui-elevated:     #E4EBE3; /* hover states, raised elements           */
+  --ui-border:       #D8D2C0; /* borders, dividers — ivory border        */
+  --ui-border-muted: #E4E0D8; /* subtle borders                         */
 
   /* ──────────────────────────────────────────────────────
-     TEXT COLORS — на светлом фоне (#faf8f5)
+     TEXT COLORS — warm dark grading
   ────────────────────────────────────────────────────── */
-  --text-primary: #1a1714; /* основной текст — почти чёрный тёплый  */
-  --text-secondary: #5a5550; /* вторичный                             */
-  --text-muted: #8a8480; /* placeholder, labels                   */
-  --text-disabled: #b8b4b0; /* disabled                              */
+  --text-primary:   #1A2518; /* main text — deep forest                 */
+  --text-secondary: #4A5E46; /* secondary — forest medium               */
+  --text-muted:     #7A9470; /* placeholders, labels — forest sage      */
+  --text-disabled:  #A8B8A4; /* disabled                                */
 
   /* ──────────────────────────────────────────────────────
-     ADMIN / LIGHT MODE — те же значения, совместимость
+     ADMIN / LIGHT MODE COMPAT
   ────────────────────────────────────────────────────── */
-  --light-bg: #faf8f5;
-  --light-surface: #f3f0eb;
-  --light-border: #ddd8d0;
-  --light-text: #1a1714;
-  --light-text-sec: #5a5550;
+  --light-bg:       #F4F0E8;
+  --light-surface:  #EDEAE0;
+  --light-border:   #D8D2C0;
+  --light-text:     #1A2518;
+  --light-text-sec: #4A5E46;
 
   /* ──────────────────────────────────────────────────────
-     ACCENT — тёплый терракотово-медный
+     PRIMARY ACCENT — warm terracotta / copper
   ────────────────────────────────────────────────────── */
-  --accent: #c4622d;
-  --accent-hover: #d4713c;
-  --accent-soft: rgba(196, 98, 45, 0.12);
-  --accent-border: rgba(196, 98, 45, 0.3);
+  --accent:        #C9B88A;
+  --accent-hover:  #A8965E;
+  --accent-soft:   rgba(201, 184, 138, 0.10);
+  --accent-border: rgba(201, 184, 138, 0.30);
 
-  /* Secondary accent — purple (categories, tags, chips, pagination, dropdowns) */
-  --accent-purple:       #7c3aed;
-  --accent-purple-light: #ede9fe;
-  --accent-purple-muted: #a78bfa;
+  /* ──────────────────────────────────────────────────────
+     SECONDARY ACCENT — deep plum / aubergine
+     Replaces generic tech-purple. Used for: category chips,
+     active filters, pagination, sidebar active states.
+     Pairs beautifully with terracotta (warm analogous).
+  ────────────────────────────────────────────────────── */
+  --accent-secondary:       #2C3D28;
+  --accent-secondary-light: #E4EBE3;
+  --accent-secondary-muted: #8BA888;
 
-  /* Tertiary accent — gold (dark/hero backgrounds ONLY — never on light bg) */
-  --accent-gold:         #f59e0b;
-  --accent-gold-light:   #fef3c7;
-  --accent-gold-dark:    #b45309;
+  /* ──────────────────────────────────────────────────────
+     GOLD ACCENT — warm editorial gold
+     Promoted from HeroCarousel scope → official global token.
+     Used for: hero CTAs, lightbox hover, gallery accents.
+     Never on light backgrounds — dark contexts only.
+  ────────────────────────────────────────────────────── */
+  --accent-gold:       #C9B88A;
+  --accent-gold-light: #EDE8D8;
+  --accent-gold-dark:  #A8965E;
 
-  /* Семантические */
-  --accent-blue: #3b6fb5;
-  --accent-green: #2e7d52;
-  --accent-red: #c0392b;
-  --accent-yellow: #a07820;
+  /* ──────────────────────────────────────────────────────
+     SEMANTIC COLORS
+  ────────────────────────────────────────────────────── */
+  --accent-blue:      #3b6fb5;
+  --accent-green:     #2e7d52;
+  --accent-red:       #c0392b;
+  --accent-yellow:    #a07820;
 
-  --accent-blue-soft: rgba(59, 111, 181, 0.12);
+  --accent-blue-soft:  rgba(59, 111, 181, 0.12);
   --accent-green-soft: rgba(46, 125, 82, 0.12);
-  --accent-red-soft: rgba(192, 57, 43, 0.12);
+  --accent-red-soft:   rgba(192, 57, 43, 0.12);
 
   /* ──────────────────────────────────────────────────────
-     WALL COLOR PRESETS
+     UTILITY COLOR TOKENS — replaces scattered hardcodes
   ────────────────────────────────────────────────────── */
-  --wall-white: #f8f5f0;
-  --wall-cream: #ede8de;
-  --wall-sand: #d8d0c0;
+  --color-white:     #FFFFFF; /* fixed white — hero text, buttons on dark */
+  --color-error:     #DC2626; /* form errors, destructive actions          */
+  --color-whatsapp:  #25D366; /* WhatsApp brand green — footer/contact     */
+
+  /* ──────────────────────────────────────────────────────
+     WALL COLOR PRESETS (visualizer)
+  ────────────────────────────────────────────────────── */
+  --wall-white:     #f8f5f0;
+  --wall-cream:     #ede8de;
+  --wall-sand:      #d8d0c0;
   --wall-warm-gray: #b8b2a8;
-  --wall-dark: #3c3830;
-  --wall-charcoal: #1e1c18;
+  --wall-dark:      #3c3830;
+  --wall-charcoal:  #1e1c18;
+
+  /* ──────────────────────────────────────────────────────
+     SHADOW ELEVATION SYSTEM
+     Warm-tinted shadows (brown base, not gray/black)
+  ────────────────────────────────────────────────────── */
+  --shadow-sm:        0 1px 3px rgba(26, 37, 24, 0.08), 0 1px 2px rgba(26, 37, 24, 0.04);
+  --shadow-md:        0 4px 16px rgba(26, 37, 24, 0.10), 0 2px 6px rgba(26, 37, 24, 0.06);
+  --shadow-lg:        0 12px 40px rgba(26, 37, 24, 0.14), 0 4px 12px rgba(26, 37, 24, 0.08);
+  --shadow-card-hover:0 16px 48px rgba(26, 37, 24, 0.16), 0 4px 16px rgba(26, 37, 24, 0.10);
 
   /* ──────────────────────────────────────────────────────
      LEGACY COMPATIBILITY
   ────────────────────────────────────────────────────── */
-  --c-black: #1a1714;
-  --c-white: #ffffff;
-  --c-gray-50: var(--ui-bg);
+  --c-black:    #1A2518;
+  --c-white:    #ffffff;
+  --c-gray-50:  var(--ui-bg);
   --c-gray-100: var(--ui-surface);
   --c-gray-200: var(--ui-border);
-  --c-gray-300: #c8c4bc;
+  --c-gray-300: #C8D4C5;
   --c-gray-400: var(--text-muted);
-  --c-gray-500: #6b6560;
-  --c-gray-600: #4a4540;
-  --c-gray-800: #2e2a25;
-  --c-gray-900: #1a1714;
+  --c-gray-500: #5A7055;
+  --c-gray-600: #4A5E46;
+  --c-gray-800: #2C3D28;
+  --c-gray-900: #1A2518;
 
-  --c-accent: var(--accent);
-  --c-danger: var(--accent-red);
-  --c-danger-soft: var(--accent-red-soft);
-  --c-success: var(--accent-green);
+  --c-accent:       var(--accent);
+  --c-danger:       var(--accent-red);
+  --c-danger-soft:  var(--accent-red-soft);
+  --c-success:      var(--accent-green);
   --c-success-soft: var(--accent-green-soft);
 
-  /* Glass */
-  --glass-dark: rgba(250, 248, 245, 0.95);
-  --glass-dark-border: rgba(26, 23, 20, 0.1);
-  --glass-light: rgba(250, 248, 245, 0.97);
-  --glass-light-border: rgba(26, 23, 20, 0.08);
-  --glass-blur: blur(20px);
+  /* ──────────────────────────────────────────────────────
+     GLASS / FROSTED EFFECTS
+  ────────────────────────────────────────────────────── */
+  --glass-dark:         rgba(244, 240, 232, 0.95);
+  --glass-dark-border:  rgba(26, 37, 24, 0.1);
+  --glass-light:        rgba(244, 240, 232, 0.97);
+  --glass-light-border: rgba(26, 37, 24, 0.08);
+  --glass-blur:   blur(20px);
   --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
 
   /* ──────────────────────────────────────────────────────
      TYPOGRAPHY
   ────────────────────────────────────────────────────── */
-  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font:         'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif; /* headings — editorial luxury */
 
   --text-2xs: 10px;
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-md: 16px;
-  --text-lg: 18px;
-  --text-xl: 22px;
+  --text-xs:  12px;
+  --text-sm:  14px;
+  --text-md:  16px;
+  --text-lg:  18px;
+  --text-xl:  22px;
   --text-2xl: 28px;
   --text-3xl: 36px;
 
-  --weight-normal: 400;
-  --weight-medium: 500;
+  --weight-normal:   400;
+  --weight-medium:   500;
   --weight-semibold: 600;
-  --weight-bold: 700;
+  --weight-bold:     700;
 
   /* ──────────────────────────────────────────────────────
      SHAPE
   ────────────────────────────────────────────────────── */
-  --r-xs: 6px;
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 20px;
-  --r-xl: 28px;
-  --r-2xl: 36px;
+  --r-xs:   6px;
+  --r-sm:   10px;
+  --r-md:   14px;
+  --r-lg:   20px;
+  --r-xl:   28px;
+  --r-2xl:  36px;
   --r-full: 9999px;
 
   /* ──────────────────────────────────────────────────────
@@ -143,7 +173,7 @@
   --sp-7: 28px;
   --sp-8: 32px;
 
-  --h-input: 52px;
+  --h-input:  52px;
   --h-btn-sm: 40px;
   --h-btn-md: 52px;
   --h-btn-lg: 60px;
@@ -151,8 +181,8 @@
   /* ──────────────────────────────────────────────────────
      ANIMATION
   ────────────────────────────────────────────────────── */
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:  cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --dur-fast: 120ms;
   --dur-base: 220ms;
@@ -163,5 +193,5 @@
   ────────────────────────────────────────────────────── */
   --z-tooltip: 10;
   --z-overlay: 20;
-  --z-top: 30;
+  --z-top:     30;
 }

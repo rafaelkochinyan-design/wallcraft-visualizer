@@ -66,30 +66,16 @@ export default function PublicFooter() {
           <div>
             <div className="pub-footer__col-title">{t('nav.contact')}</div>
             <ul className="pub-footer__links">
-              {phone && (
-                <li>
-                  <a href={`tel:${phone}`}>{phone}</a>
-                </li>
-              )}
-              {email && (
-                <li>
-                  <a href={`mailto:${email}`}>{email}</a>
-                </li>
-              )}
-              {address && (
-                <li>
-                  <span style={{ color: 'rgba(240,236,230,0.5)' }}>{address}</span>
-                </li>
-              )}
+              {phone && <li><a href={`tel:${phone}`}>{phone}</a></li>}
+              {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
+              {address && <li><span className="pub-footer__address">{address}</span></li>}
             </ul>
           </div>
         )}
       </div>
 
       <div className="pub-footer__bottom">
-        <span>
-          © {new Date().getFullYear()} {tenant?.name || 'WallCraft'}. {t('footer.rights')}.
-        </span>
+        <span>© {new Date().getFullYear()} {tenant?.name || 'WallCraft'}. {t('footer.rights')}.</span>
         <span>{t('footer.made_with')}</span>
       </div>
     </footer>

@@ -391,7 +391,7 @@ function PanelModal({ panel, onClose, onSaved, onError }: PanelModalProps) {
                 </a>
                 <button type="button"
                   onClick={() => setForm((f) => ({ ...f, zip_url: '' }))}
-                  style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>
+                  style={{ color: 'var(--color-error)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12 }}>
                   Remove
                 </button>
               </div>

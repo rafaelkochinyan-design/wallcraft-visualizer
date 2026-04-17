@@ -179,7 +179,7 @@ function LeadCard({
 }) {
   const { label: statusLabel, color: statusColor } = STATUS[lead.status] ?? STATUS.new
   const wc = lead.wall_config
-  const isProductOrder = (wc as unknown as { type?: string }).type === 'product_order'
+  const isProductOrder = wc.type === 'product_order'
 
   return (
     <div
@@ -204,7 +204,7 @@ function LeadCard({
             height: 56,
             borderRadius: 12,
             flexShrink: 0,
-            background: isProductOrder ? '#D4601A' : (wc.color || '#e5e7eb'),
+            background: isProductOrder ? 'var(--accent)' : (wc.color || '#e5e7eb'),
             border: '1px solid rgba(0,0,0,0.1)',
             display: 'flex',
             alignItems: 'center',
@@ -300,7 +300,7 @@ function LeadCard({
               </div>
             )}
             {wc.total_cost && wc.total_cost > 0 && (
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#D4601A', paddingTop: 8, borderTop: '1px solid #e5e7eb', marginTop: 4 }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent)', paddingTop: 8, borderTop: '1px solid #e5e7eb', marginTop: 4 }}>
                 Total: {wc.total_cost.toLocaleString('ru-RU')} AMD
               </div>
             )}
@@ -319,7 +319,7 @@ function LeadCard({
                 <span style={{ color: '#6b7280', marginRight: 8 }}>Quantity:</span>
                 <strong>{wc.total_panels} pcs</strong>
                 {wc.total_cost && (
-                  <span style={{ marginLeft: 16, fontSize: 18, fontWeight: 700, color: '#D4601A' }}>
+                  <span style={{ marginLeft: 16, fontSize: 18, fontWeight: 700, color: 'var(--accent)' }}>
                     {wc.total_cost.toLocaleString('ru-RU')} AMD
                   </span>
                 )}

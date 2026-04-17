@@ -1,4 +1,5 @@
 import { prisma } from '../utils/prisma'
+import { INSTAGRAM_REFRESH_URL, InstagramLongLivedTokenResponse } from '../routes/instagram'
 
 export async function refreshInstagramTokenIfNeeded(): Promise<void> {
   try {
@@ -18,11 +19,11 @@ export async function refreshInstagramTokenIfNeeded(): Promise<void> {
 
       try {
         const res = await fetch(
-          `https://graph.instagram.com/refresh_access_token` +
+          INSTAGRAM_REFRESH_URL +
           `?grant_type=ig_refresh_token` +
           `&access_token=${tenant.instagram_access_token}`
         )
-        const data = await res.json() as any
+        const data = await res.json() as InstagramLongLivedTokenResponse
         if (!data.access_token) {
           console.error(`[instagram] Token refresh failed for tenant ${tenant.slug}:`, data)
           continue

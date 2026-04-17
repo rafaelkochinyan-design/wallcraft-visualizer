@@ -103,7 +103,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
           price_per_m2:  activePrice  ?? undefined,
           total_cost:    totalPrice   ?? undefined,
           // LeadCard display fields (visualizer compat)
-          width:  0, height: 0, color: '#D4601A',
+          width:  0, height: 0, color: '',
           panels: [{ name: panel.name }],
         },
       })
@@ -212,7 +212,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
               placeholder="+374 XX XXX XXX"
             />
             {phoneError && (
-              <p style={{ fontSize: 12, color: '#dc2626', marginTop: 6, margin: '6px 0 0' }}>
+              <p style={{ fontSize: 12, color: 'var(--color-error)', marginTop: 6, margin: '6px 0 0' }}>
                 ⚠ {phoneError}
               </p>
             )}
@@ -241,7 +241,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
                 placeholder="e.g. 12.5"
               />
               {sqmError && (
-                <p style={{ fontSize: 12, color: '#dc2626', marginTop: 6, margin: '6px 0 0' }}>
+                <p style={{ fontSize: 12, color: 'var(--color-error)', marginTop: 6, margin: '6px 0 0' }}>
                   ⚠ {sqmError}
                 </p>
               )}
@@ -251,8 +251,8 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
                 <div style={{
                   marginTop: 10,
                   padding: '12px 14px',
-                  background: 'rgba(167,139,250,0.08)',
-                  border: '1px solid rgba(167,139,250,0.25)',
+                  background: 'var(--accent-soft)',
+                  border: '1px solid var(--accent-border)',
                   borderRadius: 10,
                   fontSize: 14,
                   color: 'var(--text-secondary)',
@@ -272,7 +272,7 @@ export default function OrderSheet({ panel, priceFormatted, activePrice, onClose
                   {totalPrice !== null && (
                     <div style={{
                       marginTop: 8, paddingTop: 8,
-                      borderTop: '1px solid rgba(167,139,250,0.25)',
+                      borderTop: '1px solid var(--accent-border)',
                       fontSize: 16, fontWeight: 700, color: 'var(--accent)',
                     }}>
                       {t('products.estimated_total')}: {totalPrice.toLocaleString(i18n.language)} AMD

@@ -11,6 +11,15 @@ import { handleImageUpload } from '../utils/upload'
 
 const router = Router()
 
+// Normalize a social URL — adds https:// if the user omitted the scheme
+const socialUrl = z.preprocess((val) => {
+  if (!val || typeof val !== 'string') return val
+  const s = val.trim()
+  if (!s) return null
+  if (/^https?:\/\//i.test(s)) return s
+  return `https://${s}`
+}, z.string().url().nullable().optional())
+
 // Single multer instance — per-handler validation enforces specific limits
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -396,10 +405,10 @@ router.put('/settings', async (req, res, next) => {
       email: z.string().email().optional().nullable(),
       address: z.string().max(200).optional().nullable(),
       whatsapp: z.string().max(50).optional().nullable(),
-      instagram_url: z.string().url().optional().nullable(),
-      facebook_url: z.string().url().optional().nullable(),
-      tiktok_url: z.string().url().optional().nullable(),
-      pinterest_url: z.string().url().optional().nullable(),
+      instagram_url: socialUrl,
+      facebook_url:  socialUrl,
+      tiktok_url:    socialUrl,
+      pinterest_url: socialUrl,
     })
     const parsed = schema.safeParse(req.body)
     if (!parsed.success) return fail(res, 400, parsed.error.errors[0].message)

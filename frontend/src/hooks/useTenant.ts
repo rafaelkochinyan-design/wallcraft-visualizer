@@ -47,11 +47,10 @@ export function useTenant(): UseTenantResult {
             tenantRes.data.data.primary_color
           )
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setError('Failed to load store data. Please refresh the page.')
-          toast.error('Не удалось загрузить данные магазина')
-          console.error('useTenant error:', err)
+          toast.error('Failed to load store data')
         }
       } finally {
         if (!cancelled) setLoading(false)

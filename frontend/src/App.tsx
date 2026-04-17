@@ -260,8 +260,6 @@ export default function App() {
           },
         }}
       />
-      {/* Brand watermark — "WallCraft" diagonal repeat, luxury style */}
-      <div className="wc-watermark" aria-hidden="true" />
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>
           <AnimatedRoutes />
